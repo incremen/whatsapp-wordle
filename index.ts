@@ -45,15 +45,6 @@ client.on('ready', () => {
     console.log(`Client is ready! | RSS: ${mb(mem.rss)} | Heap: ${mb(mem.heapUsed)}/${mb(mem.heapTotal)}`);
 });
 
-function parseMessage(msg: any): { userId: string, body: string } | null {
-    if (msg.fromMe) {
-        if (msg.body?.startsWith('!pretend ')) {
-            return { userId: 'pretend_me', body: msg.body.slice('!pretend '.length) };
-        }
-        return null; // ignore own messages unless pretending
-    }
-    return { userId: msg.from, body: msg.body };
-}
 
 client.on('message_create', async (msg: any) => {
     console.log(`new message `)
