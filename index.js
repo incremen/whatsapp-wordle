@@ -22,11 +22,15 @@ client.on('ready', () => {
     console.log('Client is ready!');
 });
 
-client.on('message', async (msg) => {
-    console.log("got a msg")
-    if (msg.body === '!!') {
+client.on('message_create', async (msg) => {
+    console.log('message_create:', msg.body, 'fromMe:', msg.fromMe);
+    if (msg.body === 'a') {
         msg.reply('hello world');
     }
+});
+
+client.on('message', async (msg) => {
+    console.log('message:', msg.body, 'fromMe:', msg.fromMe);
 });
 
 client.initialize();
