@@ -10,8 +10,15 @@ const manager = new SessionManager();
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        browserURL: 'http://localhost:9222', // local dev: run ./chrome.sh first. comment out for VPS
-        // args: ['--no-sandbox', '--disable-setuid-sandbox'], // VPS: uncomment this, comment out browserURL
+        // browserURL: 'http://localhost:9222', // local dev: run ./chrome.sh first. comment out for VPS
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',   // don't use /dev/shm (limited on VPS)
+            '--disable-gpu',             // no GPU needed in headless
+            '--single-process',          // run renderer in same process (big RAM saver)
+            '--no-zygote',               // skip zygote process
+        ], // VPS: uncomment this, comment out browserURL
     },
     webVersion: '2.3000.1014054010',
     webVersionCache: {
@@ -26,7 +33,9 @@ client.on('qr', (qr: string) => {
 });
 
 client.on('ready', () => {
-    console.log('Client is ready!');
+    const mb = (bytes: number) => (bytes / 1024 / 1024).toFixed(1) + ' MB';
+    const mem = process.memoryUsage();
+    console.log(`Client is ready! | RSS: ${mb(mem.rss)} | Heap: ${mb(mem.heapUsed)}/${mb(mem.heapTotal)}`);
 });
 
 function parseMessage(msg: any): { userId: string, body: string } | null {
