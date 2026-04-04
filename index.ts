@@ -40,22 +40,19 @@ function parseMessage(msg: any): { userId: string, body: string } | null {
 }
 
 client.on('message_create', async (msg: any) => {
-    const parsed = parseMessage(msg);
     console.log(`new message `)
-    if (!parsed) return;
-    const { userId, body } = parsed;
 
-    if (body === '!wordle') {
-        manager.create(userId);
+    if (msg.body === '!wordle') {
+        manager.create(msg.from);
         msg.reply('Game started! Use !guess <word> to play.');
-        
-    } else if (body.startsWith('!guess ')) {
-        const session = manager.get(userId);
+
+    } else if (msg.body.startsWith('!guess ')) {
+        const session = manager.get(msg.from);
         if (!session || session.done) {
             msg.reply('No active game. Send !wordle to start one.');
             return;
         }
-        const response = session.guess(body.slice(7));
+        const response = session.guess(msg.body.slice(7));
         msg.reply('```' + response + '```');
     }
 });
