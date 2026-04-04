@@ -17,6 +17,7 @@ export class Session {
     guesses: number = 0;
     board: BoardRow[] = [];
     done: boolean = false;
+    won: boolean = false;
 
     constructor() {
         this.target = WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
@@ -36,6 +37,7 @@ export class Session {
 
         if (word === this.target) {
             this.done = true;
+            this.won = true;
             return { won: true, guesses: this.guesses };
         }
         if (this.guesses >= MAX_GUESSES) {
@@ -46,7 +48,10 @@ export class Session {
     }
 
     getBoardText(): string {
-        return this.board.map(r => `${r.guess}: ${r.emojis}`).join('\n');
+        const history = this.board.map(r => `${r.guess}: ${r.emojis}`).join('\n');
+        if (this.won) return `${history}\n\nGot it in ${this.guesses}!`;
+        if (this.done) return `${history}\n\nFool. The word was: ${this.target}`;
+        return history;
     }
 
     private _getGuessEmojis(guess: string): string {
