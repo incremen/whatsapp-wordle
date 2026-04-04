@@ -1,5 +1,5 @@
 import { SessionManager} from './SessionManager';
-import { Session} from './Session';
+
 
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
@@ -29,17 +29,27 @@ client.on('ready', () => {
     console.log('Client is ready!');
 });
 
-client.on('message_create', async (msg: any) => {
-    console.log('message_create:', msg.body, 'fromMe:', msg.fromMe);
-    const contents: string = msg.body;
+function parseMessage(msg: any): { userId: string, body: string } | null {
+    if (msg.fromMe) {
+        if (msg.body?.startsWith('!pretend ')) {
+            return { userId: 'pretend_me', body: msg.body.slice('!pretend '.length) };
+        }
+        return null; // ignore own messages unless pretending
+    }
+    return { userId: msg.from, body: msg.body };
+}
 
-    if (contents.startsWith("guess") ) {
-        const session : Session = manager.getOrCreate("me");
-        const word_guess : string = contents.slice(6);
-        console.log(`guess = ${word_guess}`);
+client.on('message_create', async (msg: any) => {
+    const parsed = parseMessage(msg);
+    console.log(`new message `)
+    if (!parsed) return;
+    const { userId, body } = parsed;
+
+    if (body.startsWith('guess ')) {
+        const session = manager.getOrCreate(userId);
+        const word_guess = body.slice(6);
         session.guess(word_guess);
-        const monospace_board : string = '```' + session.getBoardText() + '```';
-        msg.reply(monospace_board);
+        msg.reply('```' + session.getBoardText() + '```');
     }
 });
 
