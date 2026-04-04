@@ -7,6 +7,7 @@ const WORDS = [
 const target = WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
 const MAX_GUESSES = 6;
 let guesses = 0;
+const board = [];
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
@@ -16,7 +17,6 @@ function getEmojis(guess) {
     const guessArr = guess.split('');
     const used = Array(5).fill(false);
 
-    // First pass: correct position (blue)
     for (let i = 0; i < 5; i++) {
         if (guessArr[i] === targetArr[i]) {
             result[i] = '🟦';
@@ -25,7 +25,6 @@ function getEmojis(guess) {
         }
     }
 
-    // Second pass: wrong position (yellow)
     for (let i = 0; i < 5; i++) {
         if (guessArr[i] === null) continue;
         for (let j = 0; j < 5; j++) {
@@ -40,8 +39,16 @@ function getEmojis(guess) {
     return result.join('');
 }
 
+function printBoard() {
+    for (const row of board) {
+        console.log(`${row.guess}: ${row.emojis}`);
+    }
+    if (board.length > 0) console.log('');
+}
+
 function prompt() {
-    rl.question(`Guess ${guesses + 1}/${MAX_GUESSES}: `, (input) => {
+    printBoard();
+    rl.question(`Guess ${guesses + 1}/${MAX_GUESSES}:\n`, (input) => {
         const guess = input.trim().toUpperCase();
 
         if (guess.length !== 5 || !/^[A-Z]+$/.test(guess)) {
@@ -50,14 +57,16 @@ function prompt() {
         }
 
         const emojis = getEmojis(guess);
-        console.log(`${guess}: ${emojis}`);
+        board.push({ guess, emojis });
         guesses++;
 
         if (guess === target) {
-            console.log(`\nYou got it in ${guesses}!`);
+            printBoard();
+            console.log(`You got it in ${guesses}!`);
             rl.close();
         } else if (guesses >= MAX_GUESSES) {
-            console.log(`\nThe word was: ${target}`);
+            printBoard();
+            console.log(`The word was: ${target}`);
             rl.close();
         } else {
             prompt();
@@ -65,6 +74,4 @@ function prompt() {
     });
 }
 
-console.log('=== WORDLE ===');
-console.log('🟩 correct  🟨 wrong position  ⬛ not in word\n');
 prompt();
