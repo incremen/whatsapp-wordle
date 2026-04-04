@@ -53,7 +53,7 @@ export class Session {
 
     getBoardText(): string {
         const history = '```' + this.board.map(r => `${r.guess}: ${r.emojis.join('')}`).join('\n') + '```';
-        const dashboard = this.done ? '' : '\n' + this._getDashboard();
+        const dashboard = this.done ? '' : '\n\n' + this._getDashboard();
         if (this.won) return `${history}\n\nGot it in ${this.guesses}!`;
         if (this.done) return `${history}\n\nFool. The word was: '${this.target}'`;
         return history + dashboard;
@@ -86,12 +86,13 @@ export class Session {
             !misplaced.has(l) && !eliminated.has(l) && !found.includes(l)
         );
 
-        return [
+        const lines = [
             `🟩 Found:      ${found.join(' ')}`,
             `🟨 Misplaced:  ${[...misplaced].join(', ') || '-'}`,
             `⬛ Eliminated: ${[...eliminated].join(', ') || '-'}`,
             `⬜ Available:  ${available.join(', ')}`,
-        ].join('\n');
+        ];
+        return '```' + lines.join('\n') + '```';
     }
 
     private _getGuessEmojis(guess: string): string[] {
