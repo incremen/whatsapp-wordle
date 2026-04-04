@@ -10,7 +10,7 @@ const manager = new SessionManager();
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        browserURL: 'http://localhost:9222',
     },
     webVersion: '2.3000.1014054010',
     webVersionCache: {
