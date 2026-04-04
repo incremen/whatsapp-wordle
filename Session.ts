@@ -78,7 +78,11 @@ export class Session {
         }
 
         // a letter marked ⬛ in one position may still be 🟩/🟨 elsewhere (double letters)
-        for (const letter of found) if (letter !== '_') eliminated.delete(letter);
+        for (const letter of found) {
+            if (letter !== '_') eliminated.delete(letter);
+            misplaced.delete(letter);
+
+        }
         for (const letter of misplaced) eliminated.delete(letter);
 
         const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
