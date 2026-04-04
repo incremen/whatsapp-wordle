@@ -1,4 +1,6 @@
-import { SessionManager } from './SessionManager';
+import { SessionManager} from './SessionManager';
+import { Session} from './Session';
+
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
@@ -28,8 +30,14 @@ client.on('ready', () => {
 
 client.on('message_create', async (msg: any) => {
     console.log('message_create:', msg.body, 'fromMe:', msg.fromMe);
-    if (msg.body === 'a') {
-        msg.reply('hello world');
+    const contents: string = msg.body;
+
+    if (contents.startsWith("guess") ) {
+        const session : Session = manager.getOrCreate("me");
+        const word_guess : string = contents.slice(6);
+        console.log(`guess = ${word_guess}`);
+        session.guess(word_guess);
+        msg.reply(session.getBoardText());
     }
 });
 

@@ -23,6 +23,7 @@ export class Session {
     }
 
     guess(input: string): GuessResult {
+        console.log(`got guess ${input}`)
         const word = input.trim().toUpperCase();
 
         if (word.length !== 5 || !/^[A-Z]+$/.test(word)) {
