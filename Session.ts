@@ -40,7 +40,7 @@ export class Session {
     }
 
     getBoardText(): string {
-        const history = this.board.map(r => `${r.guess}: ${r.emojis}`).join('\n');
+        const history = '```' + this.board.map(r => `${r.guess}: ${r.emojis}`).join('\n') + '```';
         if (this.won) return `${history}\n\nGot it in ${this.guesses}!`;
         if (this.done) return `${history}\n\nFool. The word was: ${this.target}`;
         return history;
