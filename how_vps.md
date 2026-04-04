@@ -1,38 +1,47 @@
-## Deployment Cheat Sheet
+## Deployment & Maintenance
 
-### Initial Setup
-1. **Build the project:**
-   ```bash
-   npx tsc
-   cp *.txt dist/
-   ```
-2. **Launch in background:**
-   ```bash
-   pm2 start dist/index.js --name "wordle-bot"
-   ```
-3. **Scan the QR code:**
-   ```bash
-   pm2 logs wordle-bot
-   ```
-   *(Press **Ctrl + C** to exit the log view; the bot stays running.)*
-4. **Ensure it survives reboots:**
-   ```bash
-   pm2 save
-   ```
+### 1. Initial Setup (Run Once)
+```bash
+# Build and copy assets
+npx tsc
+cp *.txt dist/
+
+# Launch the bot
+pm2 start dist/index.js --name "wordle-bot"
+pm2 save
+```
 
 ---
 
-### The Update Loop
-Every time you pull new code from GitHub, run these in the project folder:
-1. `git pull`
-2. `npx tsc`
-3. `cp *.txt dist/`
-4. `pm2 restart wordle-bot`
+### 2. Server Health (2GB RAM Safety Net)
+*Run these to prevent "Out of Memory" crashes if not already done.*
+```bash
+# Create 2GB swap file (if not already created)
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+# Make swap permanent on reboot (if not already in fstab)
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
 
 ---
 
-### Troubleshooting
-* **Check status:** `pm2 list`
-* **See crash details:** `pm2 logs wordle-bot --err`
-* **Clear old log text:** `pm2 flush`
-* **Stop the bot:** `pm2 stop wordle-bot`
+### 3. The "Update" Loop
+*Run this every time you pull new code from GitHub.*
+```bash
+git pull
+npx tsc
+cp *.txt dist/
+pm2 restart wordle-bot
+```
+
+---
+
+### 4. Monitoring & Troubleshooting
+* **Scan QR Code:** `pm2 logs wordle-bot`
+* **Check RAM/CPU:** `htop` or `free -h`
+* **Check Bot specifically:** `pm2 monit`
+* **Clear old error logs:** `pm2 flush`
+* **Check Swap status:** `swapon --show`
