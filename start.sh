@@ -5,7 +5,7 @@
   --headless=new \
   --remote-debugging-port=9222 \
   --no-sandbox \
-  --user-data-dir=/tmp/wa-chrome &
+  --user-data-dir=/tmp/wa-chrome 2>/dev/null &
 
 sleep 1
-exec npx nodemon
+exec npx nodemon --signal SIGKILL
