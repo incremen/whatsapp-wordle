@@ -37,7 +37,8 @@ client.on('message_create', async (msg: any) => {
         const word_guess : string = contents.slice(6);
         console.log(`guess = ${word_guess}`);
         session.guess(word_guess);
-        msg.reply(session.getBoardText());
+        const monospace_board : string = '```' + session.getBoardText() + '```';
+        msg.reply(monospace_board);
     }
 });
 
