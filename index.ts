@@ -10,7 +10,8 @@ const manager = new SessionManager();
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        browserURL: 'http://localhost:9222',
+        browserURL: 'http://localhost:9222', // local dev: run ./chrome.sh first. comment out for VPS
+        // args: ['--no-sandbox', '--disable-setuid-sandbox'], // VPS: uncomment this, comment out browserURL
     },
     webVersion: '2.3000.1014054010',
     webVersionCache: {
