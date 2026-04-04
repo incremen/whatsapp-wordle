@@ -1,76 +1,98 @@
 const readline = require('readline');
 
-const WORDS = [
-    'crane', 'audio'
-];
-
-const target = WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
+const WORDS = ['crane', 'audio'];
 const MAX_GUESSES = 6;
-let guesses = 0;
-const board = [];
 
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-
-function getEmojis(guess) {
-    const result = ['⬛', '⬛', '⬛', '⬛', '⬛'];
-    const targetArr = target.split('');
-    const guessArr = guess.split('');
-    const used = Array(5).fill(false);
-
-    for (let i = 0; i < 5; i++) {
-        if (guessArr[i] === targetArr[i]) {
-            result[i] = '🟦';
-            used[i] = true;
-            guessArr[i] = null;
-        }
+class Session {
+    constructor() {
+        this.target = WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
+        this.guesses = 0;
+        this.board = [];
+        this.done = false;
     }
 
-    for (let i = 0; i < 5; i++) {
-        if (guessArr[i] === null) continue;
-        for (let j = 0; j < 5; j++) {
-            if (!used[j] && guessArr[i] === targetArr[j]) {
-                result[i] = '🟨';
-                used[j] = true;
-                break;
+    guess(input) {
+        const word = input.trim().toUpperCase();
+
+        if (word.length !== 5 || !/^[A-Z]+$/.test(word)) {
+            return { error: 'Enter a 5-letter word.' };
+        }
+
+        const emojis = this._getGuessEmojis(word);
+        this.board.push({ guess: word, emojis });
+        this.guesses++;
+
+        if (word === this.target) {
+            this.done = true;
+            return { won: true, guesses: this.guesses };
+        }
+        if (this.guesses >= MAX_GUESSES) {
+            this.done = true;
+            return { lost: true, target: this.target };
+        }
+        return { continue: true };
+    }
+
+    getBoardText() {
+        return this.board.map(r => `${r.guess}: ${r.emojis}`).join('\n');
+    }
+
+    _getGuessEmojis(guess) {
+        const result = ['⬛', '⬛', '⬛', '⬛', '⬛'];
+        const targetArr = this.target.split('');
+        const guessArr = guess.split('');
+        const used = Array(5).fill(false);
+
+        for (let i = 0; i < 5; i++) {
+            if (guessArr[i] === targetArr[i]) {
+                result[i] = '🟩';
+                used[i] = true;
+                guessArr[i] = null;
             }
         }
+        for (let i = 0; i < 5; i++) {
+            if (guessArr[i] === null) continue;
+            for (let j = 0; j < 5; j++) {
+                if (!used[j] && guessArr[i] === targetArr[j]) {
+                    result[i] = '🟨';
+                    used[j] = true;
+                    break;
+                }
+            }
+        }
+        return result.join('');
     }
-
-    return result.join('');
 }
 
-function printBoard() {
-    for (const row of board) {
-        console.log(`${row.guess}: ${row.emojis}`);
+class SessionManager {
+    constructor() {
+        this.sessions = new Map();
     }
-    if (board.length > 0) console.log('');
+
+    getOrCreate(userId) {
+        if (!this.sessions.has(userId) || this.sessions.get(userId).done) {
+            this.sessions.set(userId, new Session());
+        }
+        return this.sessions.get(userId);
+    }
 }
+
+const manager = new SessionManager();
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
 function prompt() {
-    printBoard();
-    rl.question(`Guess ${guesses + 1}/${MAX_GUESSES}:\n`, (input) => {
-        const guess = input.trim().toUpperCase();
+    const session = manager.getOrCreate('me');
+    rl.question(`Guess ${session.guesses + 1}/${MAX_GUESSES}:\n`, (input) => {
+        const result = session.guess(input);
 
-        if (guess.length !== 5 || !/^[A-Z]+$/.test(guess)) {
-            console.log('Enter a 5-letter word.');
-            return prompt();
-        }
-
-        const emojis = getEmojis(guess);
-        board.push({ guess, emojis });
-        guesses++;
-
-        if (guess === target) {
-            printBoard();
-            console.log(`You got it in ${guesses}!`);
-            rl.close();
-        } else if (guesses >= MAX_GUESSES) {
-            printBoard();
-            console.log(`The word was: ${target}`);
-            rl.close();
+        if (result.error) {
+            console.log(result.error);
         } else {
-            prompt();
+            console.log(session.getBoardText() + '\n');
+            if (result.won) { console.log(`You got it in ${result.guesses}!`); return rl.close(); }
+            if (result.lost) { console.log(`The word was: ${result.target}`); return rl.close(); }
         }
+        prompt();
     });
 }
 
