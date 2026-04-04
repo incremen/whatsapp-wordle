@@ -13,7 +13,7 @@ export const MAX_GUESSES = 6;
 
 type BoardRow = {
     guess: string;
-    emojis: string;
+    emojis: string[];
 }
 
 export class Session {
@@ -52,13 +52,49 @@ export class Session {
     }
 
     getBoardText(): string {
-        const history = '```' + this.board.map(r => `${r.guess}: ${r.emojis}`).join('\n') + '```';
+        const history = '```' + this.board.map(r => `${r.guess}: ${r.emojis.join('')}`).join('\n') + '```';
+        const dashboard = this.done ? '' : '\n' + this._getDashboard();
         if (this.won) return `${history}\n\nGot it in ${this.guesses}!`;
         if (this.done) return `${history}\n\nFool. The word was: '${this.target}'`;
-        return history;
+        return history + dashboard;
     }
 
-    private _getGuessEmojis(guess: string): string {
+    private _getDashboard(): string {
+        const found: string[] = Array(5).fill('_');
+        const misplaced = new Set<string>();
+        const eliminated = new Set<string>();
+
+        for (const { guess, emojis } of this.board) {
+            for (let i = 0; i < 5; i++) {
+                const letter = guess[i];
+                if (emojis[i] === '🟩') {
+                    found[i] = letter;
+                } else if (emojis[i] === '🟨') {
+                    misplaced.add(letter);
+                } else {
+                    eliminated.add(letter);
+                }
+            }
+        }
+
+        // a letter marked ⬛ in one position may still be 🟩/🟨 elsewhere (double letters)
+        for (const letter of found) if (letter !== '_') eliminated.delete(letter);
+        for (const letter of misplaced) eliminated.delete(letter);
+
+        const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        const available = allLetters.filter(l =>
+            !misplaced.has(l) && !eliminated.has(l) && !found.includes(l)
+        );
+
+        return [
+            `🟩 Found:      ${found.join(' ')}`,
+            `🟨 Misplaced:  ${[...misplaced].join(', ') || '-'}`,
+            `⬛ Eliminated: ${[...eliminated].join(', ') || '-'}`,
+            `⬜ Available:  ${available.join(', ')}`,
+        ].join('\n');
+    }
+
+    private _getGuessEmojis(guess: string): string[] {
         const result = ['⬛', '⬛', '⬛', '⬛', '⬛'];
         const targetArr = this.target.split('');
         const guessArr = guess.split('');
@@ -81,6 +117,6 @@ export class Session {
                 }
             }
         }
-        return result.join('');
+        return result;
     }
 }
