@@ -7,19 +7,22 @@ const qrcode = require('qrcode-terminal');
 
 const manager = new SessionManager();
 
+const PUPPETEER_ARGS = [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-gpu',
+    '--single-process',
+    '--no-zygote',
+];
+
+const puppeteerConfig: any = process.env.PUPPETEER_EXECUTABLE_PATH
+    ? { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH, args: PUPPETEER_ARGS }  // VPS: set env var, e.g. PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+    : { browserURL: 'http://localhost:9222' };                                           // local: run ./chrome.sh first
+
 const client = new Client({
     authStrategy: new LocalAuth(),
-    puppeteer: {
-        // browserURL: 'http://localhost:9222', // local dev: run ./chrome.sh first. comment out for VPS
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',   // don't use /dev/shm (limited on VPS)
-            '--disable-gpu',             // no GPU needed in headless
-            '--single-process',          // run renderer in same process (big RAM saver)
-            '--no-zygote',               // skip zygote process
-        ], // VPS: uncomment this, comment out browserURL
-    },
+    puppeteer: puppeteerConfig,
     webVersion: '2.3000.1014054010',
     webVersionCache: {
         type: 'remote',
