@@ -16,9 +16,13 @@ const PUPPETEER_ARGS = [
     '--no-zygote',
 ];
 
-const puppeteerConfig: any = process.env.PUPPETEER_EXECUTABLE_PATH
-    ? { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH, args: PUPPETEER_ARGS }  // VPS: set env var, e.g. PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-    : { browserURL: 'http://localhost:9222' };                                           // local: run ./chrome.sh first
+const executablePath =
+    process.env.PUPPETEER_EXECUTABLE_PATH ||                // explicit override always wins
+    (process.platform === 'linux' ? '/snap/bin/chromium' : undefined); // linux default
+
+const puppeteerConfig: any = executablePath
+    ? { executablePath, args: PUPPETEER_ARGS }  // VPS
+    : { browserURL: 'http://localhost:9222' };   // local: run ./chrome.sh first
 
 const client = new Client({
     authStrategy: new LocalAuth(),
