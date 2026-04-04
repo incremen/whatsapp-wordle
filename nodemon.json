@@ -2,5 +2,6 @@
   "watch": ["*.ts"],
   "ext": "ts",
   "exec": "npx ts-node index.ts",
-  "delay": "5000"
+  "delay": "5000",
+  "signal": "SIGKILL"
 }
