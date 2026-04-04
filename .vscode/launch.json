@@ -8,8 +8,8 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${file}",
-      "runtimeExecutable": "/Users/itamar/.nvm/versions/node/v24.14.1/bin/node",
+      "program": "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
+      "args": ["${file}"],
       "console": "integratedTerminal"
     }
   ]
