@@ -47,9 +47,8 @@ client.on('message_create', async (msg: any) => {
 
     if (body.startsWith('guess ')) {
         const session = manager.getOrCreate(userId);
-        const word_guess = body.slice(6);
-        session.guess(word_guess);
-        msg.reply('```' + session.getBoardText() + '```');
+        const response = session.guess(body.slice(6));
+        msg.reply('```' + response + '```');
     }
 });
 

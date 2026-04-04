@@ -9,14 +9,8 @@ function prompt(): void {
     const session = manager.getOrCreate('me');
     rl.question(`Guess ${session.guesses + 1}/${MAX_GUESSES}:\n`, (input: string) => {
         const result = session.guess(input);
-
-        if ('error' in result) {
-            console.log(result.error);
-        } else {
-            console.log(session.getBoardText() + '\n');
-            if ('won' in result) { console.log(`You got it in ${result.guesses}!`); return rl.close(); }
-            if ('lost' in result) { console.log(`The word was: ${result.target}`); return rl.close(); }
-        }
+        console.log(result + '\n');
+        if (session.done) return rl.close();
         prompt();
     });
 }

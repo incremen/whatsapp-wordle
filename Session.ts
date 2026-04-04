@@ -1,11 +1,6 @@
 const WORDS = ['crane', 'audio'];
 export const MAX_GUESSES = 6;
 
-type GuessResult =
-    | { error: string }
-    | { won: true; guesses: number }
-    | { lost: true; target: string }
-    | { continue: true };
 
 type BoardRow = {
     guess: string;
@@ -23,12 +18,11 @@ export class Session {
         this.target = WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
     }
 
-    guess(input: string): GuessResult {
-        console.log(`got guess ${input}`)
+    guess(input: string): string {
         const word = input.trim().toUpperCase();
 
         if (word.length !== 5 || !/^[A-Z]+$/.test(word)) {
-            return { error: 'Enter a 5-letter word.' };
+            return 'Enter a 5-letter word.';
         }
 
         const emojis = this._getGuessEmojis(word);
@@ -38,13 +32,11 @@ export class Session {
         if (word === this.target) {
             this.done = true;
             this.won = true;
-            return { won: true, guesses: this.guesses };
-        }
-        if (this.guesses >= MAX_GUESSES) {
+        } else if (this.guesses >= MAX_GUESSES) {
             this.done = true;
-            return { lost: true, target: this.target };
         }
-        return { continue: true };
+
+        return this.getBoardText();
     }
 
     getBoardText(): string {
