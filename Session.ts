@@ -1,4 +1,13 @@
-const WORDS = ['crane', 'audio'];
+import * as fs from 'fs';
+import * as path from 'path';
+
+function loadWords(file: string): string[] {
+    return fs.readFileSync(path.join(__dirname, file), 'utf-8')
+        .split('\n').map(w => w.trim()).filter(w => w.length === 5);
+}
+
+const VALID_GUESSES = new Set(loadWords('valid-guesses.txt'));
+const VALID_TARGETS = loadWords('valid-targets.txt');
 export const MAX_GUESSES = 6;
 
 
@@ -15,7 +24,7 @@ export class Session {
     won: boolean = false;
 
     constructor() {
-        this.target = WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
+        this.target = VALID_TARGETS[Math.floor(Math.random() * VALID_TARGETS.length)].toUpperCase();
     }
 
     guess(input: string): string {
@@ -23,6 +32,9 @@ export class Session {
 
         if (word.length !== 5 || !/^[A-Z]+$/.test(word)) {
             return 'Enter a 5-letter word.';
+        }
+        if (!VALID_GUESSES.has(word.toLowerCase())) {
+            return 'Not a valid word.';
         }
 
         const emojis = this._getGuessEmojis(word);
