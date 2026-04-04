@@ -45,9 +45,17 @@ client.on('message_create', async (msg: any) => {
     if (!parsed) return;
     const { userId, body } = parsed;
 
-    if (body.startsWith('guess ')) {
-        const session = manager.getOrCreate(userId);
-        const response = session.guess(body.slice(6));
+    if (body === '!wordle') {
+        manager.create(userId);
+        msg.reply('Game started! Use !guess <word> to play.');
+        
+    } else if (body.startsWith('!guess ')) {
+        const session = manager.get(userId);
+        if (!session || session.done) {
+            msg.reply('No active game. Send !wordle to start one.');
+            return;
+        }
+        const response = session.guess(body.slice(7));
         msg.reply('```' + response + '```');
     }
 });
