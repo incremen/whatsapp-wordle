@@ -1,5 +1,3 @@
-const readline = require('readline');
-
 const WORDS = ['crane', 'audio'];
 const MAX_GUESSES = 6;
 
@@ -64,36 +62,4 @@ class Session {
     }
 }
 
-class SessionManager {
-    constructor() {
-        this.sessions = new Map();
-    }
-
-    getOrCreate(userId) {
-        if (!this.sessions.has(userId) || this.sessions.get(userId).done) {
-            this.sessions.set(userId, new Session());
-        }
-        return this.sessions.get(userId);
-    }
-}
-
-const manager = new SessionManager();
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-
-function prompt() {
-    const session = manager.getOrCreate('me');
-    rl.question(`Guess ${session.guesses + 1}/${MAX_GUESSES}:\n`, (input) => {
-        const result = session.guess(input);
-
-        if (result.error) {
-            console.log(result.error);
-        } else {
-            console.log(session.getBoardText() + '\n');
-            if (result.won) { console.log(`You got it in ${result.guesses}!`); return rl.close(); }
-            if (result.lost) { console.log(`The word was: ${result.target}`); return rl.close(); }
-        }
-        prompt();
-    });
-}
-
-prompt();
+module.exports = { Session, MAX_GUESSES };
