@@ -7,7 +7,7 @@ type GuessResult =
     | { lost: true; target: string }
     | { continue: true };
 
-type BoardRow {
+type BoardRow = {
     guess: string;
     emojis: string;
 }
