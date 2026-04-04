@@ -20,7 +20,7 @@ const client = new Client({
 });
 
 client.on('qr', (qr: string) => {
-    qrcode.generate(qr, { small: true });
+    qrcode.generate(qr, { small: true });   
     console.log('Scan the QR code above with WhatsApp');
 });
 
