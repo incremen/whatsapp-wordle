@@ -45,12 +45,12 @@ client.on('message_create', async (msg: any) => {
     let response = "";
     if (msg.body === '!wordle') {
         manager.create(msg.from);
-        msg.reply('Game started! Use !guess <word> to play.');
+        msg.reply('Game started! Use `!guess <word>` to play.');
 
     } else if (msg.body.startsWith('!guess ')) {
         const session = manager.get(msg.from);
         if (!session || session.done) {
-            response = 'No active game. Send !wordle to start one.';
+            response = 'No active game. Send `!wordle` to start one.';
         }
         else {
             response = session.guess(msg.body.slice(7));
