@@ -7,3 +7,4 @@
  - `data` - sqllite, store stats for each user with !stats (like avg guess per game, total games...) and maybe get interesting data in general about common opening words and so on
  - `!help` - should include all commands and link to this github
  - `!enableDrops (admin only)` random wordle that spawns in chat every now and then, and you solve it for a reward. this'll show up on your !stats
+ - `super wordle solver` - like in the 3b1b vid. evaluate guesses, show optimal each time, how many bits, etc.
