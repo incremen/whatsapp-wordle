@@ -22,6 +22,9 @@ export class Session {
     board: BoardRow[] = [];
     done: boolean = false;
     won: boolean = false;
+    found: string[] = Array(5).fill('_');
+    misplaced = new Set<string>();
+    eliminated = new Set<string>();
 
     constructor() {
         this.target = VALID_TARGETS[Math.floor(Math.random() * VALID_TARGETS.length)].toUpperCase();
@@ -40,6 +43,7 @@ export class Session {
         const emojis = this._getGuessEmojis(word);
         this.board.push({ guess: word, emojis });
         this.guesses++;
+        this._updateLetterState(word, emojis);
 
         if (word === this.target) {
             this.done = true;
@@ -51,6 +55,7 @@ export class Session {
         return this.getBoardText();
     }
 
+
     getBoardText(): string {
         const history = '```' + this.board.map(r => `${r.guess}: ${r.emojis.join('')}`).join('\n') + '```';
         const dashboard = this.done ? '' : '\n\n' + this._getDashboard();
@@ -59,41 +64,35 @@ export class Session {
         return history + dashboard;
     }
 
-    private _getDashboard(): string {
-        const found: string[] = Array(5).fill('_');
-        const misplaced = new Set<string>();
-        const eliminated = new Set<string>();
-
-        for (const { guess, emojis } of this.board) {
-            for (let i = 0; i < 5; i++) {
-                const letter = guess[i];
-                if (emojis[i] === '🟩') {
-                    found[i] = letter;
-                } else if (emojis[i] === '🟨') {
-                    misplaced.add(letter);
-                } else {
-                    eliminated.add(letter);
-                }
+    private _updateLetterState(word: string, emojis: string[]): void {
+        for (let i = 0; i < 5; i++) {
+            const letter = word[i];
+            if (emojis[i] === '🟩') {
+                this.found[i] = letter;
+            } else if (emojis[i] === '🟨') {
+                this.misplaced.add(letter);
+            } else {
+                this.eliminated.add(letter);
             }
         }
-
         // a letter marked ⬛ in one position may still be 🟩/🟨 elsewhere (double letters)
-        for (const letter of found) {
-            if (letter !== '_') eliminated.delete(letter);
-            misplaced.delete(letter);
-
+        for (const letter of this.found) {
+            if (letter !== '_') { this.eliminated.delete(letter); this.misplaced.delete(letter); }
         }
-        for (const letter of misplaced) eliminated.delete(letter);
+        for (const letter of this.misplaced) this.eliminated.delete(letter);
+    }
+
+    private _getDashboard(): string {
 
         const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
         const available = allLetters.filter(l =>
-            !misplaced.has(l) && !eliminated.has(l) && !found.includes(l)
+            !this.misplaced.has(l) && !this.eliminated.has(l) && !this.found.includes(l)
         );
 
         const lines = [
-            `🟩 Found:      ${found.join(' ')}`,
-            `🟨 Misplaced:  ${[...misplaced].join(', ') || '-'}`,
-            `⬛ Eliminated: ${[...eliminated].join(', ') || '-'}`,
+            `🟩 Found:      ${this.found.join(' ')}`,
+            `🟨 Misplaced:  ${[...this.misplaced].join(', ') || '-'}`,
+            `⬛ Eliminated: ${[...this.eliminated].join(', ') || '-'}`,
             `⬜ Available:  ${available.join(', ')}`,
         ];
         return '```' + lines.join('\n') + '```';
