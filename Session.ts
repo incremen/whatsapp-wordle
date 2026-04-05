@@ -10,6 +10,11 @@ const VALID_GUESSES = new Set(loadWords('valid-guesses.txt'));
 const VALID_TARGETS = loadWords('valid-targets.txt');
 export const MAX_GUESSES = 6;
 
+const CORRECT = '🟩';
+const MISPLACED = '🟨';
+const WRONG = '⬛';
+const AVAILABLE = '⬜';
+
 
 type BoardRow = {
     guess: string;
@@ -19,6 +24,7 @@ type BoardRow = {
 export class Session {
     target: string;
     guesses: number = 0;
+    hints : number = 0;
     board: BoardRow[] = [];
     done: boolean = false;
     won: boolean = false;
@@ -45,14 +51,35 @@ export class Session {
         this.guesses++;
         this._updateLetterState(word, emojis);
 
+        this.checkIfDone(word);
+
+        return this.getBoardText();
+    }
+
+    private checkIfDone(word: string) {
         if (word === this.target) {
             this.done = true;
             this.won = true;
         } else if (this.guesses >= MAX_GUESSES) {
             this.done = true;
         }
+    }
 
-        return this.getBoardText();
+    hint() : string {
+        const not_green_indexes = [0,1,2,3,4].filter(i => this.found[i] === '_');
+        const random_idx = not_green_indexes[Math.floor(Math.random() * not_green_indexes.length)];
+
+        const emojis: string[] = Array(5).fill(WRONG);
+        emojis[random_idx] = CORRECT;
+        this.board.push({guess: "HINT ", emojis});
+        this.hints++;
+
+        this.found[random_idx] = this.target[random_idx];
+        this.misplaced.delete(this.target[random_idx]);
+        this.eliminated.delete(this.target[random_idx]);
+
+        
+
     }
 
 
@@ -67,9 +94,9 @@ export class Session {
     private _updateLetterState(word: string, emojis: string[]): void {
         for (let i = 0; i < 5; i++) {
             const letter = word[i];
-            if (emojis[i] === '🟩') {
+            if (emojis[i] === CORRECT) {
                 this.found[i] = letter;
-            } else if (emojis[i] === '🟨') {
+            } else if (emojis[i] === MISPLACED) {
                 this.misplaced.add(letter);
             } else {
                 this.eliminated.add(letter);
@@ -90,23 +117,23 @@ export class Session {
         );
 
         const lines = [
-            `🟩 Found:      ${this.found.join(' ')}`,
-            `🟨 Misplaced:  ${[...this.misplaced].join(', ') || '-'}`,
-            `⬛ Eliminated: ${[...this.eliminated].join(', ') || '-'}`,
-            `⬜ Available:  ${available.join(', ')}`,
+            `${CORRECT} Found:      ${this.found.join(' ')}`,
+            `${MISPLACED} Misplaced:  ${[...this.misplaced].join(', ') || '-'}`,
+            `${WRONG} Eliminated: ${[...this.eliminated].join(', ') || '-'}`,
+            `${AVAILABLE} Available:  ${available.join(', ')}`,
         ];
         return '```' + lines.join('\n') + '```';
     }
 
     private _getGuessEmojis(guess: string): string[] {
-        const result = ['⬛', '⬛', '⬛', '⬛', '⬛'];
+        const result = [WRONG, WRONG, WRONG, WRONG, WRONG];
         const targetArr = this.target.split('');
         const guessArr = guess.split('');
         const used = Array(5).fill(false);
 
         for (let i = 0; i < 5; i++) {
             if (guessArr[i] === targetArr[i]) {
-                result[i] = '🟩';
+                result[i] = CORRECT;
                 used[i] = true;
                 guessArr[i] = null!;
             }
@@ -115,7 +142,7 @@ export class Session {
             if (guessArr[i] === null) continue;
             for (let j = 0; j < 5; j++) {
                 if (!used[j] && guessArr[i] === targetArr[j]) {
-                    result[i] = '🟨';
+                    result[i] = MISPLACED;
                     used[j] = true;
                     break;
                 }
