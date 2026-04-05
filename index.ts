@@ -32,9 +32,10 @@ client.on('ready', () => {
 client.on('message_create', async (msg: any) => {
     log('New message', `from: ${msg.from} body: ${msg.body}`);
 
-    if (msg.body === '!disable' && msg.fromMe) { setDisabled(msg.from, true);  msg.reply('Bot disabled here.'); return; }
-    if (msg.body === '!enable'  && msg.fromMe) { setDisabled(msg.from, false); msg.reply('Bot enabled here.');  return; }
-    if (getDisabledIds().has(msg.from) && !msg.fromMe) return;
+    const chatId = msg.id.remote;
+    if (msg.body === '!disable' && msg.fromMe) { setDisabled(chatId, true);  msg.reply('Bot disabled here.'); return; }
+    if (msg.body === '!enable'  && msg.fromMe) { setDisabled(chatId, false); msg.reply('Bot enabled here.');  return; }
+    if (getDisabledIds().has(chatId) && !msg.fromMe) return;
 
     let response = "";
     if (msg.body === '!wordle') {
