@@ -63,7 +63,7 @@ export class Session {
             this.done = true;
             this.won = true;
         } 
-        else if (this.guesses >= MAX_GUESSES || this.found.every(l => l !== '_')) {
+        else if (this.guesses >= MAX_GUESSES) {
             this.done = true;
         }
     }
