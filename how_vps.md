@@ -31,7 +31,7 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 ---
 
-### 3. The "Update" Loop
+### 3. The Update Loop
 *Run this every time you pull new code from GitHub. Note: 'restart' kills the old process for you.*
 ```bash
 git pull
