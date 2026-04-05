@@ -57,10 +57,13 @@ export class Session {
     }
 
     private updateDoneWon() {
-        if (this.found.every(l => l !== '_')) {
+        const lastRow = this.board[this.board.length - 1];
+        
+        if (lastRow.emojis.every(e => e === CORRECT)) {
             this.done = true;
             this.won = true;
-        } else if (this.guesses >= MAX_GUESSES) {
+        } 
+        else if (this.guesses >= MAX_GUESSES || this.found.every(l => l !== '_')) {
             this.done = true;
         }
     }
