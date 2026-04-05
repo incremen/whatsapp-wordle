@@ -52,7 +52,7 @@ client.on('message_create', async (msg: any) => {
     let response = "";
     if (msg.body === '!wordle') {
         manager.create(msg.from);
-        msg.reply('Game started! Use `!guess <word>` to play.');
+        msg.reply('Game started! Use `!guess <word>` to play, `!hint` for a hint.');
 
     } 
     else if (msg.body.startsWith('!guess ')) {
