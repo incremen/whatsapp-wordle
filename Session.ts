@@ -86,10 +86,40 @@ export class Session {
     getBoardText(): string {
         const history = '```' + this.board.map(r => `${r.guess}: ${r.emojis.join('')}`).join('\n') + '```';
         const dashboard = this.done ? '' : '\n\n' + this._getDashboard();
-        if (this.won) return `${history}\n\nGot it in ${this.guesses}!`;
+        if (this.won) return `${history}\n\n${this._getWinMessage()}`;
         if (this.done) return `${history}\n\nFool. The word was: '${this.target}'`;
         return history + dashboard;
     }
+
+private _getWinMessage(): string {
+    const g = this.guesses;
+    const h = this.hints;
+    const s = h === 1 ? '' : 's';
+
+    if (h === 0) {
+        if (g === 1) return `Got it in 1/6. Lucky bastard.`;
+        if (g === 2) return `Got it in 2/6. WOW!`;
+        if (g === 3) return `Got it in 3/6. Very good!`;
+        if (g === 4) return `Got it in 4/6. Nicely done.`;
+        if (g === 5) return `Got it in 5/6. Decent.`;
+        return `Got it in 6/6. Hard word? Or word hard?`;
+    }
+
+    if (h === 1) {
+        if (g <= 3) return `${g}/6. Fast, but with a hint`;
+        if (g <= 5) return `${g}/6. Decent, but with a hint.`;
+        return `6/6. You barely made it, even with a hint.`;
+    }
+
+    if (g === 6) {
+        return `6/6. That was a struggle. ${h} hint${s} used.`;
+    }
+    if (h >= 3) {
+        return `${g}/6. With ${h} hints, it wasn't exactly a solo effort.`;
+    }
+
+    return `${g}/6. You finished, but it cost you ${h} hint${s}.`;
+}
 
     private _updateLetterState(word: string, emojis: string[]): void {
         for (let i = 0; i < 5; i++) {
