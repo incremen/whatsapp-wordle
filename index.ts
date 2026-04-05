@@ -1,11 +1,23 @@
-import { SessionManager} from './SessionManager';
-
-
+import { SessionManager } from './SessionManager';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 
 const manager = new SessionManager();
+
+const DISABLED_IDS_FILE = path.join(__dirname, 'disabled.txt');
+
+function getDisabledIds(): Set<string> {
+    try { return new Set(fs.readFileSync(DISABLED_IDS_FILE, 'utf-8').split('\n').filter(Boolean)); }
+    catch { return new Set(); }
+}
+function setDisabled(chatId: string, disabled: boolean) {
+    const ids = getDisabledIds();
+    disabled ? ids.add(chatId) : ids.delete(chatId);
+    fs.writeFileSync(DISABLED_IDS_FILE, [...ids].join('\n'));
+}
 
 const PUPPETEER_ARGS = [
     '--no-sandbox',
@@ -47,7 +59,15 @@ client.on('ready', () => {
 
 
 client.on('message_create', async (msg: any) => {
-    console.log(`new message `)
+    if (msg.body === '!disable' && msg.fromMe) 
+        { setDisabled(msg.from, true);  msg.reply('Bot disabled here.'); return; 
+
+        }
+    if (msg.body === '!enable'  && msg.fromMe) {
+         setDisabled(msg.from, false); msg.reply('Bot enabled here.');  return; 
+        }
+    if (getDisabledIds().has(msg.from) && !msg.fromMe)
+         return;
 
     let response = "";
     if (msg.body === '!wordle') {
