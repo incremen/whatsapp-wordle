@@ -57,8 +57,7 @@ export class Session {
     }
 
     private updateDoneWon() {
-        const lastGuess = this.board[this.board.length - 1]?.guess;
-        if (lastGuess === this.target) {
+        if (this.found.every(l => l !== '_')) {
             this.done = true;
             this.won = true;
         } else if (this.guesses >= MAX_GUESSES) {
@@ -79,8 +78,8 @@ export class Session {
         this.misplaced.delete(this.target[random_idx]);
         this.eliminated.delete(this.target[random_idx]);
 
-        
-
+        this.updateDoneWon();
+        return this.getBoardText();
     }
 
 
