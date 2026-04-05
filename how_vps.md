@@ -43,7 +43,8 @@ pm2 restart wordle-bot
 ---
 
 ### 4. Monitoring & Troubleshooting
-* **Scan QR Code:** `pm2 logs wordle-bot`
+* **Check what pm2 is running** `pm2 list`
+* **Check console.log** `pm2 logs wordle-bot`
 * **Check RAM/CPU:** `htop` or `free -h`
 * **Check Bot specifically:** `pm2 monit`
 * **Clear logs:** `pm2 flush`
