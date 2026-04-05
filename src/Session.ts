@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 function loadWords(file: string): string[] {
-    return fs.readFileSync(path.join(__dirname, file), 'utf-8')
+    return fs.readFileSync(path.join(__dirname, '..', 'data', file), 'utf-8')
         .split('\n').map(w => w.trim()).filter(w => w.length === 5);
 }
 
