@@ -6,6 +6,9 @@
 npx tsc
 cp *.txt dist/
 
+# Remove old instance if it exists (prevents "Script already launched" errors)
+pm2 delete wordle-bot || true
+
 # Launch the bot
 pm2 start dist/index.js --name "wordle-bot"
 pm2 save
@@ -29,7 +32,7 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 ---
 
 ### 3. The "Update" Loop
-*Run this every time you pull new code from GitHub.*
+*Run this every time you pull new code from GitHub. Note: 'restart' kills the old process for you.*
 ```bash
 git pull
 npx tsc
@@ -43,5 +46,9 @@ pm2 restart wordle-bot
 * **Scan QR Code:** `pm2 logs wordle-bot`
 * **Check RAM/CPU:** `htop` or `free -h`
 * **Check Bot specifically:** `pm2 monit`
-* **Clear old error logs:** `pm2 flush`
-* **Check Swap status:** `swapon --show`
+* **Clear logs:** `pm2 flush`
+
+**How to stop/kill:**
+* **Stop (pause):** `pm2 stop wordle-bot`
+* **Delete (remove from list):** `pm2 delete wordle-bot`
+* **Kill PM2 (stops everything/nuclear):** `pm2 kill`
