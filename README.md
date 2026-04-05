@@ -1,6 +1,6 @@
 # WhatsApp Wordle Bot
 
-A WhatsApp bot that lets users play Wordle via chat. Code is in `/src`.
+A WhatsApp bot that lets users play Wordle via your user. Code is in `/src`.
 
 ## Commands
 - `!wordle` — start a new game
