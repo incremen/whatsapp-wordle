@@ -51,13 +51,14 @@ export class Session {
         this.guesses++;
         this._updateLetterState(word, emojis);
 
-        this.checkIfDone(word);
+        this.checkIfDone();
 
         return this.getBoardText();
     }
 
-    private checkIfDone(word: string) {
-        if (word === this.target) {
+    private checkIfDone() {
+        const lastGuess = this.board[this.board.length - 1]?.guess;
+        if (lastGuess === this.target) {
             this.done = true;
             this.won = true;
         } else if (this.guesses >= MAX_GUESSES) {
