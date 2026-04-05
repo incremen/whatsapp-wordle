@@ -14,4 +14,4 @@ npm install
 npx ts-node src/index.ts
 ```
 
-> `scripts/`, `docs/`, config files etc. are quirks for running on a small server — you can mostly ignore/change them if just running locally.
+> `scripts/`, `docs/how_vps`, config files etc. are quirks for running on a small server — you can mostly ignore/change them if just running locally.

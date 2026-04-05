@@ -2,9 +2,7 @@
 
 ### 1. Initial Setup (Run Once)
 ```bash
-# Build and copy assets
-npx tsc
-cp *.txt dist/
+npm run build
 
 # Remove old instance if it exists (prevents "Script already launched" errors)
 pm2 delete wordle-bot || true
@@ -35,8 +33,7 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 *Run this every time you pull new code from GitHub. Note: 'restart' kills the old process for you.*
 ```bash
 git pull
-npx tsc
-cp *.txt dist/
+npm run build
 pm2 restart wordle-bot
 ```
 
