@@ -54,15 +54,30 @@ client.on('message_create', async (msg: any) => {
         manager.create(msg.from);
         msg.reply('Game started! Use `!guess <word>` to play.');
 
-    } else if (msg.body.startsWith('!guess ')) {
+    } 
+    else if (msg.body.startsWith('!guess ')) {
         const session = manager.get(msg.from);
         if (!session || session.done) {
             response = 'No active game. Send `!wordle` to start one.';
         }
+    
         else {
             response = session.guess(msg.body.slice(7));
         }
         msg.reply(response);
+    }
+
+    else if (msg.body.startsWith('!hint')) {
+        const session = manager.get(msg.from);
+        if (!session || session.done) {
+            response = 'No active game. Send `!wordle` to start one.';
+        }
+    
+        else {
+            response = session.hint();
+        }
+        msg.reply(response);
+
     }
 });
 
