@@ -44,15 +44,17 @@ const client = new Client({
     }
 });
 
+const now = () => new Date().toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' });
+
 client.on('qr', (qr: string) => {
-    qrcode.generate(qr, { small: true });   
-    console.log('Scan the QR code above with WhatsApp');
+    qrcode.generate(qr, { small: true });
+    console.log(`[${now()}] Scan the QR code above with WhatsApp`);
 });
 
 client.on('ready', () => {
     const mb = (bytes: number) => (bytes / 1024 / 1024).toFixed(1) + ' MB';
     const mem = process.memoryUsage();
-    console.log(`Client is ready! | RSS: ${mb(mem.rss)} | Heap: ${mb(mem.heapUsed)}/${mb(mem.heapTotal)}`);
+    console.log(`[${now()}] Client is ready! | RSS: ${mb(mem.rss)} | Heap: ${mb(mem.heapUsed)}/${mb(mem.heapTotal)}`);
 });
 
 
