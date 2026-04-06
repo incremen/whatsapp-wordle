@@ -10,6 +10,7 @@ export function initDb(): void {
             chat_id    TEXT    NOT NULL,
             started_by TEXT    NOT NULL,
             target     TEXT    NOT NULL,
+            daily_date TEXT,
             started_at INTEGER NOT NULL,
             ended_at   INTEGER,
             won        INTEGER
