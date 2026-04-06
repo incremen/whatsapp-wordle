@@ -24,7 +24,7 @@ export const commands: Command[] = [
             return;
         }
 
-        if (guesses.length > 5) {
+        if (guesses.length > 6) {
             msg.reply('You can only guess up to 5 words from the start.');
             return;
         }
