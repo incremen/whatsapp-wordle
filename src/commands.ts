@@ -53,6 +53,17 @@ export const commands: Command[] = [
     { prefix: '!stats', handler: (msg) => {
         msg.reply(db.getUserStats(msg.from));
     }},
+    { prefix: '!help', handler: (msg) => {
+        const lines = [
+            '*Wordle Bot*',
+            '`!wordle` — start a new game',
+            '`!guess <word>` — make a guess',
+            '`!wordle <word1> <word2> ...` — start new game with pre-guesses',
+            '`!hint` — reveal one correct letter',
+            '`!stats` — your stats',
+        ];
+        msg.reply(lines.join('\n'));
+    }},
     { prefix: '!hint', handler: (msg, chatId) => {
         const session = manager.get(chatId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
