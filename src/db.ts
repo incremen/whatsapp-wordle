@@ -48,3 +48,20 @@ export function saveGame(chatId: string, data: GameData): void {
         }
     })();
 }
+
+export function getRecentGames(count = 5): string {
+    const games = db.prepare(
+        `SELECT * FROM games ORDER BY id DESC LIMIT ?`
+    ).all(count) as any[];
+
+    if (!games.length) return 'No games yet.';
+
+    const getMoves = db.prepare(`SELECT * FROM moves WHERE game_id = ? ORDER BY seq`);
+    const fmt = (ts: number) => new Date(ts).toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' });
+
+    return games.map(g => {
+        const moves = getMoves.all(g.id) as any[];
+        const moveLines = moves.map(m => `  ${m.seq + 1}. [${m.type}] ${m.value}  ${m.result}`).join('\n');
+        return `--- Game #${g.id} ---\nChat:   ${g.chat_id}\nTarget: ${g.target}\nWon:    ${g.won ? 'Yes' : 'No'}\nTime:   ${fmt(g.started_at)} → ${fmt(g.ended_at)}\nMoves:\n${moveLines}`;
+    }).join('\n\n');
+}

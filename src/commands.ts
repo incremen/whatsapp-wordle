@@ -11,6 +11,7 @@ export type Command = { prefix: string; handler: Handler };
 export const adminCommands: Command[] = [
     { prefix: '!disable', handler: (msg, chatId) => { setDisabled(chatId, true);  msg.reply('Bot disabled here.'); }},
     { prefix: '!enable',  handler: (msg, chatId) => { setDisabled(chatId, false); msg.reply('Bot enabled here.'); }},
+    { prefix: '!recent',  handler: (msg) => { msg.reply(db.getRecentGames()); }},
 ];
 
 export const commands: Command[] = [
