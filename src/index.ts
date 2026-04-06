@@ -41,9 +41,7 @@ client.on('message_create', async (msg: any) => {
             response = 'No active game. Send `!wordle` to start one.';
         } else {
             response = session.guess(msg.body.slice(7));
-            if (session.done) db.saveGame(chatId, session.target, session.won, session.startedAt,
-                session.board.map(r => ({ type: r.guess === 'HINT ' ? 'hint' : 'guess', value: r.guess, result: r.emojis.join('') }))
-            );
+            if (session.done) db.saveGame(chatId, session.getGameData());
         }
         msg.reply(response);
 

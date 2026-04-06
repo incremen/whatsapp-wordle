@@ -25,9 +25,14 @@ export function initDb(): void {
     `);
 }
 
-type Move = { type: 'guess' | 'hint'; value: string; result: string };
+type GameData = {
+    target: string;
+    won: boolean;
+    startedAt: number;
+    moves: { type: 'guess' | 'hint'; value: string; result: string }[];
+};
 
-export function saveGame(chatId: string, target: string, won: boolean, startedAt: number, moves: Move[]): void {
+export function saveGame(chatId: string, data: GameData): void {
     const insertGame = db.prepare(
         `INSERT INTO games (chat_id, target, started_at, ended_at, won) VALUES (?, ?, ?, ?, ?)`
     );
@@ -36,9 +41,9 @@ export function saveGame(chatId: string, target: string, won: boolean, startedAt
     );
 
     db.transaction(() => {
-        const { lastInsertRowid: gameId } = insertGame.run(chatId, target, startedAt, Date.now(), won ? 1 : 0);
-        for (let i = 0; i < moves.length; i++) {
-            const { type, value, result } = moves[i];
+        const { lastInsertRowid: gameId } = insertGame.run(chatId, data.target, data.startedAt, Date.now(), data.won ? 1 : 0);
+        for (let i = 0; i < data.moves.length; i++) {
+            const { type, value, result } = data.moves[i];
             insertMove.run(gameId, i, type, value, result);
         }
     })();

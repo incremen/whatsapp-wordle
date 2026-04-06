@@ -17,6 +17,7 @@ const AVAILABLE = '⬜';
 
 
 type BoardRow = {
+    type: 'guess' | 'hint';
     guess: string;
     emojis: string[];
 }
@@ -48,7 +49,7 @@ export class Session {
         }
 
         const emojis = this._getGuessEmojis(word);
-        this.board.push({ guess: word, emojis });
+        this.board.push({ type: 'guess', guess: word, emojis });
         this.guesses++;
         this._updateLetterState(word, emojis);
 
@@ -75,7 +76,7 @@ export class Session {
 
         const emojis: string[] = Array(5).fill(WRONG);
         emojis[random_idx] = CORRECT;
-        this.board.push({guess: "HINT ", emojis});
+        this.board.push({ type: 'hint', guess: "HINT ", emojis });
         this.hints++;
 
         this.found[random_idx] = this.target[random_idx];
@@ -157,6 +158,15 @@ private _getWinMessage(): string {
             `${AVAILABLE} Available:  ${available.join(', ')}`,
         ];
         return '```' + lines.join('\n') + '```';
+    }
+
+    getGameData() {
+        return {
+            target: this.target,
+            won: this.won,
+            startedAt: this.startedAt,
+            moves: this.board.map(r => ({ type: r.type, value: r.guess, result: r.emojis.join('') })),
+        };
     }
 
     private _getGuessEmojis(guess: string): string[] {
