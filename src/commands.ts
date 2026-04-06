@@ -33,7 +33,7 @@ export const commands: CommandMap = {
         }
 
         if (guesses.length > 6) {
-            msg.reply('You can only guess up to 5 words from the start.');
+            msg.reply('You can only guess up to 6 words from the start.');
             return;
         }
 
