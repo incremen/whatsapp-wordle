@@ -28,6 +28,7 @@ export class Session {
     board: BoardRow[] = [];
     done: boolean = false;
     won: boolean = false;
+    startedAt: number = Date.now();
     found: string[] = Array(5).fill('_');
     misplaced = new Set<string>();
     eliminated = new Set<string>();

@@ -2,8 +2,11 @@ import { SessionManager } from './SessionManager';
 import { log } from './logger';
 import { getDisabledIds, setDisabled } from './disabledChats';
 import { puppeteerConfig, client } from './clientConfig';
+import * as db from './db';
 
 const qrcode = require('qrcode-terminal');
+
+db.initDb();
 
 const manager = new SessionManager();
 
@@ -34,14 +37,23 @@ client.on('message_create', async (msg: any) => {
 
     } else if (msg.body.startsWith('!guess ')) {
         const session = manager.get(chatId);
-        if (!session || session.done) response = 'No active game. Send `!wordle` to start one.';
-        else response = session.guess(msg.body.slice(7));
+        if (!session || session.done) {
+            response = 'No active game. Send `!wordle` to start one.';
+        } else {
+            response = session.guess(msg.body.slice(7));
+            if (session.done) db.saveGame(chatId, session.target, session.won, session.startedAt,
+                session.board.map(r => ({ type: r.guess === 'HINT ' ? 'hint' : 'guess', value: r.guess, result: r.emojis.join('') }))
+            );
+        }
         msg.reply(response);
 
     } else if (msg.body.startsWith('!hint')) {
         const session = manager.get(chatId);
-        if (!session || session.done) response = 'No active game. Send `!wordle` to start one.';
-        else response = session.hint();
+        if (!session || session.done) {
+            response = 'No active game. Send `!wordle` to start one.';
+        } else {
+            response = session.hint();
+        }
         msg.reply(response);
     }
 });
