@@ -7,13 +7,13 @@ const PUPPETEER_ARGS = [
     '--disable-gpu',
 ];
 
+// Update this path if Chrome/Chromium is installed elsewhere on your system
 const executablePath =
-    process.env.PUPPETEER_EXECUTABLE_PATH ||
-    (process.platform === 'linux' ? '/snap/bin/chromium' : undefined);
+    process.platform === 'linux' ? '/snap/bin/chromium' : undefined;
 
 export const puppeteerConfig: any = executablePath
-    ? { executablePath, args: PUPPETEER_ARGS }  // VPS
-    : { browserURL: 'http://localhost:9222' };   // local: run ./chrome.sh first
+    ? { executablePath, args: PUPPETEER_ARGS }
+    : { args: PUPPETEER_ARGS };
 
 export const client = new Client({
     authStrategy: new LocalAuth(),

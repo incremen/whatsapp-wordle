@@ -9,9 +9,26 @@ A WhatsApp bot that lets users play Wordle via your user. Code is in `/src`.
 - `!disable` / `!enable` — disable/enable bot in this chat (owner only)
 
 ## Run locally
-```bash
-npm install
-npx ts-node src/index.ts
-```
 
-> `scripts/`, `docs/how_vps`, config files etc. are quirks for running on a small server — you can mostly ignore/change them if just running locally.
+### Prerequisites
+- Node.js (v18+)
+- Google Chrome or Chromium installed (Puppeteer can install Chromium for you with `npx puppeteer browsers install chrome`, but you probably already have Chrome)
+
+### Setup
+1. Clone the repo and install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Check `src/clientConfig.ts` — if Chrome/Chromium isn't in the default path, update `executablePath` to point to yours.
+
+3. Start the bot:
+   ```bash
+   npx ts-node src/index.ts
+   ```
+
+4. Scan the QR code that appears in your terminal with WhatsApp (Linked Devices > Link a Device).
+
+The bot runs as your WhatsApp user - messages you send with `!wordle`, `!guess`, etc. will work in any chat.
+
+> `scripts/`, `docs/how_vps`, config files etc. are for running on a (weak) VPS — you can ignore them when running locally.
