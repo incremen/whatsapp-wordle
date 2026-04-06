@@ -5,10 +5,11 @@
 - `data` - sqlite, store stats per user with `!stats`
 - `!wordle <word1> <word2> ...` - start wordle with pre-guesses
 - `!stats` - show personal statistics
+- `!help` - list all commands, link to github
+
  
 ## To (maybe) Do
 - `!daily` - daily challenge (same word for everyone each day)
-- `!help` - list all commands, link to github
 - `!wordle easy/medium/hard` - classify words into easy/medium/hard, based on existing data
 - `!enableDrops (admin)` - random wordle drops in chat, solve for reward, shows on !stats
 - `super wordle solver` - 3b1b style: evaluate guesses, show optimal, bits of info
