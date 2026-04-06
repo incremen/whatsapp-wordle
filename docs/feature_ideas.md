@@ -9,6 +9,6 @@
  - `!enableDrops (admin only)` random wordle that spawns in chat every now and then, and you solve it for a reward. this'll show up on your !stats
  - `super wordle solver` - like in the 3b1b vid. evaluate guesses, show optimal each time, how many bits, etc.
 
-
+- `wordle <word1> <word2> ...` start wordle with those words already
 
  - maybe record that if you do !wordle mid game, or you just never return to the game, then it registers as quit? also, db currently treats gcs as users. so if multiple people guess together it wont count? i think. not sure. deal with it later
