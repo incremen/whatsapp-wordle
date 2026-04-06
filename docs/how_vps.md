@@ -45,6 +45,7 @@ pm2 restart wordle-bot
 * **Check RAM/CPU:** `htop` or `free -h`
 * **Check Bot specifically:** `pm2 monit`
 * **Clear logs:** `pm2 flush`
+* **Print with unicode stuff (show hebrew correctly)** `pm2 logs wordle-bot --raw | fribidi`
 
 **How to stop/kill:**
 * **Stop (pause):** `pm2 stop wordle-bot`
