@@ -59,9 +59,9 @@ export function getRecentGames(count = 5): string {
     const getMoves = db.prepare(`SELECT * FROM moves WHERE game_id = ? ORDER BY seq`);
     const fmt = (ts: number) => new Date(ts).toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' });
 
-    return games.map(g => {
+    return games.reverse().map(g => {
         const moves = getMoves.all(g.id) as any[];
         const moveLines = moves.map(m => `${m.value}: ${m.result}`).join('\n');
-        return `--- Game #${g.id} ---\nChat:   ${g.chat_id}\nTarget: ${g.target}\nWon:    ${g.won ? 'Yes' : 'No'}\nTime:   ${fmt(g.started_at)} → ${fmt(g.ended_at)}\nMoves:\n  ${moveLines}`;
+        return `Game #${g.id} \nChat:   ${g.chat_id}\nTarget: ${g.target}\nWon:    ${g.won ? 'Yes' : 'No'}\nTime:   ${fmt(g.started_at)} → ${fmt(g.ended_at)}\nMoves:\n  ${moveLines}`;
     }).join('\n\n');
 }
