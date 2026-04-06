@@ -31,4 +31,6 @@ A WhatsApp bot that lets users play Wordle via your user. Code is in `/src`.
 
 The bot runs as your WhatsApp user - messages you send with `!wordle`, `!guess`, etc. will work in any chat.
 
+> `scripts/start.sh` can also be used locally — it launches Chrome with remote debugging and starts the bot. Just update the Chrome path in it and in `clientConfig.ts` set `browserURL: 'http://localhost:9222'` instead of `executablePath`.
+
 > `scripts/`, `docs/how_vps`, config files etc. are for running on a (weak) VPS — you can ignore them when running locally.
