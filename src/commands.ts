@@ -7,16 +7,23 @@ const manager = new SessionManager();
 
 type Msg = any;
 type Handler = (msg: Msg, chatId: string, args: string) => void;
-export type Command = { prefix: string; handler: Handler };
+export type CommandMap = Record<string, Handler>;
 
-export const adminCommands: Command[] = [
-    { prefix: '!disable', handler: (msg, chatId) => { setDisabled(chatId, true);  msg.reply('Bot disabled here.'); }},
-    { prefix: '!enable',  handler: (msg, chatId) => { setDisabled(chatId, false); msg.reply('Bot enabled here.'); }},
-    { prefix: '!recent',  handler: (msg) => { msg.reply(db.getRecentGames()); }},
-];
+// --- Admin commands (owner only) ---
 
-export const commands: Command[] = [
-    { prefix: '!wordle', handler: (msg, chatId) => {
+export const adminCommands: CommandMap = {
+
+    '!disable': (msg, chatId) => { setDisabled(chatId, true);  msg.reply('Bot disabled here.'); },
+    '!enable':  (msg, chatId) => { setDisabled(chatId, false); msg.reply('Bot enabled here.'); },
+    '!recent':  (msg) => { msg.reply(db.getRecentGames()); },
+
+};
+
+// --- Public commands ---
+
+export const commands: CommandMap = {
+
+    '!wordle': (msg, chatId) => {
         const session = manager.create(chatId, msg.from);
         const guesses = msg.body.slice(7).split(' ').filter((g: string) => g);
 
@@ -36,47 +43,53 @@ export const commands: Command[] = [
             lastText = text;
             if (!ok || session.done) break;
         }
+
         if (!session.done) {
-            msg.reply(lastText + "\n\nUse `!guess <word>` to play, `!hint` for a hint.")
+            msg.reply(lastText + '\n\nUse `!guess <word>` to play, `!hint` for a hint.');
+        } else {
+            msg.reply(lastText);
+            db.saveGame(chatId, session.getGameData());
         }
-        else {
-        msg.reply(lastText);
-        }
-        if (session.done) db.saveGame(chatId, session.getGameData());
-    }},
-    { prefix: '!daily', handler: (msg, chatId) => {
+    },
+
+    '!daily': (msg, chatId) => {
         if (chatId.endsWith('@g.us')) { msg.reply('DMs only.'); return; }
         const word = getDailyWord();
         if (!word) { msg.reply('No daily word set for today.'); return; }
         manager.create(chatId, msg.from, word);
-        msg.reply('Daily Wordle! Use `!guess <word>` to play, `!hint` for a hint.');
-    }},
-    { prefix: '!guess', handler: (msg, chatId, args) => {
+        msg.reply('Daily Wordle! Use `!guess <word>` to play.');
+    },
+
+    '!guess': (msg, chatId, args) => {
         const session = manager.get(chatId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
         const { text } = session.guess(msg.from, args);
         msg.reply(text);
         if (session.done) db.saveGame(chatId, session.getGameData());
-    }},
-    { prefix: '!stats', handler: (msg) => {
+    },
+
+    '!hint': (msg, chatId) => {
+        const session = manager.get(chatId);
+        if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
+        msg.reply(session.hint(msg.from));
+    },
+
+    '!stats': (msg) => {
         msg.reply(db.getUserStats(msg.from));
-    }},
-    { prefix: '!help', handler: (msg) => {
+    },
+
+    '!help': (msg) => {
         const lines = [
             '*Wordle Bot*',
             '`!wordle` — start a new game',
             '`!guess <word>` — make a guess',
             '`!wordle <word1> <word2> ...` — start new game with pre-guesses',
+            '`!daily` — daily challenge (DMs only)',
             '`!hint` — reveal one correct letter',
             '`!stats` — your stats',
-            'Github: https://github.com/incremen/whatsapp-wordle'
-
+            'Github: https://github.com/incremen/whatsapp-wordle',
         ];
         msg.reply(lines.join('\n'));
-    }},
-    { prefix: '!hint', handler: (msg, chatId) => {
-        const session = manager.get(chatId);
-        if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
-        msg.reply(session.hint(msg.from));
-    }},
-];
+    },
+
+};

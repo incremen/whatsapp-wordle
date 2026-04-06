@@ -2,7 +2,7 @@ import { log } from './logger';
 import { getDisabledIds } from './disabledChats';
 import { client } from './clientConfig';
 import { initDb } from './db';
-import { commands, adminCommands, Command } from './commands';
+import { commands, adminCommands, CommandMap } from './commands';
 
 const qrcode = require('qrcode-terminal');
 
@@ -25,24 +25,21 @@ client.on('message_create', async (msg: any) => {
     const chatId = msg.id.remote;
 
     if (msg.fromMe) {
-        const admin = findCommand(msg.body, adminCommands);
-        if (admin) { admin.cmd.handler(msg, chatId, admin.args); return; }
+        const match = findCommand(msg.body, adminCommands);
+        if (match) { match.handler(msg, chatId, match.args); return; }
     }
 
     if (getDisabledIds().has(chatId) && !msg.fromMe) return;
 
     const match = findCommand(msg.body, commands);
-    if (match) match.cmd.handler(msg, chatId, match.args);
+    if (match) match.handler(msg, chatId, match.args);
 });
 
-
-function findCommand(body: string, list: Command[]): { cmd: Command; args: string } | null {
-    for (const cmd of list) {
-        if (body === cmd.prefix || body.startsWith(cmd.prefix + ' ')) {
-            return { cmd, args: body.slice(cmd.prefix.length + 1) };
-        }
-    }
-    return null;
+function findCommand(body: string, map: CommandMap): { handler: CommandMap[string]; args: string } | null {
+    const prefix = body.split(' ')[0];
+    const handler = map[prefix];
+    if (!handler) return null;
+    return { handler, args: body.slice(prefix.length + 1) };
 }
 
-client.initialize();
+client.initialize();    `x  `
