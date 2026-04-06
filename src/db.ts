@@ -8,6 +8,7 @@ export function initDb(): void {
         CREATE TABLE IF NOT EXISTS games (
             id         INTEGER PRIMARY KEY AUTOINCREMENT,
             chat_id    TEXT    NOT NULL,
+            started_by TEXT    NOT NULL,
             target     TEXT    NOT NULL,
             started_at INTEGER NOT NULL,
             ended_at   INTEGER,
@@ -18,6 +19,7 @@ export function initDb(): void {
             id      INTEGER PRIMARY KEY AUTOINCREMENT,
             game_id INTEGER NOT NULL REFERENCES games(id),
             seq     INTEGER NOT NULL,
+            user_id TEXT    NOT NULL,
             type    TEXT    NOT NULL CHECK(type IN ('guess', 'hint')),
             value   TEXT    NOT NULL,
             result  TEXT    NOT NULL
@@ -26,25 +28,26 @@ export function initDb(): void {
 }
 
 type GameData = {
+    startedBy: string;
     target: string;
     won: boolean;
     startedAt: number;
-    moves: { type: 'guess' | 'hint'; value: string; result: string }[];
+    moves: { type: 'guess' | 'hint'; userId: string; value: string; result: string }[];
 };
 
 export function saveGame(chatId: string, data: GameData): void {
     const insertGame = db.prepare(
-        `INSERT INTO games (chat_id, target, started_at, ended_at, won) VALUES (?, ?, ?, ?, ?)`
+        `INSERT INTO games (chat_id, started_by, target, started_at, ended_at, won) VALUES (?, ?, ?, ?, ?, ?)`
     );
     const insertMove = db.prepare(
-        `INSERT INTO moves (game_id, seq, type, value, result) VALUES (?, ?, ?, ?, ?)`
+        `INSERT INTO moves (game_id, seq, user_id, type, value, result) VALUES (?, ?, ?, ?, ?, ?)`
     );
 
     db.transaction(() => {
-        const { lastInsertRowid: gameId } = insertGame.run(chatId, data.target, data.startedAt, Date.now(), data.won ? 1 : 0);
+        const { lastInsertRowid: gameId } = insertGame.run(chatId, data.startedBy, data.target, data.startedAt, Date.now(), data.won ? 1 : 0);
         for (let i = 0; i < data.moves.length; i++) {
-            const { type, value, result } = data.moves[i];
-            insertMove.run(gameId, i, type, value, result);
+            const { type, userId, value, result } = data.moves[i];
+            insertMove.run(gameId, i, userId, type, value, result);
         }
     })();
 }
@@ -62,6 +65,16 @@ export function getRecentGames(count = 5): string {
     return games.reverse().map(g => {
         const moves = getMoves.all(g.id) as any[];
         const moveLines = moves.map(m => `${m.value}: ${m.result}`).join('\n');
-        return `Game #${g.id} \nChat:   ${g.chat_id}\nTarget: ${g.target}\nWon:    ${g.won ? 'Yes' : 'No'}\nTime:   ${fmt(g.started_at)} → ${fmt(g.ended_at)}\nMoves:\n\`\`\`${moveLines}\`\`\``;
+        const lines = [
+            `Game #${g.id}`,
+            `Chat:       ${g.chat_id}`,
+            `Started by: ${g.started_by}`,
+            `Target:     ${g.target}`,
+            `Won:        ${g.won ? 'Yes' : 'No'}`,
+            `Time:       ${fmt(g.started_at)} → ${fmt(g.ended_at)}`,
+            `Moves:`,
+            `\`\`\`${moveLines}\`\`\``,
+        ];
+        return lines.join('\n');
     }).join('\n\n');
 }

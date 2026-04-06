@@ -16,18 +16,18 @@ export const adminCommands: Command[] = [
 
 export const commands: Command[] = [
     { prefix: '!wordle', handler: (msg, chatId) => {
-        manager.create(chatId);
+        manager.create(chatId, msg.from);
         msg.reply('Game started! Use `!guess <word>` to play, `!hint` for a hint.');
     }},
     { prefix: '!guess', handler: (msg, chatId, args) => {
         const session = manager.get(chatId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
-        msg.reply(session.guess(args));
+        msg.reply(session.guess(msg.from, args));
         if (session.done) db.saveGame(chatId, session.getGameData());
     }},
     { prefix: '!hint', handler: (msg, chatId) => {
         const session = manager.get(chatId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
-        msg.reply(session.hint());
+        msg.reply(session.hint(msg.from));
     }},
 ];

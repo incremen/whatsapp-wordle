@@ -7,9 +7,9 @@ export class SessionManager {
         return this.sessions.get(userId);
     }
 
-    create(userId: string): Session {
-        const session = new Session();
-        this.sessions.set(userId, session);
+    create(chatId: string, startedBy: string): Session {
+        const session = new Session(startedBy);
+        this.sessions.set(chatId, session);
         return session;
     }
 

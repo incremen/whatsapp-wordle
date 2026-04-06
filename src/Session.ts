@@ -18,6 +18,7 @@ const AVAILABLE = '⬜';
 
 type BoardRow = {
     type: 'guess' | 'hint';
+    userId: string;
     guess: string;
     emojis: string[];
 }
@@ -29,16 +30,18 @@ export class Session {
     board: BoardRow[] = [];
     done: boolean = false;
     won: boolean = false;
+    startedBy: string;
     startedAt: number = Date.now();
     found: string[] = Array(5).fill('_');
     misplaced = new Set<string>();
     eliminated = new Set<string>();
 
-    constructor() {
+    constructor(startedBy: string) {
+        this.startedBy = startedBy;
         this.target = VALID_TARGETS[Math.floor(Math.random() * VALID_TARGETS.length)].toUpperCase();
     }
 
-    guess(input: string): string {
+    guess(userId: string, input: string): string {
         const word = input.trim().toUpperCase();
 
         if (word.length !== 5 || !/^[A-Z]+$/.test(word)) {
@@ -49,7 +52,7 @@ export class Session {
         }
 
         const emojis = this._getGuessEmojis(word);
-        this.board.push({ type: 'guess', guess: word, emojis });
+        this.board.push({ type: 'guess', userId, guess: word, emojis });
         this.guesses++;
         this._updateLetterState(word, emojis);
 
@@ -70,13 +73,13 @@ export class Session {
         }
     }
 
-    hint() : string {
+    hint(userId: string) : string {
         const not_green_indexes = [0,1,2,3,4].filter(i => this.found[i] === '_');
         const random_idx = not_green_indexes[Math.floor(Math.random() * not_green_indexes.length)];
 
         const emojis: string[] = Array(5).fill(WRONG);
         emojis[random_idx] = CORRECT;
-        this.board.push({ type: 'hint', guess: "HINT ", emojis });
+        this.board.push({ type: 'hint', userId, guess: "HINT ", emojis });
         this.hints++;
 
         this.found[random_idx] = this.target[random_idx];
@@ -162,10 +165,11 @@ private _getWinMessage(): string {
 
     getGameData() {
         return {
+            startedBy: this.startedBy,
             target: this.target,
             won: this.won,
             startedAt: this.startedAt,
-            moves: this.board.map(r => ({ type: r.type, value: r.guess, result: r.emojis.join('') })),
+            moves: this.board.map(r => ({ type: r.type, userId: r.userId, value: r.guess, result: r.emojis.join('') })),
         };
     }
 
