@@ -29,17 +29,17 @@ client.on('message_create', async (msg: any) => {
 
     let response = "";
     if (msg.body === '!wordle') {
-        manager.create(msg.from);
+        manager.create(chatId);
         msg.reply('Game started! Use `!guess <word>` to play, `!hint` for a hint.');
 
     } else if (msg.body.startsWith('!guess ')) {
-        const session = manager.get(msg.from);
+        const session = manager.get(chatId);
         if (!session || session.done) response = 'No active game. Send `!wordle` to start one.';
         else response = session.guess(msg.body.slice(7));
         msg.reply(response);
 
     } else if (msg.body.startsWith('!hint')) {
-        const session = manager.get(msg.from);
+        const session = manager.get(chatId);
         if (!session || session.done) response = 'No active game. Send `!wordle` to start one.';
         else response = session.hint();
         msg.reply(response);
