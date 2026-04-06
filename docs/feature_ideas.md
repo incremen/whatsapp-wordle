@@ -1,14 +1,20 @@
 # Feature Ideas
 
+## Done
+- `!hint` - give one green for free
+- `data` - sqlite, store stats per user with `!stats`
+- `!wordle <word1> <word2> ...` - start wordle with pre-guesses
+- `!stats` - show personal statistics
+ 
+## To Do
 - `!daily` - daily challenge (same word for everyone each day)
-- `!wordle gc` - group chat mode (solve together as a group)
-- `hint` - give one green for free (not in daily)
- - `difficulty` - classify words into easy medium hard via some stats
- - `data` - sqllite, store stats for each user with !stats (like avg guess per game, total games...) and maybe get interesting data in general about common opening words and so on
- - `!help` - should include all commands and link to this github
- - `!enableDrops (admin only)` random wordle that spawns in chat every now and then, and you solve it for a reward. this'll show up on your !stats
- - `super wordle solver` - like in the 3b1b vid. evaluate guesses, show optimal each time, how many bits, etc.
-
-- `wordle <word1> <word2> ...` start wordle with those words already
-
- - maybe record that if you do !wordle mid game, or you just never return to the game, then it registers as quit? also, db currently treats gcs as users. so if multiple people guess together it wont count? i think. not sure. deal with it later
+- `!help` - list all commands
+- `difficulty` - classify words into easy/medium/hard
+- `!enableDrops (admin)` - random wordle drops in chat, solve for reward, shows on !stats
+- `super wordle solver` - 3b1b style: evaluate guesses, show optimal, bits of info
+- `!leaderboard` - top players by win rate, avg guesses, streak
+- `!streak` - track current/best win streaks per user
+- `!duel <@user>` - 1v1 same word, fewest guesses wins
+- `!surrender` - give up mid-game (counts as loss in stats)
+- quit detection - if someone does `!wordle` mid-game, record the old game as a quit
+- `!stats` improvements - most used opening words, guess distribution chart, per-chat stats vs global stats
