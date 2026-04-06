@@ -35,6 +35,7 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 git pull
 npm run build
 pm2 restart wordle-bot
+pm2 logs wordle-bot --raw | fribidi
 ```
 
 ---
