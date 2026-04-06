@@ -41,14 +41,14 @@ export class Session {
         this.target = VALID_TARGETS[Math.floor(Math.random() * VALID_TARGETS.length)].toUpperCase();
     }
 
-    guess(userId: string, input: string): string {
+    guess(userId: string, input: string): { text: string; ok: boolean } {
         const word = input.trim().toUpperCase();
 
         if (word.length !== 5 || !/^[A-Z]+$/.test(word)) {
-            return 'Enter a 5-letter word.';
+            return { text: 'Enter a 5-letter word.', ok: false };
         }
         if (!VALID_GUESSES.has(word.toLowerCase())) {
-            return 'Not a valid word.';
+            return { text: 'Not a valid word.', ok: false };
         }
 
         const emojis = this._getGuessEmojis(word);
@@ -58,7 +58,7 @@ export class Session {
 
         this.updateDoneWon();
 
-        return this.getBoardText();
+        return { text: this.getBoardText(), ok: true };
     }
 
     private updateDoneWon() {
