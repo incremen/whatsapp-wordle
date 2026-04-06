@@ -35,7 +35,12 @@ export const commands: Command[] = [
             lastText = text;
             if (!ok || session.done) break;
         }
+        if (!session.done) {
+            msg.reply(lastText + "\n\nUse `!guess <word>` to play, `!hint` for a hint.")
+        }
+        else {
         msg.reply(lastText);
+        }
         if (session.done) db.saveGame(chatId, session.getGameData());
     }},
     { prefix: '!guess', handler: (msg, chatId, args) => {
