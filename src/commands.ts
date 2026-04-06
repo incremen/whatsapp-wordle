@@ -61,6 +61,8 @@ export const commands: Command[] = [
             '`!wordle <word1> <word2> ...` — start new game with pre-guesses',
             '`!hint` — reveal one correct letter',
             '`!stats` — your stats',
+            'Github: https://github.com/incremen/whatsapp-wordle'
+
         ];
         msg.reply(lines.join('\n'));
     }},
