@@ -1,5 +1,6 @@
 import { SessionManager } from './SessionManager';
 import { setDisabled } from './disabledChats';
+import { getDailyWord } from './daily';
 import * as db from './db';
 
 const manager = new SessionManager();
@@ -42,6 +43,13 @@ export const commands: Command[] = [
         msg.reply(lastText);
         }
         if (session.done) db.saveGame(chatId, session.getGameData());
+    }},
+    { prefix: '!daily', handler: (msg, chatId) => {
+        if (chatId.endsWith('@g.us')) { msg.reply('DMs only.'); return; }
+        const word = getDailyWord();
+        if (!word) { msg.reply('No daily word set for today.'); return; }
+        manager.create(chatId, msg.from, word);
+        msg.reply('Daily Wordle! Use `!guess <word>` to play, `!hint` for a hint.');
     }},
     { prefix: '!guess', handler: (msg, chatId, args) => {
         const session = manager.get(chatId);

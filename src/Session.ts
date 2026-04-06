@@ -36,9 +36,9 @@ export class Session {
     misplaced = new Set<string>();
     eliminated = new Set<string>();
 
-    constructor(startedBy: string) {
+    constructor(startedBy: string, target?: string) {
         this.startedBy = startedBy;
-        this.target = VALID_TARGETS[Math.floor(Math.random() * VALID_TARGETS.length)].toUpperCase();
+        this.target = target?.toUpperCase() ?? VALID_TARGETS[Math.floor(Math.random() * VALID_TARGETS.length)].toUpperCase();
     }
 
     guess(userId: string, input: string): { text: string; ok: boolean } {

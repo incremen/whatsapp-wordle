@@ -7,8 +7,8 @@ export class SessionManager {
         return this.sessions.get(userId);
     }
 
-    create(chatId: string, startedBy: string): Session {
-        const session = new Session(startedBy);
+    create(chatId: string, startedBy: string, target?: string): Session {
+        const session = new Session(startedBy, target);
         this.sessions.set(chatId, session);
         return session;
     }
