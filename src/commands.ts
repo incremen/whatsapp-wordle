@@ -25,6 +25,9 @@ export const commands: Command[] = [
         msg.reply(session.guess(msg.from, args));
         if (session.done) db.saveGame(chatId, session.getGameData());
     }},
+    { prefix: '!stats', handler: (msg) => {
+        msg.reply(db.getUserStats(msg.from));
+    }},
     { prefix: '!hint', handler: (msg, chatId) => {
         const session = manager.get(chatId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }

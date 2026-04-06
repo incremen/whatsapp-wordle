@@ -79,6 +79,25 @@ export function getRecentGames(count = 5): string {
     }).join('\n\n');
 }
 
-export function getUserStats(userId : string ) : string {
-    return "";
+export function getUserStats(userId: string): string {
+    const row = db.prepare(`
+        SELECT
+            COUNT(*)          AS total,
+            SUM(won)          AS wins,
+            AVG(CASE WHEN won = 1 THEN (SELECT COUNT(*) FROM moves WHERE game_id = g.id AND type = 'guess') END) AS avg_guesses,
+            AVG(CASE WHEN won = 1 THEN (SELECT COUNT(*) FROM moves WHERE game_id = g.id AND type = 'hint') END)  AS avg_hints
+        FROM games g
+        WHERE started_by = ?
+    `).get(userId) as any;
+
+    if (!row || row.total === 0) return 'No games found for this user.';
+
+    const winRate = ((row.wins / row.total) * 100).toFixed(0);
+    const lines = [
+        `Games:       ${row.total}`,
+        `Wins:        ${row.wins}/${row.total} (${winRate}%)`,
+        `Avg guesses: ${row.avg_guesses?.toFixed(1) ?? '-'}`,
+        `Avg hints:   ${row.avg_hints?.toFixed(1) ?? '0'}`,
+    ];
+    return lines.join('\n');
 }
