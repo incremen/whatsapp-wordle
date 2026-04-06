@@ -78,3 +78,7 @@ export function getRecentGames(count = 5): string {
         return lines.join('\n');
     }).join('\n\n');
 }
+
+export function getUserStats(userId : string ) : string {
+    return "";
+}
