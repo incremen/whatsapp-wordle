@@ -1,22 +1,12 @@
 import { SessionManager } from './SessionManager';
 import { log } from './logger';
 import { getDisabledIds, setDisabled } from './disabledChats';
-import { puppeteerConfig } from './clientConfig';
+import { puppeteerConfig, client } from './clientConfig';
 
-const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 
 const manager = new SessionManager();
 
-const client = new Client({
-    authStrategy: new LocalAuth(),
-    puppeteer: puppeteerConfig,
-    webVersion: '2.3000.1014054010',
-    webVersionCache: {
-        type: 'remote',
-        remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1014054010.html'
-    }
-});
 
 client.on('qr', (qr: string) => {
     qrcode.generate(qr, { small: true });
