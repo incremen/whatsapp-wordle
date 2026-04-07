@@ -5,6 +5,14 @@ import { log } from './logger';
 
 const { MessageMedia } = require('whatsapp-web.js');
 
+export function buildSnapshotMedia() {
+    const dbPath = path.join(__dirname, '..', '..', 'data', 'wordle.db');
+    const media = MessageMedia.fromFilePath(dbPath);
+    const date = new Date().toISOString().slice(0, 10);
+    media.filename = `wordle-backup-${date}.db`;
+    return media;
+}
+
 let scheduled = false;
 
 export function startSnapshotScheduler(client: any) {
@@ -13,10 +21,7 @@ export function startSnapshotScheduler(client: any) {
 
     cron.schedule('6 23 * * *', async () => {
         log('Snapshot cron fired');
-        const dbPath = path.join(__dirname, '..', '..', 'data', 'wordle.db');
-        const media = MessageMedia.fromFilePath(dbPath);
-        const date = new Date().toISOString().slice(0, 10);
-        media.filename = `wordle-backup-${date}.db`;
+        const media = buildSnapshotMedia();
         for (const chatId of getSnapshotChats()) {
             try { await client.sendMessage(chatId, media); }
             catch (e) { log('Snapshot send failed', `${chatId}: ${e}`); }
