@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { getDailyBoardChats } from '../infra/dailyBoard';
-import { getUserDailyResult } from '../infra/db';
+import { getUserDailyResult, getGroupDailyStreak } from '../infra/db';
 import { todayDate } from '../infra/time';
 import { log } from '../infra/logger';
 
@@ -30,7 +30,6 @@ async function sendDailyBoardToChat(client: any, chatId: string) {
 
     const lines: string[] = [];
     const mentions: string[] = [];
-    let bestStreak = 0;
 
     for (const userId of participants) {
         const result = getUserDailyResult(userId);
@@ -39,7 +38,6 @@ async function sendDailyBoardToChat(client: any, chatId: string) {
         const status = result.won ? `✅ ${result.guesses}/6` : '❌';
         lines.push(`@${userId.replace('@c.us', '')}: ${status} (🔥 ${result.streak})`);
         mentions.push(userId);
-        if (result.streak > bestStreak) bestStreak = result.streak;
     }
 
     if (!lines.length) {
@@ -48,6 +46,6 @@ async function sendDailyBoardToChat(client: any, chatId: string) {
     }
 
     const header = `📊 *Daily Wordle Recap — ${todayDate()}*`;
-    const streakLine = `\nGroup streak: 🔥 ${bestStreak}`;
+    const streakLine = `\nGroup streak: 🔥 ${getGroupDailyStreak(participants, todayDate())}`;
     await chat.sendMessage(`${header}\n\n${lines.join('\n')}${streakLine}`, { mentions });
 }

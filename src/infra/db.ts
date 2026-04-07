@@ -150,3 +150,32 @@ export function getDailyStreak(userId: string): number {
 
     return streak;
 }
+
+export function getGroupDailyStreak(participants: string[], startDate?: string): number {
+    if (!participants.length) return 0;
+
+    const placeholders = participants.map(() => '?').join(',');
+    const dates = db.prepare(`
+        SELECT DISTINCT daily_date FROM games
+        WHERE started_by IN (${placeholders}) AND daily_date IS NOT NULL AND won = 1
+        ORDER BY daily_date DESC
+    `).all(...participants) as { daily_date: string }[];
+
+    if (!dates.length) return 0;
+
+    let expected = startDate ?? todayDate();
+
+    let streak = 0;
+    for (const { daily_date } of dates) {
+        if (daily_date === expected) {
+            streak++;
+            const prev = new Date(expected + 'T00:00:00');
+            prev.setDate(prev.getDate() - 1);
+            expected = prev.toISOString().slice(0, 10);
+        } else {
+            break;
+        }
+    }
+
+    return streak;
+}
