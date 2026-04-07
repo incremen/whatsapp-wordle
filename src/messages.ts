@@ -1,5 +1,5 @@
 import { Session } from './Session';
-
+import {getDailyStreak} from './db';
 function winMessage(session: Session): string {
     const g = session.guesses;
     const h = session.hints;
@@ -42,6 +42,7 @@ export const regularMessages: Messages = {
 export const dailyMessages: Messages = {
     start: 'Daily Wordle! Use `!guess <word>` to play.',
     noGame: 'No active daily. Send `!daily` to start.',
-    win: (s) => `Daily done! ${winMessage(s)}`,
-    lose: (s) => `The daily word was: '${s.target}'. Better luck tomorrow!`,
+    win: (s) => `${winMessage(s)}\n🔥 ${getDailyStreak(s.startedBy) + 1} day streak!`,
+    lose: (s) => `The daily word was: '${s.target}'.
+     Sorry, but you lost your ${getDailyStreak(s.startedBy) + 1} streak`,
 };
