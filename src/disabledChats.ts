@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-const DISABLED_IDS_FILE = path.join(__dirname, '..', 'disabled.txt');
+const DISABLED_IDS_FILE = path.join(__dirname, '..', 'data', 'disabled.txt');
 
 export function getDisabledIds(): Set<string> {
     try { return new Set(fs.readFileSync(DISABLED_IDS_FILE, 'utf-8').split('\n').filter(Boolean)); }

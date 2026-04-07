@@ -1,4 +1,6 @@
 node_modules/
 .wwebjs_auth/
 .wwebjs_cache/
-disabled.txt
+data/disabled.txt
+data/dailyboard-chats.txt
+data/wordle.db
