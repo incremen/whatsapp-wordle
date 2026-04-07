@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { todayDate } from './time';
 
 function loadWords(file: string): string[] {
     return fs.readFileSync(path.join(__dirname, '..', 'data', file), 'utf-8')
@@ -103,6 +104,7 @@ export class Session {
         return {
             startedBy: this.startedBy,
             target: this.target,
+            dailyDate: this.gameType === 'daily' ? todayDate() : undefined,
             won: this.won,
             startedAt: this.startedAt,
             moves: this.board.map(r => ({ type: r.type, userId: r.userId, value: r.guess, result: r.emojis.join('') })),
