@@ -12,27 +12,22 @@ export function startDailyBoardScheduler(client: any) {
 
     cron.schedule('26 19 * * *', async () => {
         log('Daily board cron fired');
-        await sendDailyBoards(client);
+        for (const chatId of getDailyBoardChats()) {
+            const chat = await client.getChatById(chatId);
+            const { text, mentions } = buildDailyRecap(chat.participants?.map((p: any) => p.id._serialized) ?? []);
+            await chat.sendMessage(text, { mentions });
+        }
     }, { timezone: 'Asia/Jerusalem' });
 
     log('Daily board scheduler started (cron: midnight IST)');
 }
 
-async function sendDailyBoards(client: any) {
-    for (const chatId of getDailyBoardChats()) {
-        await sendDailyBoardToChat(client, chatId);
-    }
-}
-
-async function sendDailyBoardToChat(client: any, chatId: string) {
-    const chat = await client.getChatById(chatId);
-    const participants = chat.participants?.map((p: any) => p.id._serialized) ?? [];
-
+export function buildDailyRecap(participants: string[]): { text: string; mentions: string[] } {
     const lines: string[] = [];
     const mentions: string[] = [];
 
     for (const userId of participants) {
-    const result = getUserDailyResult(userId);
+        const result = getUserDailyResult(userId);
         if (!result) continue;
 
         const status = result.won ? `✅ ${result.guesses}/6` : '❌';
@@ -40,12 +35,12 @@ async function sendDailyBoardToChat(client: any, chatId: string) {
         mentions.push(userId);
     }
 
+    const header = `📊 *Daily Wordle Recap — ${todayDate()}*`;
+
     if (!lines.length) {
-        await chat.sendMessage(`📊 *Daily Wordle Recap — ${todayDate()}*\nNo one played today's daily!`);
-        return;
+        return { text: `${header}\nNo one played today's daily!`, mentions: [] };
     }
 
-    const header = `📊 *Daily Wordle Recap — ${todayDate()}*`;
     const streakLine = `\nGroup streak: 🔥 ${getGroupDailyStreak(participants, todayDate())}`;
-    await chat.sendMessage(`${header}\n\n${lines.join('\n')}${streakLine}`, { mentions });
+    return { text: `${header}\n\n${lines.join('\n')}${streakLine}`, mentions };
 }

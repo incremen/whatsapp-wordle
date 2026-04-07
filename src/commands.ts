@@ -4,6 +4,7 @@ import { setDisabled } from './infra/disabledChats';
 import { setDailyBoard } from './infra/dailyBoard';
 import { regularMessages, dailyMessages, Messages } from './game/messages';
 import { Session } from './game/Session';
+import { buildDailyRecap } from './game/dailyBoardScheduler';
 import * as db from './infra/db';
 
 const manager = new SessionManager();
@@ -105,6 +106,14 @@ export const commands: CommandMap = {
         }
         session.hint(msg.from);
         msg.reply(session.formatBoard());
+    },
+
+    '!dailystats': async (msg, chatId) => {
+        if (!chatId.endsWith('@g.us')) { msg.reply('GCs only.'); return; }
+        const chat = await msg.getChat();
+        const participants = chat.participants?.map((p: any) => p.id._serialized) ?? [];
+        const { text, mentions } = buildDailyRecap(participants);
+        msg.reply(text, undefined, { mentions });
     },
 
     '!stats': (msg) => {
