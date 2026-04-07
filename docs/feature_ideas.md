@@ -11,6 +11,7 @@
 
  
 ## To (maybe) Do
+- group admins should be able to do admin commands
 - shouldn't be case sensitive
 - if you can't use a command it should tell you
 - `wordle hard mode`
