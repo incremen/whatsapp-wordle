@@ -43,6 +43,7 @@ pm2 logs wordle-bot --raw | fribidi
 ### 4. Monitoring & Troubleshooting
 * **Check what pm2 is running** `pm2 list`
 * **Check console.log history from node** `pm2 logs wordle-bot`
+* **Check last 200 lines** pm2 logs wordle-bot --lines 200
 * **Check RAM/CPU:** `htop` or `free -h`
 * **Check Bot specifically:** `pm2 monit`
 * **Clear logs:** `pm2 flush`
