@@ -10,7 +10,7 @@ export function startDailyBoardScheduler(client: any) {
     if (scheduled) { log('Daily board scheduler already running, skipping'); return; }
     scheduled = true;
 
-    cron.schedule('49 18 * * *', async () => {
+    cron.schedule('57 18 * * *', async () => {
         log('Daily board cron fired');
         await sendDailyBoards(client);
     }, { timezone: 'Asia/Jerusalem' });
