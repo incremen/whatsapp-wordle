@@ -35,7 +35,7 @@ export const devCommands: CommandMap = {
     '!dailysnapshot': (msg, chatId, args) => {
         if (args === 'enable') {
             setSnapshotChat(chatId, true);
-            msg.reply('Daily snapshot enabled. DB backup will be sent here at midnight.');
+            msg.reply('Daily snapshot enabled. DB backup will be sent here daily (forgot when tho).');
         } else if (args === 'disable') {
             setSnapshotChat(chatId, false);
             msg.reply('Daily snapshot disabled.');
