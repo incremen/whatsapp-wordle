@@ -9,6 +9,7 @@
 
  
 ## To (maybe) Do
+- if you can't use a command it should tell you
 - `wordle hard mode`
 - `!daily` - daily challenge, same word for everyone each day, dms only
 - `!enableStreak (gc only) (admin)` - when enabled, at midnight shows who did the daily wordle and the groupchat's streak (like in discord)

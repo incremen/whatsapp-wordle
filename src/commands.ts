@@ -1,6 +1,7 @@
 import { SessionManager } from './SessionManager';
 import { DailySessionManager } from './DailySessionManager';
 import { setDisabled } from './disabledChats';
+import { setDailyBoard } from './dailyBoard';
 import { regularMessages, dailyMessages, Messages } from './messages';
 import { Session } from './Session';
 import * as db from './db';
@@ -23,6 +24,18 @@ export const adminCommands: CommandMap = {
     '!disable': (msg, chatId) => { setDisabled(chatId, true);  msg.reply('Bot disabled here.'); },
     '!enable':  (msg, chatId) => { setDisabled(chatId, false); msg.reply('Bot enabled here.'); },
     '!recent':  (msg) => { msg.reply(db.getRecentGames()); },
+    '!dailyboard': (msg, chatId, args) => {
+        if (!chatId.endsWith('@g.us')) { msg.reply('GCs only.'); return; }
+        if (args === 'enable') {
+            setDailyBoard(chatId, true);
+            msg.reply('Daily board enabled! At midnight, this chat will get a daily recap.');
+        } else if (args === 'disable') {
+            setDailyBoard(chatId, false);
+            msg.reply('Daily board disabled.');
+        } else {
+            msg.reply('Usage: `!dailyboard enable` or `!dailyboard disable`');
+        }
+    },
 
 };
 

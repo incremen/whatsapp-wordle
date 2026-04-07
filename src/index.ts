@@ -3,6 +3,7 @@ import { getDisabledIds } from './disabledChats';
 import { client } from './clientConfig';
 import { initDb } from './db';
 import { commands, adminCommands, CommandMap } from './commands';
+import { startDailyBoardScheduler } from './dailyBoardScheduler';
 
 const qrcode = require('qrcode-terminal');
 
@@ -17,6 +18,7 @@ client.on('ready', () => {
     const mb = (bytes: number) => (bytes / 1024 / 1024).toFixed(1) + ' MB';
     const mem = process.memoryUsage();
     log('Client connected', `RSS: ${mb(mem.rss)} | Heap: ${mb(mem.heapUsed)}/${mb(mem.heapTotal)}`);
+    startDailyBoardScheduler(client);
 });
 
 client.on('message_create', async (msg: any) => {
