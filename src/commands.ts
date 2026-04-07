@@ -7,6 +7,8 @@ import { regularMessages, dailyMessages, Messages } from './game/messages';
 import { Session } from './game/Session';
 import { buildDailyRecap } from './game/dailyBoardScheduler';
 import * as db from './infra/db';
+import * as path from 'path';
+const { MessageMedia } = require('whatsapp-web.js');
 
 const manager = new SessionManager();
 const dailyManager = new DailySessionManager();
@@ -37,6 +39,11 @@ export const adminCommands: CommandMap = {
         } else {
             msg.reply('Usage: `!dailyboard enable` or `!dailyboard disable`');
         }
+    },
+    '!snapshot': (msg) => {
+        const dbPath = path.join(__dirname, '..', 'data', 'wordle.db');
+        const media = MessageMedia.fromFilePath(dbPath);
+        msg.reply(media);
     },
     '!startupmessage': (msg, chatId, args) => {
         if (args === 'enable') {
