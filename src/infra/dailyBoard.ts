@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-const FILE = path.join(__dirname, '..', 'data', 'dailyboard-chats.txt');
+const FILE = path.join(__dirname, '..', '..', 'data', 'dailyboard-chats.txt');
 
 export function getDailyBoardChats(): Set<string> {
     try { return new Set(fs.readFileSync(FILE, 'utf-8').split('\n').filter(Boolean)); }

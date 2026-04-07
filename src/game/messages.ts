@@ -1,5 +1,5 @@
 import { Session } from './Session';
-import {getDailyStreak} from './db';
+import {getDailyStreak} from '../infra/db';
 function winMessage(session: Session): string {
     const g = session.guesses;
     const h = session.hints;

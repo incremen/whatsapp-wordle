@@ -1,6 +1,6 @@
 import { Session } from './Session';
 import { getDailyWord } from './daily';
-import { todayDate } from './time';
+import { todayDate } from '../infra/time';
 
 export class DailySessionManager {
     private sessions = new Map<string, { date: string; session: Session }>();

@@ -1,9 +1,9 @@
-import { log } from './logger';
-import { getDisabledIds } from './disabledChats';
+import { log } from './infra/logger';
+import { getDisabledIds } from './infra/disabledChats';
 import { client } from './clientConfig';
-import { initDb } from './db';
+import { initDb } from './infra/db';
 import { commands, adminCommands, CommandMap } from './commands';
-import { startDailyBoardScheduler } from './dailyBoardScheduler';
+import { startDailyBoardScheduler } from './game/dailyBoardScheduler';
 
 const qrcode = require('qrcode-terminal');
 

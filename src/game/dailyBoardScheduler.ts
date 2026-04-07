@@ -1,7 +1,7 @@
-import { getDailyBoardChats } from './dailyBoard';
-import { getUserDailyResult } from './db';
-import { todayDate } from './time';
-import { log } from './logger';
+import { getDailyBoardChats } from '../infra/dailyBoard';
+import { getUserDailyResult } from '../infra/db';
+import { todayDate } from '../infra/time';
+import { log } from '../infra/logger';
 
 export function startDailyBoardScheduler(client: any) {
     const msUntilMidnight = () => {

@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import * as path from 'path';
 import { todayDate, formatTimestamp } from './time';
 
-const db = new Database(path.join(__dirname, '..', 'data', 'wordle.db'));
+const db = new Database(path.join(__dirname, '..', '..', 'data', 'wordle.db'));
 
 export function initDb(): void {
     db.exec(`

@@ -1,10 +1,10 @@
-import { SessionManager } from './SessionManager';
-import { DailySessionManager } from './DailySessionManager';
-import { setDisabled } from './disabledChats';
-import { setDailyBoard } from './dailyBoard';
-import { regularMessages, dailyMessages, Messages } from './messages';
-import { Session } from './Session';
-import * as db from './db';
+import { SessionManager } from './game/SessionManager';
+import { DailySessionManager } from './game/DailySessionManager';
+import { setDisabled } from './infra/disabledChats';
+import { setDailyBoard } from './infra/dailyBoard';
+import { regularMessages, dailyMessages, Messages } from './game/messages';
+import { Session } from './game/Session';
+import * as db from './infra/db';
 
 const manager = new SessionManager();
 const dailyManager = new DailySessionManager();
