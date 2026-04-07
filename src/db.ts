@@ -100,6 +100,7 @@ export function getUserStats(userId: string): string {
         `Wins:        ${row.wins}/${row.total} (${winRate}%)`,
         `Avg guesses: ${row.avg_guesses?.toFixed(1) ?? '-'}`,
         `Avg hints:   ${row.avg_hints?.toFixed(1) ?? '0'}`,
+        `Daily streak: ${getDailyStreak(userId)}`
     ];
     return lines.join('\n');
 }
