@@ -4,6 +4,7 @@ import { client } from './clientConfig';
 import { initDb } from './infra/db';
 import { commands, adminCommands, CommandMap } from './commands';
 import { startDailyBoardScheduler } from './game/dailyBoardScheduler';
+import { startSnapshotScheduler } from './infra/snapshotScheduler';
 import { getStartupChats } from './infra/startupChats';
 
 const qrcode = require('qrcode-terminal');
@@ -18,6 +19,7 @@ client.on('qr', (qr: string) => {
 client.on('ready', async () => {
     log('Client connected');
     startDailyBoardScheduler(client);
+    startSnapshotScheduler(client);
     for (const chatId of getStartupChats()) {
         try { await client.sendMessage(chatId, 'Bot is online 🟢'); }
         catch (e) { log('Startup message failed', `${chatId}: ${e}`); }

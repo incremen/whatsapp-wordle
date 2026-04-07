@@ -3,6 +3,7 @@ import { DailySessionManager } from './game/DailySessionManager';
 import { setDisabled } from './infra/disabledChats';
 import { setDailyBoard } from './infra/dailyBoard';
 import { setStartupChat } from './infra/startupChats';
+import { setSnapshotChat } from './infra/snapshotChats';
 import { regularMessages, dailyMessages, Messages } from './game/messages';
 import { Session } from './game/Session';
 import { buildDailyRecap } from './game/dailyBoardScheduler';
@@ -44,6 +45,17 @@ export const adminCommands: CommandMap = {
         const dbPath = path.join(__dirname, '..', 'data', 'wordle.db');
         const media = MessageMedia.fromFilePath(dbPath);
         msg.reply(media);
+    },
+    '!dailysnapshot': (msg, chatId, args) => {
+        if (args === 'enable') {
+            setSnapshotChat(chatId, true);
+            msg.reply('Daily snapshot enabled. DB backup will be sent here at midnight.');
+        } else if (args === 'disable') {
+            setSnapshotChat(chatId, false);
+            msg.reply('Daily snapshot disabled.');
+        } else {
+            msg.reply('Usage: `!dailysnapshot enable` or `!dailysnapshot disable`');
+        }
     },
     '!startupmessage': (msg, chatId, args) => {
         if (args === 'enable') {
