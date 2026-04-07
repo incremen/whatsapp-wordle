@@ -9,6 +9,7 @@
 
  
 ## To (maybe) Do
+- `wordle hard mode`
 - `!daily` - daily challenge, same word for everyone each day, dms only
 - `!enableStreak (gc only) (admin)` - when enabled, at midnight shows who did the daily wordle and the groupchat's streak (like in discord)
 - `!wordle easy/medium/hard` - classify words into easy/medium/hard, based on existing data
