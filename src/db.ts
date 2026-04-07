@@ -103,7 +103,7 @@ export function getUserStats(userId: string): string {
         `Avg hints:   ${row.avg_hints?.toFixed(1) ?? '0'}`,
         `Daily streak: ${getDailyStreak(userId)}`
     ];
-    return lines.join('\n');
+    return "```" +  lines.join('\n') + "```";
 }
 
 export function getUserDailyResult(userId: string): { won: boolean; guesses: number; streak: number } | null {
