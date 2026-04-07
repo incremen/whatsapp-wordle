@@ -15,9 +15,7 @@ client.on('qr', (qr: string) => {
 });
 
 client.on('ready', () => {
-    const mb = (bytes: number) => (bytes / 1024 / 1024).toFixed(1) + ' MB';
-    const mem = process.memoryUsage();
-    log('Client connected', `RSS: ${mb(mem.rss)} | Heap: ${mb(mem.heapUsed)}/${mb(mem.heapTotal)}`);
+    log('Client connected');
     startDailyBoardScheduler(client);
 });
 
