@@ -10,23 +10,25 @@ const VALID_GUESSES = new Set(loadWords('valid-guesses.txt'));
 const VALID_TARGETS = loadWords('valid-targets.txt');
 export const MAX_GUESSES = 6;
 
-const CORRECT = '🟩';
-const MISPLACED = '🟨';
-const WRONG = '⬛';
-const AVAILABLE = '⬜';
+export const CORRECT = '🟩';
+export const MISPLACED = '🟨';
+export const WRONG = '⬛';
+export const AVAILABLE = '⬜';
 
-
-type BoardRow = {
+export type BoardRow = {
     type: 'guess' | 'hint';
     userId: string;
     guess: string;
     emojis: string[];
 }
 
+export type GameType = 'regular' | 'daily';
+
 export class Session {
     target: string;
+    gameType: GameType;
     guesses: number = 0;
-    hints : number = 0;
+    hints: number = 0;
     board: BoardRow[] = [];
     done: boolean = false;
     won: boolean = false;
@@ -36,44 +38,32 @@ export class Session {
     misplaced = new Set<string>();
     eliminated = new Set<string>();
 
-    constructor(startedBy: string, target?: string) {
+    constructor(startedBy: string, gameType: GameType = 'regular', target?: string) {
         this.startedBy = startedBy;
+        this.gameType = gameType;
         this.target = target?.toUpperCase() ?? VALID_TARGETS[Math.floor(Math.random() * VALID_TARGETS.length)].toUpperCase();
     }
 
-    guess(userId: string, input: string): { text: string; ok: boolean } {
+    guess(userId: string, input: string): { ok: boolean; error?: string } {
         const word = input.trim().toUpperCase();
 
         if (word.length !== 5 || !/^[A-Z]+$/.test(word)) {
-            return { text: 'Enter a 5-letter word.', ok: false };
+            return { ok: false, error: 'Enter a 5-letter word.' };
         }
         if (!VALID_GUESSES.has(word.toLowerCase())) {
-            return { text: 'Not a valid word.', ok: false };
+            return { ok: false, error: 'Not a valid word.' };
         }
 
-        const emojis = this._getGuessEmojis(word);
+        const emojis = this.getGuessEmojis(word);
         this.board.push({ type: 'guess', userId, guess: word, emojis });
         this.guesses++;
-        this._updateLetterState(word, emojis);
-
+        this.updateLetterState(word, emojis);
         this.updateDoneWon();
 
-        return { text: this.getBoardText(), ok: true };
+        return { ok: true };
     }
 
-    private updateDoneWon() {
-        const lastRow = this.board[this.board.length - 1];
-        
-        if (lastRow.emojis.every(e => e === CORRECT)) {
-            this.done = true;
-            this.won = true;
-        } 
-        else if (this.guesses >= MAX_GUESSES) {
-            this.done = true;
-        }
-    }
-
-    hint(userId: string) : string {
+    hint(userId: string): void {
         const not_green_indexes = [0,1,2,3,4].filter(i => this.found[i] === '_');
         const random_idx = not_green_indexes[Math.floor(Math.random() * not_green_indexes.length)];
 
@@ -87,73 +77,19 @@ export class Session {
         this.eliminated.delete(this.target[random_idx]);
 
         this.updateDoneWon();
-        return this.getBoardText();
     }
 
-
-    getBoardText(): string {
+    formatBoard(): string {
         const history = '```' + this.board.map(r => `${r.guess}: ${r.emojis.join('')}`).join('\n') + '```';
-        const dashboard = this.done ? '' : '\n\n' + this._getDashboard();
-        if (this.won) return `${history}\n\n${this._getWinMessage()}`;
-        if (this.done) return `${history}\n\nFool. The word was: '${this.target}'`;
-        return history + dashboard;
+        if (!this.done) return history + '\n\n' + this.getDashboard();
+        return history;
     }
 
-private _getWinMessage(): string {
-    const g = this.guesses;
-    const h = this.hints;
-    const s = h === 1 ? '' : 's';
-
-    if (h === 0) {
-        if (g === 1) return `Got it in 1/6. Lucky bastard.`;
-        if (g === 2) return `Got it in 2/6. WOW!`;
-        if (g === 3) return `Got it in 3/6. Very good!`;
-        if (g === 4) return `Got it in 4/6. Nicely done.`;
-        if (g === 5) return `Got it in 5/6. Decent.`;
-        return `Got it in 6/6. Hard word? Or word hard?`;
-    }
-
-    if (h === 1) {
-        if (g <= 3) return `${g}/6. Fast, but with a hint`;
-        if (g <= 5) return `${g}/6. Decent, but with a hint.`;
-        return `6/6. You barely made it, even with a hint.`;
-    }
-
-    if (g === 6) {
-        return `6/6. That was a struggle. ${h} hint${s} used.`;
-    }
-    if (h >= 3) {
-        return `${g}/6. With ${h} hints, it wasn't exactly a solo effort.`;
-    }
-
-    return `${g}/6. You finished, but it cost you ${h} hint${s}.`;
-}
-
-    private _updateLetterState(word: string, emojis: string[]): void {
-        for (let i = 0; i < 5; i++) {
-            const letter = word[i];
-            if (emojis[i] === CORRECT) {
-                this.found[i] = letter;
-            } else if (emojis[i] === MISPLACED) {
-                this.misplaced.add(letter);
-            } else {
-                this.eliminated.add(letter);
-            }
-        }
-        // a letter marked ⬛ in one position may still be 🟩/🟨 elsewhere (double letters)
-        for (const letter of this.found) {
-            if (letter !== '_') { this.eliminated.delete(letter); this.misplaced.delete(letter); }
-        }
-        for (const letter of this.misplaced) this.eliminated.delete(letter);
-    }
-
-    private _getDashboard(): string {
-
+    private getDashboard(): string {
         const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
         const available = allLetters.filter(l =>
             !this.misplaced.has(l) && !this.eliminated.has(l) && !this.found.includes(l)
         );
-
         const lines = [
             `${CORRECT} Found:      ${this.found.join(' ')}`,
             `${MISPLACED} Misplaced:  ${[...this.misplaced].join(', ') || '-'}`,
@@ -173,7 +109,34 @@ private _getWinMessage(): string {
         };
     }
 
-    private _getGuessEmojis(guess: string): string[] {
+    private updateDoneWon() {
+        const lastRow = this.board[this.board.length - 1];
+        if (lastRow.emojis.every(e => e === CORRECT)) {
+            this.done = true;
+            this.won = true;
+        } else if (this.guesses >= MAX_GUESSES) {
+            this.done = true;
+        }
+    }
+
+    private updateLetterState(word: string, emojis: string[]): void {
+        for (let i = 0; i < 5; i++) {
+            const letter = word[i];
+            if (emojis[i] === CORRECT) {
+                this.found[i] = letter;
+            } else if (emojis[i] === MISPLACED) {
+                this.misplaced.add(letter);
+            } else {
+                this.eliminated.add(letter);
+            }
+        }
+        for (const letter of this.found) {
+            if (letter !== '_') { this.eliminated.delete(letter); this.misplaced.delete(letter); }
+        }
+        for (const letter of this.misplaced) this.eliminated.delete(letter);
+    }
+
+    private getGuessEmojis(guess: string): string[] {
         const result = [WRONG, WRONG, WRONG, WRONG, WRONG];
         const targetArr = this.target.split('');
         const guessArr = guess.split('');

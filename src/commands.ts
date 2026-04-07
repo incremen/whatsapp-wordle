@@ -1,6 +1,8 @@
 import { SessionManager } from './SessionManager';
 import { setDisabled } from './disabledChats';
 import { getDailyWord } from './daily';
+import { regularMessages, dailyMessages, Messages } from './messages';
+import { Session } from './Session';
 import * as db from './db';
 
 const manager = new SessionManager();
@@ -8,6 +10,10 @@ const manager = new SessionManager();
 type Msg = any;
 type Handler = (msg: Msg, chatId: string, args: string) => void;
 export type CommandMap = Record<string, Handler>;
+
+function messagesFor(session: Session): Messages {
+    return session.gameType === 'daily' ? dailyMessages : regularMessages;
+}
 
 // --- Admin commands (owner only) ---
 
@@ -28,7 +34,7 @@ export const commands: CommandMap = {
         const guesses = msg.body.slice(7).split(' ').filter((g: string) => g);
 
         if (!guesses.length) {
-            msg.reply('Game started! Use `!guess <word>` to play, `!hint` for a hint.');
+            msg.reply(messagesFor(session).start);
             return;
         }
 
@@ -37,41 +43,50 @@ export const commands: CommandMap = {
             return;
         }
 
-        let lastText = '';
+        let lastError = '';
         for (const guess of guesses) {
-            const { text, ok } = session.guess(msg.from, guess);
-            lastText = text;
-            if (!ok || session.done) break;
+            const { ok, error } = session.guess(msg.from, guess);
+            if (!ok) { lastError = error!; break; }
+            if (session.done) break;
         }
 
-        if (!session.done) {
-            msg.reply(lastText + '\n\nUse `!guess <word>` to play, `!hint` for a hint.');
-        } else {
-            msg.reply(lastText);
-            db.saveGame(chatId, session.getGameData());
-        }
+        if (lastError) { msg.reply(lastError); return; }
+
+        const board = session.formatBoard();
+        if (session.won) msg.reply(board + '\n\n' + messagesFor(session).win(session));
+        else if (session.done) msg.reply(board + '\n\n' + messagesFor(session).lose(session));
+        else msg.reply(board + '\n\n' + messagesFor(session).start);
+
+        if (session.done) db.saveGame(chatId, session.getGameData());
     },
 
     '!daily': (msg, chatId) => {
         if (chatId.endsWith('@g.us')) { msg.reply('DMs only.'); return; }
         const word = getDailyWord();
         if (!word) { msg.reply('No daily word set for today.'); return; }
-        manager.create(chatId, msg.from, word);
-        msg.reply('Daily Wordle! Use `!guess <word>` to play.');
+        manager.create(chatId, msg.from, 'daily', word);
+        msg.reply(dailyMessages.start);
     },
 
-    '!guess': (msg, chatId, args) => {
+    '!guess': (msg, chatId) => {
         const session = manager.get(chatId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
-        const { text } = session.guess(msg.from, args);
-        msg.reply(text);
+        const { ok, error } = session.guess(msg.from, msg.body.slice(7));
+        if (!ok) { msg.reply(error!); return; }
+
+        const board = session.formatBoard();
+        if (session.won) msg.reply(board + '\n\n' + messagesFor(session).win(session));
+        else if (session.done) msg.reply(board + '\n\n' + messagesFor(session).lose(session));
+        else msg.reply(board);
+
         if (session.done) db.saveGame(chatId, session.getGameData());
     },
 
     '!hint': (msg, chatId) => {
         const session = manager.get(chatId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
-        msg.reply(session.hint(msg.from));
+        session.hint(msg.from);
+        msg.reply(session.formatBoard());
     },
 
     '!stats': (msg) => {
