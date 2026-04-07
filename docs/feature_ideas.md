@@ -10,6 +10,7 @@
 - `!enableStreak (gc only) (admin)` - when enabled, at midnight shows who did the daily wordle and the groupchat's streak (like in discord)
  
 ## To (maybe) Do
+- snapshot should return a file with a backup name including date, .db, not Untitled
 - filter bad words from guesses
 - if in a gc, edit previous message instead of replying with a new one (or make this a gc toggle?)
 - ^alternatively as long as not 5 new messages have been sent in the db since, THEN do so
