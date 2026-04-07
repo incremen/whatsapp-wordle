@@ -2,7 +2,7 @@ import { log } from './infra/logger';
 import { getDisabledIds } from './infra/disabledChats';
 import { client } from './clientConfig';
 import { initDb } from './infra/db';
-import { commands, adminCommands, CommandMap } from './commands';
+import { commands, adminCommands, devCommands, CommandMap } from './commands';
 import { startDailyBoardScheduler } from './game/dailyBoardScheduler';
 import { startSnapshotScheduler } from './infra/snapshotScheduler';
 import { getStartupChats } from './infra/startupChats';
@@ -31,11 +31,18 @@ client.on('message_create', async (msg: any) => {
 
     const chatId = msg.id.remote;
 
+    const devMatch = findCommand(msg.body, devCommands);
+    if (devMatch) {
+        if (msg.fromMe) devMatch.handler(msg, chatId, devMatch.args);
+        return;
+    }
+
     const adminMatch = findCommand(msg.body, adminCommands);
     if (adminMatch) {
         if (msg.fromMe || await isGroupAdmin(msg, chatId)) {
-            adminMatch.handler(msg, chatId, adminMatch.args); return;
+            adminMatch.handler(msg, chatId, adminMatch.args);
         }
+        return;
     }
 
     if (getDisabledIds().has(chatId) && !msg.fromMe) return;
