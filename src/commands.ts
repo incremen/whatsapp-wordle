@@ -71,6 +71,7 @@ export const commands: CommandMap = {
     '!guess': (msg, chatId) => {
         const session = manager.get(chatId) ?? dailyManager.get(msg.from);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
+
         const { ok, error } = session.guess(msg.from, msg.body.slice(7));
         if (!ok) { msg.reply(error!); return; }
 
@@ -85,6 +86,10 @@ export const commands: CommandMap = {
     '!hint': (msg, chatId) => {
         const session = manager.get(chatId) ?? dailyManager.get(msg.from);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
+        if (session.gameType === 'daily') {
+            msg.reply("No hints for a daily game!")
+            return
+        }
         session.hint(msg.from);
         msg.reply(session.formatBoard());
     },
