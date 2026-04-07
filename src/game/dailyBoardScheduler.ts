@@ -1,25 +1,16 @@
+import cron from 'node-cron';
 import { getDailyBoardChats } from '../infra/dailyBoard';
 import { getUserDailyResult } from '../infra/db';
 import { todayDate } from '../infra/time';
 import { log } from '../infra/logger';
 
 export function startDailyBoardScheduler(client: any) {
-    const msUntilMidnight = () => {
-        const now = new Date();
-        const midnight = new Date(now);
-        midnight.setHours(18, 0, 0, 0);
-        return midnight.getTime() - now.getTime();
-    };
+    cron.schedule('12 18 * * *', async () => {
+        log('Daily board cron fired');
+        await sendDailyBoards(client);
+    }, { timezone: 'Asia/Jerusalem' });
 
-    const schedule = () => {
-        setTimeout(async () => {
-            await sendDailyBoards(client);
-            schedule();
-        }, msUntilMidnight());
-    };
-
-    schedule();
-    log('Daily board scheduler started');
+    log('Daily board scheduler started (cron: midnight IST)');
 }
 
 async function sendDailyBoards(client: any) {
