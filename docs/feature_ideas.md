@@ -11,6 +11,8 @@
 
  
 ## To (maybe) Do
+- if in a gc, edit previous message instead of replying with a new one (or make this a gc toggle?)
+- ^alternatively as long as not 5 new messages have been sent in the db since, THEN do so
 - moves should have a field for all 5 letters and if correct or no
 - !stats show most used starter word
 - snapshot returns db snapshot
