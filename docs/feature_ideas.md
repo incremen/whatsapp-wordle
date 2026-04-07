@@ -11,6 +11,7 @@
 
  
 ## To (maybe) Do
+- !stats show most used starter word
 - snapshot returns db snapshot
 - group admins should be able to do admin commands
 - shouldn't be case sensitive
@@ -23,5 +24,6 @@
 - `!streak` - track current/best win streaks per user
 - `!duel <@user>` - 1v1 same word, fewest guesses wins
 - `!surrender` - give up mid-game (counts as loss in stats)
+- Dordle - 2 games at once, 7 guesses
 - quit detection - if someone does `!wordle` mid-game, record the old game as a quit
 - `!stats` improvements - most used opening words, guess distribution chart, per-chat stats vs global stats
