@@ -118,6 +118,7 @@ export const commands: CommandMap = {
         }
         if (session.hints > 5) {
             msg.reply("What more is there to know?")
+            return
         }
         session.hint(msg.from);
         msg.reply(session.formatBoard());
