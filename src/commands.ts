@@ -2,6 +2,7 @@ import { SessionManager } from './game/SessionManager';
 import { DailySessionManager } from './game/DailySessionManager';
 import { setDisabled } from './infra/disabledChats';
 import { setDailyBoard } from './infra/dailyBoard';
+import { setStartupChat } from './infra/startupChats';
 import { regularMessages, dailyMessages, Messages } from './game/messages';
 import { Session } from './game/Session';
 import { buildDailyRecap } from './game/dailyBoardScheduler';
@@ -35,6 +36,17 @@ export const adminCommands: CommandMap = {
             msg.reply('Daily board disabled.');
         } else {
             msg.reply('Usage: `!dailyboard enable` or `!dailyboard disable`');
+        }
+    },
+    '!startupmessage': (msg, chatId, args) => {
+        if (args === 'enable') {
+            setStartupChat(chatId, true);
+            msg.reply('This chat will be notified when the bot starts up.');
+        } else if (args === 'disable') {
+            setStartupChat(chatId, false);
+            msg.reply('Startup notifications disabled.');
+        } else {
+            msg.reply('Usage: `!startupmessage enable` or `!startupmessage disable`');
         }
     },
 

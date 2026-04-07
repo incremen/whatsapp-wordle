@@ -4,3 +4,4 @@ node_modules/
 data/disabled.txt
 data/dailyboard-chats.txt
 data/wordle.db
+data/startup-chats.txt
