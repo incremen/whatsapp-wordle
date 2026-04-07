@@ -10,7 +10,7 @@ export function startDailyBoardScheduler(client: any) {
     if (scheduled) { log('Daily board scheduler already running, skipping'); return; }
     scheduled = true;
 
-    cron.schedule('39 18 * * *', async () => {
+    cron.schedule('49 18 * * *', async () => {
         log('Daily board cron fired');
         await sendDailyBoards(client);
     }, { timezone: 'Asia/Jerusalem' });
@@ -29,6 +29,7 @@ async function sendDailyBoardToChat(client: any, chatId: string) {
     const participants = chat.participants?.map((p: any) => p.id._serialized) ?? [];
 
     const lines: string[] = [];
+    const mentions: string[] = [];
     let bestStreak = 0;
 
     for (const userId of participants) {
@@ -36,7 +37,8 @@ async function sendDailyBoardToChat(client: any, chatId: string) {
         if (!result) continue;
 
         const status = result.won ? `✅ ${result.guesses}/6` : '❌';
-        lines.push(`${userId}: ${status} (🔥 ${result.streak})`);
+        lines.push(`@${userId.replace('@c.us', '')}: ${status} (🔥 ${result.streak})`);
+        mentions.push(userId);
         if (result.streak > bestStreak) bestStreak = result.streak;
     }
 
@@ -47,5 +49,5 @@ async function sendDailyBoardToChat(client: any, chatId: string) {
 
     const header = `📊 *Daily Wordle Recap — ${todayDate()}*`;
     const streakLine = `\nGroup streak: 🔥 ${bestStreak}`;
-    await chat.sendMessage(`${header}\n\n${lines.join('\n')}${streakLine}`);
+    await chat.sendMessage(`${header}\n\n${lines.join('\n')}${streakLine}`, { mentions });
 }
