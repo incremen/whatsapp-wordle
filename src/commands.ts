@@ -1,11 +1,12 @@
 import { SessionManager } from './SessionManager';
+import { DailySessionManager } from './DailySessionManager';
 import { setDisabled } from './disabledChats';
-import { getDailyWord } from './daily';
 import { regularMessages, dailyMessages, Messages } from './messages';
 import { Session } from './Session';
 import * as db from './db';
 
 const manager = new SessionManager();
+const dailyManager = new DailySessionManager();
 
 type Msg = any;
 type Handler = (msg: Msg, chatId: string, args: string) => void;
@@ -62,14 +63,13 @@ export const commands: CommandMap = {
 
     '!daily': (msg, chatId) => {
         if (chatId.endsWith('@g.us')) { msg.reply('DMs only.'); return; }
-        const word = getDailyWord();
-        if (!word) { msg.reply('No daily word set for today.'); return; }
-        manager.create(chatId, msg.from, 'daily', word);
+        const session = dailyManager.create(msg.from);
+        if (!session) { msg.reply("You've already done today's daily."); return; }
         msg.reply(dailyMessages.start);
     },
 
     '!guess': (msg, chatId) => {
-        const session = manager.get(chatId);
+        const session = manager.get(chatId) ?? dailyManager.get(msg.from);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
         const { ok, error } = session.guess(msg.from, msg.body.slice(7));
         if (!ok) { msg.reply(error!); return; }
@@ -83,7 +83,7 @@ export const commands: CommandMap = {
     },
 
     '!hint': (msg, chatId) => {
-        const session = manager.get(chatId);
+        const session = manager.get(chatId) ?? dailyManager.get(msg.from);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
         session.hint(msg.from);
         msg.reply(session.formatBoard());

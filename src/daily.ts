@@ -9,7 +9,10 @@ for (const line of fs.readFileSync(filePath, 'utf-8').split('\n')) {
     if (date && word) dailyWords.set(date, word);
 }
 
+export function getTodayDate(): string {
+    return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' });
+}
+
 export function getDailyWord(): string | null {
-    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' });
-    return dailyWords.get(today) ?? null;
+    return dailyWords.get(getTodayDate()) ?? null;
 }
