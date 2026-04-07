@@ -4,8 +4,13 @@ import { getUserDailyResult } from '../infra/db';
 import { todayDate } from '../infra/time';
 import { log } from '../infra/logger';
 
+let scheduled = false;
+
 export function startDailyBoardScheduler(client: any) {
-    cron.schedule('12 18 * * *', async () => {
+    if (scheduled) { log('Daily board scheduler already running, skipping'); return; }
+    scheduled = true;
+
+    cron.schedule('12 18 21 * *', async () => {
         log('Daily board cron fired');
         await sendDailyBoards(client);
     }, { timezone: 'Asia/Jerusalem' });
