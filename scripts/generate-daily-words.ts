@@ -12,7 +12,7 @@ for (let i = targets.length - 1; i > 0; i--) {
 }
 
 const start = new Date('2026-04-06');
-const days = 365 * 3;
+const days = 365 * 10;
 const lines: string[] = [];
 
 for (let d = 0; d < days; d++) {
