@@ -106,14 +106,14 @@ export function getUserStats(userId: string): string {
     return lines.join('\n');
 }
 
-export function getUserDailyResult(userId: string): { won: boolean; guesses: number; streak: number } | null {
-    const today = todayDate();
+export function getUserDailyResult(userId: string, date?: string): { won: boolean; guesses: number; streak: number } | null {
+    const targetDate = date ?? todayDate();
     const row = db.prepare(`
         SELECT g.won,
             (SELECT COUNT(*) FROM moves WHERE game_id = g.id AND type = 'guess') AS guesses
         FROM games g
         WHERE g.daily_date = ? AND g.started_by = ?
-    `).get(today, userId) as any;
+    `).get(targetDate, userId) as any;
 
     if (!row) return null;
     return { won: !!row.won, guesses: row.guesses, streak: getDailyStreak(userId) };
