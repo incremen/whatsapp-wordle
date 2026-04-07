@@ -6,14 +6,14 @@
 - `!wordle <word1> <word2> ...` - start wordle with pre-guesses
 - `!stats` - show personal statistics
 - `!help` - list all commands, link to github
+- `!daily` - daily challenge, same word for everyone each day, dms only
+- `!enableStreak (gc only) (admin)` - when enabled, at midnight shows who did the daily wordle and the groupchat's streak (like in discord)
 
  
 ## To (maybe) Do
 - shouldn't be case sensitive
 - if you can't use a command it should tell you
 - `wordle hard mode`
-- `!daily` - daily challenge, same word for everyone each day, dms only
-- `!enableStreak (gc only) (admin)` - when enabled, at midnight shows who did the daily wordle and the groupchat's streak (like in discord)
 - `!wordle easy/medium/hard` - classify words into easy/medium/hard, based on existing data
 - `!enableDrops (admin)` - random wordle drops in chat, solve for reward, shows on !stats
 - `super wordle solver` - 3b1b style: evaluate guesses, show optimal, bits of info
