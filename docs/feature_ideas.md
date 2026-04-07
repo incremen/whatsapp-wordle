@@ -26,4 +26,5 @@
 - `!surrender` - give up mid-game (counts as loss in stats)
 - Dordle - 2 games at once, 7 guesses
 - quit detection - if someone does `!wordle` mid-game, record the old game as a quit
-- `!stats` improvements - most used opening words, guess distribution chart, per-chat stats vs global stats
+- `!stats` improvements - most used opening words, guess distribution chart?
+- respond with emojis instead of error message
