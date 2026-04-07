@@ -116,7 +116,7 @@ export const commands: CommandMap = {
             msg.reply("No hints for a daily game!")
             return
         }
-        if (session.hints > 5) {
+        if (session.hints >= 5) {
             msg.reply("What more is there to know?");
             return
         }
