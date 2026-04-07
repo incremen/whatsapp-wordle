@@ -102,3 +102,35 @@ export function getUserStats(userId: string): string {
     ];
     return lines.join('\n');
 }
+
+export function getDailyStreak(userId: string): number {
+    const dates = db.prepare(
+        `SELECT daily_date FROM games WHERE started_by = ? AND daily_date IS NOT NULL AND won = 1 ORDER BY daily_date DESC`
+    ).all(userId) as { daily_date: string }[];
+
+    if (!dates.length) return 0;
+
+    let streak = 0;
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' });
+
+    // start from today or yesterday
+    let expected = today;
+    if (dates[0].daily_date !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        expected = yesterday.toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' });
+    }
+
+    for (const { daily_date } of dates) {
+        if (daily_date === expected) {
+            streak++;
+            const prev = new Date(expected + 'T00:00:00');
+            prev.setDate(prev.getDate() - 1);
+            expected = prev.toISOString().slice(0, 10);
+        } else {
+            break;
+        }
+    }
+
+    return streak;
+}
