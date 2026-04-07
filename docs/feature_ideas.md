@@ -9,6 +9,7 @@
 
  
 ## To (maybe) Do
+- shouldn't be case sensitive
 - if you can't use a command it should tell you
 - `wordle hard mode`
 - `!daily` - daily challenge, same word for everyone each day, dms only
