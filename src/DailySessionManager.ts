@@ -1,12 +1,13 @@
 import { Session } from './Session';
-import { getDailyWord, getTodayDate } from './daily';
+import { getDailyWord } from './daily';
+import { todayDate } from './time';
 
 export class DailySessionManager {
     private sessions = new Map<string, { date: string; session: Session }>();
 
     get(userId: string): Session | undefined {
         const entry = this.sessions.get(userId);
-        if (!entry || entry.date !== getTodayDate()) return undefined;
+        if (!entry || entry.date !== todayDate()) return undefined;
         return entry.session;
     }
 
@@ -18,7 +19,7 @@ export class DailySessionManager {
         if (!word) return null;
 
         const session = new Session(userId, 'daily', word);
-        this.sessions.set(userId, { date: getTodayDate(), session });
+        this.sessions.set(userId, { date: todayDate(), session });
         return session;
     }
 }

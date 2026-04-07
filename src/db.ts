@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import * as path from 'path';
+import { todayDate, formatTimestamp } from './time';
 
 const db = new Database(path.join(__dirname, '..', 'data', 'wordle.db'));
 
@@ -61,7 +62,7 @@ export function getRecentGames(count = 5): string {
     if (!games.length) return 'No games yet.';
 
     const getMoves = db.prepare(`SELECT * FROM moves WHERE game_id = ? ORDER BY seq`);
-    const fmt = (ts: number) => new Date(ts).toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' });
+    const fmt = formatTimestamp;
 
     return games.reverse().map(g => {
         const moves = getMoves.all(g.id) as any[];
@@ -111,7 +112,7 @@ export function getDailyStreak(userId: string): number {
     if (!dates.length) return 0;
 
     let streak = 0;
-    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' });
+    const today = todayDate();
 
     // start from today or yesterday
     let expected = today;

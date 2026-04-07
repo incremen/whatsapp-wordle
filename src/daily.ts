@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { todayDate } from './time';
 
 const dailyWords = new Map<string, string>();
 
@@ -9,10 +10,6 @@ for (const line of fs.readFileSync(filePath, 'utf-8').split('\n')) {
     if (date && word) dailyWords.set(date, word);
 }
 
-export function getTodayDate(): string {
-    return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' });
-}
-
 export function getDailyWord(): string | null {
-    return dailyWords.get(getTodayDate()) ?? null;
+    return dailyWords.get(todayDate()) ?? null;
 }
