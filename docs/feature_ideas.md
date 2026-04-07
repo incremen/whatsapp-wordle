@@ -11,6 +11,7 @@
 
  
 ## To (maybe) Do
+- moves should have a field for all 5 letters and if correct or no
 - !stats show most used starter word
 - snapshot returns db snapshot
 - group admins should be able to do admin commands
