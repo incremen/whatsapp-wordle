@@ -10,7 +10,7 @@ export function startDailyBoardScheduler(client: any) {
     if (scheduled) { log('Daily board scheduler already running, skipping'); return; }
     scheduled = true;
 
-    cron.schedule('12 19 * * *', async () => {
+    cron.schedule('19 19 * * *', async () => {
         log('Daily board cron fired');
         await sendDailyBoards(client);
     }, { timezone: 'Asia/Jerusalem' });
@@ -32,7 +32,7 @@ async function sendDailyBoardToChat(client: any, chatId: string) {
     const mentions: string[] = [];
 
     for (const userId of participants) {
-        const result = getUserDailyResult(userId);
+    const result = getUserDailyResult(userId);
         if (!result) continue;
 
         const status = result.won ? `✅ ${result.guesses}/6` : '❌';

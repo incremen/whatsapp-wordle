@@ -116,7 +116,7 @@ export function getUserDailyResult(userId: string): { won: boolean; guesses: num
     `).get(today, userId) as any;
 
     if (!row) return null;
-    return { won: !!row.won, guesses: row.guesses, streak: getDailyStreak(userId) + (row.won ? 1 : 0) };
+    return { won: !!row.won, guesses: row.guesses, streak: getDailyStreak(userId) };
 }
 
 export function getDailyStreak(userId: string): number {
