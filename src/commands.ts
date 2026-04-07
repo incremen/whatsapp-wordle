@@ -22,25 +22,9 @@ function messagesFor(session: Session): Messages {
     return session.gameType === 'daily' ? dailyMessages : regularMessages;
 }
 
-// --- Admin commands (owner only) ---
 
-export const adminCommands: CommandMap = {
+export const devCommands: CommandMap = {
 
-    '!disable': (msg, chatId) => { setDisabled(chatId, true);  msg.reply('Bot disabled here.'); },
-    '!enable':  (msg, chatId) => { setDisabled(chatId, false); msg.reply('Bot enabled here.'); },
-    '!recent':  (msg) => { msg.reply(db.getRecentGames()); },
-    '!dailyboard': (msg, chatId, args) => {
-        if (!chatId.endsWith('@g.us')) { msg.reply('GCs only.'); return; }
-        if (args === 'enable') {
-            setDailyBoard(chatId, true);
-            msg.reply('Daily board enabled! At midnight, this chat will get a daily recap.');
-        } else if (args === 'disable') {
-            setDailyBoard(chatId, false);
-            msg.reply('Daily board disabled.');
-        } else {
-            msg.reply('Usage: `!dailyboard enable` or `!dailyboard disable`');
-        }
-    },
     '!snapshot': (msg) => {
         const dbPath = path.join(__dirname, '..', 'data', 'wordle.db');
         const media = MessageMedia.fromFilePath(dbPath);
@@ -59,6 +43,27 @@ export const adminCommands: CommandMap = {
             msg.reply('Usage: `!dailysnapshot enable` or `!dailysnapshot disable`');
         }
     },
+    '!recent': (msg) => { msg.reply(db.getRecentGames()); },
+
+};
+
+
+export const adminCommands: CommandMap = {
+
+    '!disable': (msg, chatId) => { setDisabled(chatId, true);  msg.reply('Bot disabled here.'); },
+    '!enable':  (msg, chatId) => { setDisabled(chatId, false); msg.reply('Bot enabled here.'); },
+    '!dailyboard': (msg, chatId, args) => {
+        if (!chatId.endsWith('@g.us')) { msg.reply('GCs only.'); return; }
+        if (args === 'enable') {
+            setDailyBoard(chatId, true);
+            msg.reply('Daily board enabled! At midnight, this chat will get a daily recap.');
+        } else if (args === 'disable') {
+            setDailyBoard(chatId, false);
+            msg.reply('Daily board disabled.');
+        } else {
+            msg.reply('Usage: `!dailyboard enable` or `!dailyboard disable`');
+        }
+    },
     '!startupmessage': (msg, chatId, args) => {
         if (args === 'enable') {
             setStartupChat(chatId, true);
@@ -73,7 +78,6 @@ export const adminCommands: CommandMap = {
 
 };
 
-// --- Public commands ---
 
 export const commands: CommandMap = {
 
@@ -159,13 +163,19 @@ export const commands: CommandMap = {
 
     '!help': (msg) => {
         const lines = [
-            '*Wordle Bot*',
+            '*Commands:*',
             '`!wordle` — start a new game',
             '`!guess <word>` — make a guess',
-            '`!wordle <word1> <word2> ...` — start new game with pre-guesses',
+            '`!wordle <word1> <word2> ...` — start with pre-guesses',
             '`!daily` — daily challenge (DMs only)',
             '`!hint` — reveal one correct letter',
             '`!stats` — your stats',
+            '`!dailystats` — daily recap (GCs only)',
+            '',
+            '*Admin commands:*',
+            '`!disable` / `!enable` — toggle bot in this chat',
+            '`!dailyboard enable/disable` — daily recap at midnight',
+            '',
             'Github: https://github.com/incremen/whatsapp-wordle',
         ];
         msg.reply(lines.join('\n'));
