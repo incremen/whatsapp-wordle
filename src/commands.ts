@@ -44,6 +44,8 @@ export const adminCommands: CommandMap = {
     '!snapshot': (msg) => {
         const dbPath = path.join(__dirname, '..', 'data', 'wordle.db');
         const media = MessageMedia.fromFilePath(dbPath);
+        const date = new Date().toISOString().slice(0, 10);
+        media.filename = `wordle-backup-${date}.db`;
         msg.reply(media);
     },
     '!dailysnapshot': (msg, chatId, args) => {
