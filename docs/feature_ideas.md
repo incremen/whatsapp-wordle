@@ -8,9 +8,9 @@
 - `!help` - list all commands, link to github
 - `!daily` - daily challenge, same word for everyone each day, dms only
 - `!enableStreak (gc only) (admin)` - when enabled, at midnight shows who did the daily wordle and the groupchat's streak (like in discord)
-
  
 ## To (maybe) Do
+- filter bad words from guesses
 - if in a gc, edit previous message instead of replying with a new one (or make this a gc toggle?)
 - ^alternatively as long as not 5 new messages have been sent in the db since, THEN do so
 - moves should have a field for all 5 letters and if correct or no
