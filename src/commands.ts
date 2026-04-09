@@ -9,7 +9,7 @@ import { Session } from './game/Session';
 import { buildDailyRecap } from './schedules/dailyRecap';
 import * as db from './infra/db';
 import { buildSnapshotMedia } from './schedules/snapshot';
-import { getQuietChats, setQuiet } from './lists/quiet';
+import { isQuiet, setQuiet } from './lists/quiet';
 import { client } from './clientConfig';
 
 const manager = new SessionManager();
@@ -62,7 +62,6 @@ export const adminCommands: CommandMap = {
         }
     },
     '!quiet': (msg, chatId, args) => {
-        if (!chatId.endsWith('@g.us')) { msg.reply('GCs only.'); return; }
         if (args === 'enable') {
             setQuiet(chatId, true);
             msg.reply('Quiet mode enabled. Board updates will edit the original message instead of spamming new ones.');
@@ -128,18 +127,20 @@ export const commands: CommandMap = {
         if (session.done) db.saveGame(chatId, session.getGameData());
     },
 
-    '!daily': (msg, chatId) => {
+    '!daily': async (msg, chatId) => {
         if (chatId.endsWith('@g.us')) { msg.reply('DMs only.'); return; }
         const session = dailyManager.create(msg.senderId);
         if (!session) { msg.reply("You've already done today's daily."); return; }
-        msg.reply(dailyMessages.start);
+        const sent = await msg.reply(dailyMessages.start);
+        session.boardMessageId = sent.id._serialized;
+        session.boardTimestamp = Date.now();
     },
 
     '!guess': async (msg, chatId) => {
         const session = manager.get(chatId) ?? dailyManager.get(msg.senderId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
 
-        const quiet = getQuietChats().has(chatId);
+        const quiet = isQuiet(chatId);
 
         const { ok, error } = session.guess(msg.senderId, msg.body.slice(7));
         if (!ok) {
