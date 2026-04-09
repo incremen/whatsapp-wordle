@@ -7,6 +7,8 @@
 // This function normalizes msg.from to @c.us before any command runs,
 // so the DB always stores phone-based IDs.
 
+import { log } from './logger';
+
 export async function normalizeUserId(msg: any): Promise<string> {
     let senderId: string = msg.from;
     if (!senderId) return '';
@@ -22,7 +24,9 @@ export async function normalizeUserId(msg: any): Promise<string> {
         try {
             const contact = await msg.getContact();
             if (contact?.number) {
-                return `${contact.number}@c.us`;
+                const resolved = `${contact.number}@c.us`;
+                log('Normalized ID', `${senderId} -> ${resolved}`);
+                return resolved;
             }
         } catch {}
     }
