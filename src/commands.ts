@@ -177,7 +177,7 @@ export const commands: CommandMap = {
         if (session.done) db.saveGame(chatId, session.getGameData());
     },
 
-    '!hint': (msg, chatId) => {
+    '!hint': async (msg, chatId) => {
         const session = manager.get(chatId) ?? dailyManager.get(msg.senderId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
         if (session.gameType === 'daily') {
@@ -189,7 +189,26 @@ export const commands: CommandMap = {
             return
         }
         session.hint(msg.senderId);
-        msg.reply(session.formatBoard());
+
+        const quiet = isQuiet(chatId);
+        if (quiet) await msg.react('💡');
+
+        const text = session.formatBoard();
+
+        if (quiet && session.boardMessageId) {
+            const isEditable = (Date.now() - session.boardTimestamp) < (14 * 60 * 1000);
+            if (isEditable) {
+                try {
+                    const boardMsg = await client.getMessageById(session.boardMessageId);
+                    await boardMsg.edit(text);
+                    return;
+                } catch {}
+            }
+        }
+
+        const sent = await msg.reply(text);
+        session.boardMessageId = sent.id._serialized;
+        session.boardTimestamp = Date.now();
     },
 
     '!dailystats': async (msg, chatId) => {
