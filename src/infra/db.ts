@@ -140,8 +140,8 @@ export function getDailyStreak(userId: string): number {
     for (const { daily_date } of dates) {
         if (daily_date === expected) {
             streak++;
-            const prev = new Date(expected + 'T00:00:00');
-            prev.setDate(prev.getDate() - 1);
+            const prev = new Date(expected + 'T00:00:00Z');
+            prev.setUTCDate(prev.getUTCDate() - 1);
             expected = prev.toISOString().slice(0, 10);
         } else {
             break;
@@ -165,12 +165,19 @@ export function getGroupDailyStreak(participants: string[], startDate?: string):
 
     let expected = startDate ?? todayDate();
 
+    // If today hasn't been played yet, start from yesterday
+    if (!startDate && dates[0].daily_date !== expected) {
+        const yesterday = new Date(expected + 'T00:00:00Z');
+        yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+        expected = yesterday.toISOString().slice(0, 10);
+    }
+
     let streak = 0;
     for (const { daily_date } of dates) {
         if (daily_date === expected) {
             streak++;
-            const prev = new Date(expected + 'T00:00:00');
-            prev.setDate(prev.getDate() - 1);
+            const prev = new Date(expected + 'T00:00:00Z');
+            prev.setUTCDate(prev.getUTCDate() - 1);
             expected = prev.toISOString().slice(0, 10);
         } else {
             break;
