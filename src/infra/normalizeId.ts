@@ -1,4 +1,11 @@
-import { log } from './logger';
+// WhatsApp uses two ID formats for users:
+//   - @c.us  (phone-based, e.g. "1234567890@c.us")
+//   - @lid   (opaque, e.g. "9876543210@lid")
+//
+// Some users' DMs use @lid while group chat participants always use @c.us.
+// If we save a game under @lid but query with @c.us, we get no match.
+// This function normalizes msg.from to @c.us before any command runs,
+// so the DB always stores phone-based IDs.
 
 export async function normalizeUserId(msg: any): Promise<string> {
     let senderId: string = msg.from;
