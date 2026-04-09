@@ -60,7 +60,7 @@ client.on('message_create', async (msg: any) => {
 });
 
 async function isGroupAdmin(msg: any, chatId: string): Promise<boolean> {
-    if (!chatId.endsWith('@g.us')) return true; // In DMs, everyone is "admin"
+    if (!chatId.endsWith('@g.us')) return false;
     const senderId = msg.author;
     if (!senderId) return false;
 
