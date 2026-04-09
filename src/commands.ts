@@ -216,8 +216,9 @@ export const commands: CommandMap = {
             '',
             '*Groupchat admin commands:*',
             '`!disable` / `!enable` — toggle bot in this chat',
+            '`!quiet enable/disable` — less spam: edits board in place, reacts to guesses',
             '`!dailyboard enable/disable` — daily recap at midnight',
-            '`!startupmessage` - get notified whenever bot turns online (if it was rebooted for an update)',
+            '`!startupmessage enable/disable` — get notified when bot comes online',
             'Github: https://github.com/incremen/whatsapp-wordle',
         ];
         msg.reply(lines.join('\n'));

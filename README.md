@@ -14,6 +14,7 @@ A WhatsApp bot that lets you play Wordle in any chat — DMs or group chats. Bui
 
 ### Groupchat Admin commands
 - `!disable` / `!enable` — toggle bot in this chat
+- `!quiet enable/disable` — quiet mode: edits the board in place instead of sending new messages, reacts to guesses instead of replying
 - `!dailyboard enable/disable` — daily recap at midnight
 - `!startupmessage enable/disable` — notify this chat when bot starts
 
