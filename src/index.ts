@@ -7,7 +7,7 @@ import { startDailyBoardScheduler } from './game/dailyBoardScheduler';
 import { startSnapshotScheduler } from './infra/snapshotScheduler';
 import { getStartupChats } from './infra/startupChats';
 import { normalizeUserId } from './infra/normalizeId';
-import { migrateLidIds } from './infra/migrateLids';
+
 
 const qrcode = require('qrcode-terminal');
 
@@ -20,7 +20,6 @@ client.on('qr', (qr: string) => {
 
 client.on('ready', async () => {
     log('Client connected');
-    await migrateLidIds(client);
     startDailyBoardScheduler(client);
     startSnapshotScheduler(client);
     for (const chatId of getStartupChats()) {

@@ -17,9 +17,7 @@ export async function normalizeUserId(msg: any): Promise<string> {
             if (contact?.number) {
                 return `${contact.number}@c.us`;
             }
-        } catch (e) {
-            log('LID resolution failed', `${senderId}: ${e}`);
-        }
+        } catch {}
     }
 
     return senderId;
