@@ -17,6 +17,11 @@ A WhatsApp bot that lets you play Wordle in any chat — DMs or group chats. Bui
 - `!dailyboard enable/disable` — daily recap at midnight
 - `!startupmessage enable/disable` — notify this chat when bot starts
 
+### Dev commands (bot owner only)
+- `!snapshot` — send the database file as a backup
+- `!dailysnapshot enable/disable` — auto-send DB backup at midnight
+- `!recent` — show recent games
+
 ## Run locally
 
 ### Prerequisites
