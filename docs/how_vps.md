@@ -1,3 +1,5 @@
+This is just so i remember how to run it the server - this file probably shouldn't be on github but this way it's easy for me to find it :p
+
 ## Deployment & Maintenance
 
 ### 1. Initial Setup (Run Once)
