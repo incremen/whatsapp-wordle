@@ -223,6 +223,10 @@ export const commands: CommandMap = {
         msg.reply(db.getUserStats(msg.senderId));
     },
 
+    '!botstats': (msg) => {
+        msg.reply(db.getBotStats());
+    },
+
     '!help': (msg) => {
         const lines = [
             '*Commands:*',
@@ -233,6 +237,7 @@ export const commands: CommandMap = {
             '`!hint` — reveal one correct letter',
             '`!stats` — your stats',
             '`!dailystats` — daily recap (GCs only)',
+            '`!botstats` — global bot stats',
             '',
             '*Groupchat admin commands:*',
             '`!disable` / `!enable` — toggle bot in this chat',

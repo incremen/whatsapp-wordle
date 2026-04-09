@@ -10,6 +10,7 @@ A WhatsApp bot that lets you play Wordle in any chat — DMs or group chats. Bui
 - `!hint` — reveal one correct letter
 - `!stats` — your stats
 - `!dailystats` — daily recap (GCs only)
+- `!botstats` — global bot stats
 - `!help` — list commands
 
 ### Groupchat Admin commands

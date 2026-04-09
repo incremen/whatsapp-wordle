@@ -114,6 +114,33 @@ export function getUserStats(userId: string): string {
     return lines.join('\n');
 }
 
+export function getBotStats(): string {
+    const row = db.prepare(`
+        SELECT
+            COUNT(*)                    AS total,
+            COUNT(DISTINCT started_by)  AS players,
+            SUM(won)                    AS wins,
+            AVG(CASE WHEN won = 1 THEN (SELECT COUNT(*) FROM moves WHERE game_id = g.id AND type = 'guess') END) AS avg_guesses
+        FROM games g
+    `).get() as any;
+
+    if (!row || row.total === 0) return 'No games played yet.';
+
+    const uniqueWords = db.prepare(
+        `SELECT COUNT(DISTINCT value) AS cnt FROM moves WHERE type = 'guess'`
+    ).get() as any;
+
+    const winRate = ((row.wins / row.total) * 100).toFixed(0);
+    const lines = [
+        `Total games: ${row.total}`,
+        `Unique players: ${row.players}`,
+        `Win rate: ${winRate}%`,
+        `Unique words guessed: ${uniqueWords?.cnt ?? 0}`,
+        `Avg guesses (wins): ${row.avg_guesses?.toFixed(1) ?? '-'}`,
+    ];
+    return lines.join('\n');
+}
+
 export function getUserDailyResult(userId: string, date?: string): { won: boolean; guesses: number; streak: number } | null {
     const targetDate = date ?? todayDate();
     const row = db.prepare(`
