@@ -43,6 +43,6 @@ export function buildDailyRecap(participants: string[], date?: string): { text: 
         return { text: `${header}\nNo one played today's daily!`, mentions: [] };
     }
 
-    const streakLine = `\nGroup streak: 🔥 ${getGroupDailyStreak(participants, recapDate)}`;
+    const streakLine = `\n\n Total group streak: 🔥 ${getGroupDailyStreak(participants, recapDate)}`;
     return { text: `${header}\n\n${lines.join('\n')}${streakLine}`, mentions };
 }
