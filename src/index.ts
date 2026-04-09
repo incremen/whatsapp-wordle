@@ -31,10 +31,13 @@ client.on('ready', async () => {
 client.on('message_create', async (msg: any) => {
     log('New message', `from: ${msg.from} body: ${msg.body}`);
 
+    if (!msg.body?.startsWith('!')) return;
+
     const chatId = msg.id.remote;
 
     // Normalize @lid -> @c.us so all commands use a consistent ID
-    msg.from = await normalizeUserId(msg);
+    // Don't mutate msg.from — it's the group JID in GCs and used by whatsapp-web.js internally
+    msg.senderId = await normalizeUserId(msg);
 
     const devMatch = findCommand(msg.body, devCommands);
     if (devMatch) {

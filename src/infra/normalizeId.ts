@@ -10,7 +10,8 @@
 import { log } from './logger';
 
 export async function normalizeUserId(msg: any): Promise<string> {
-    let senderId: string = msg.from;
+    // msg.author is the actual sender in group chats; msg.from is the group JID
+    let senderId: string = msg.author || msg.from;
     if (!senderId) return '';
 
     // Strip device session suffix (e.g. "123456:2@c.us" -> "123456@c.us")

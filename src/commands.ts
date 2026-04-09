@@ -77,7 +77,7 @@ export const adminCommands: CommandMap = {
 export const commands: CommandMap = {
 
     '!wordle': (msg, chatId) => {
-        const session = manager.create(chatId, msg.from);
+        const session = manager.create(chatId, msg.senderId);
         const guesses = msg.body.slice(7).split(' ').filter((g: string) => g);
 
         if (!guesses.length) {
@@ -92,7 +92,7 @@ export const commands: CommandMap = {
 
         let lastError = '';
         for (const guess of guesses) {
-            const { ok, error } = session.guess(msg.from, guess);
+            const { ok, error } = session.guess(msg.senderId, guess);
             if (!ok) { lastError = error!; break; }
             if (session.done) break;
         }
@@ -109,16 +109,16 @@ export const commands: CommandMap = {
 
     '!daily': (msg, chatId) => {
         if (chatId.endsWith('@g.us')) { msg.reply('DMs only.'); return; }
-        const session = dailyManager.create(msg.from);
+        const session = dailyManager.create(msg.senderId);
         if (!session) { msg.reply("You've already done today's daily."); return; }
         msg.reply(dailyMessages.start);
     },
 
     '!guess': (msg, chatId) => {
-        const session = manager.get(chatId) ?? dailyManager.get(msg.from);
+        const session = manager.get(chatId) ?? dailyManager.get(msg.senderId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
 
-        const { ok, error } = session.guess(msg.from, msg.body.slice(7));
+        const { ok, error } = session.guess(msg.senderId, msg.body.slice(7));
         if (!ok) { msg.reply(error!); return; }
 
         const board = session.formatBoard();
@@ -130,7 +130,7 @@ export const commands: CommandMap = {
     },
 
     '!hint': (msg, chatId) => {
-        const session = manager.get(chatId) ?? dailyManager.get(msg.from);
+        const session = manager.get(chatId) ?? dailyManager.get(msg.senderId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
         if (session.gameType === 'daily') {
             msg.reply("No hints for a daily game!")
@@ -140,7 +140,7 @@ export const commands: CommandMap = {
             msg.reply("What more is there to know?");
             return
         }
-        session.hint(msg.from);
+        session.hint(msg.senderId);
         msg.reply(session.formatBoard());
     },
 
@@ -153,7 +153,7 @@ export const commands: CommandMap = {
     },
 
     '!stats': (msg) => {
-        msg.reply(db.getUserStats(msg.from));
+        msg.reply(db.getUserStats(msg.senderId));
     },
 
     '!help': (msg) => {
