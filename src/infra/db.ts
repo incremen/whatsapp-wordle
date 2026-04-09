@@ -95,10 +95,10 @@ export function getUserStats(userId: string): string {
 
     if (!row || row.total === 0) return 'No games found for this user.';
 
-    const faveGuess = db.prepare(`
+    const faveOpener = db.prepare(`
         SELECT value, COUNT(*) AS cnt FROM moves
         WHERE game_id IN (SELECT id FROM games WHERE started_by = ?)
-          AND type = 'guess'
+          AND type = 'guess' AND seq = 0
         GROUP BY value ORDER BY cnt DESC LIMIT 1
     `).get(userId) as any;
 
@@ -109,7 +109,7 @@ export function getUserStats(userId: string): string {
         `Avg guesses: ${row.avg_guesses?.toFixed(1) ?? '-'}`,
         `Avg hints: ${row.avg_hints?.toFixed(1) ?? '0'}`,
         `Daily streak: ${getDailyStreak(userId)}`,
-        `Fave guess: ${faveGuess?.value ?? '-'} (${faveGuess?.cnt ?? 0}x)`,
+        `Favorite opener: ${faveOpener?.value ?? '-'} (${faveOpener?.cnt ?? 0}x)`,
     ];
     return lines.join('\n');
 }
