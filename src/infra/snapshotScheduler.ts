@@ -1,4 +1,5 @@
 import cron from 'node-cron';
+import * as fs from 'fs';
 import * as path from 'path';
 import { getSnapshotChats } from './snapshotChats';
 import { log } from './logger';
@@ -7,10 +8,9 @@ const { MessageMedia } = require('whatsapp-web.js');
 
 export function buildSnapshotMedia() {
     const dbPath = path.join(__dirname, '..', '..', 'data', 'wordle.db');
-    const media = MessageMedia.fromFilePath(dbPath);
+    const b64data = fs.readFileSync(dbPath, { encoding: 'base64' });
     const date = new Date().toISOString().slice(0, 10);
-    media.filename = `wordle-backup-${date}.db`;
-    return media;
+    return new MessageMedia('application/octet-stream', b64data, `wordle-backup-${date}.db`);
 }
 
 let scheduled = false;
