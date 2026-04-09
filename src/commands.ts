@@ -9,6 +9,8 @@ import { Session } from './game/Session';
 import { buildDailyRecap } from './schedules/dailyRecap';
 import * as db from './infra/db';
 import { buildSnapshotMedia } from './schedules/snapshot';
+import { getQuietChats, setQuiet } from './lists/quiet';
+import { client } from './clientConfig';
 
 const manager = new SessionManager();
 const dailyManager = new DailySessionManager();
@@ -59,6 +61,18 @@ export const adminCommands: CommandMap = {
             msg.reply('Usage: `!dailyboard enable` or `!dailyboard disable`');
         }
     },
+    '!quiet': (msg, chatId, args) => {
+        if (!chatId.endsWith('@g.us')) { msg.reply('GCs only.'); return; }
+        if (args === 'enable') {
+            setQuiet(chatId, true);
+            msg.reply('Quiet mode enabled. Board updates will edit the original message instead of spamming new ones.');
+        } else if (args === 'disable') {
+            setQuiet(chatId, false);
+            msg.reply('Quiet mode disabled.');
+        } else {
+            msg.reply('Usage: `!quiet enable` or `!quiet disable`');
+        }
+    },
     '!startupmessage': (msg, chatId, args) => {
         if (args === 'enable') {
             setStartupChat(chatId, true);
@@ -76,12 +90,14 @@ export const adminCommands: CommandMap = {
 
 export const commands: CommandMap = {
 
-    '!wordle': (msg, chatId) => {
+    '!wordle': async (msg, chatId) => {
         const session = manager.create(chatId, msg.senderId);
         const guesses = msg.body.slice(7).split(' ').filter((g: string) => g);
 
         if (!guesses.length) {
-            msg.reply(messagesFor(session).start);
+            const sent = await msg.reply(messagesFor(session).start);
+            session.boardMessageId = sent.id._serialized;
+            session.boardTimestamp = Date.now();
             return;
         }
 
@@ -100,9 +116,14 @@ export const commands: CommandMap = {
         if (lastError) { msg.reply(lastError); return; }
 
         const board = session.formatBoard();
-        if (session.won) msg.reply(board + '\n\n' + messagesFor(session).win(session));
-        else if (session.done) msg.reply(board + '\n\n' + messagesFor(session).lose(session));
-        else msg.reply(board + '\n\n' + messagesFor(session).start);
+        let text: string;
+        if (session.won) text = board + '\n\n' + messagesFor(session).win(session);
+        else if (session.done) text = board + '\n\n' + messagesFor(session).lose(session);
+        else text = board + '\n\n' + messagesFor(session).start;
+
+        const sent = await msg.reply(text);
+        session.boardMessageId = sent.id._serialized;
+        session.boardTimestamp = Date.now();
 
         if (session.done) db.saveGame(chatId, session.getGameData());
     },
@@ -114,17 +135,43 @@ export const commands: CommandMap = {
         msg.reply(dailyMessages.start);
     },
 
-    '!guess': (msg, chatId) => {
+    '!guess': async (msg, chatId) => {
         const session = manager.get(chatId) ?? dailyManager.get(msg.senderId);
         if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
 
+        const quiet = getQuietChats().has(chatId);
+
         const { ok, error } = session.guess(msg.senderId, msg.body.slice(7));
-        if (!ok) { msg.reply(error!); return; }
+        if (!ok) {
+            if (quiet) { await msg.react('❌'); return; }
+            msg.reply(error!);
+            return;
+        }
+
+        if (quiet) await msg.react('✅');
 
         const board = session.formatBoard();
-        if (session.won) msg.reply(board + '\n\n' + messagesFor(session).win(session));
-        else if (session.done) msg.reply(board + '\n\n' + messagesFor(session).lose(session));
-        else msg.reply(board);
+        let text: string;
+        if (session.won) text = board + '\n\n' + messagesFor(session).win(session);
+        else if (session.done) text = board + '\n\n' + messagesFor(session).lose(session);
+        else text = board;
+
+        if (quiet && session.boardMessageId) {
+            const isEditable = (Date.now() - session.boardTimestamp) < (14 * 60 * 1000);
+            if (isEditable) {
+                try {
+                    const boardMsg = await client.getMessageById(session.boardMessageId);
+                    await boardMsg.edit(text);
+                    if (session.done) db.saveGame(chatId, session.getGameData());
+                    return;
+                } catch {}
+            }
+        }
+
+        // Fallback: send new message (always used in non-quiet, or when edit fails/expired)
+        const sent = await msg.reply(text);
+        session.boardMessageId = sent.id._serialized;
+        session.boardTimestamp = Date.now();
 
         if (session.done) db.saveGame(chatId, session.getGameData());
     },

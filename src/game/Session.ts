@@ -35,6 +35,8 @@ export class Session {
     won: boolean = false;
     startedBy: string;
     startedAt: number = Date.now();
+    boardMessageId: string = '';
+    boardTimestamp: number = 0;
     found: string[] = Array(5).fill('_');
     misplaced = new Set<string>();
     eliminated = new Set<string>();
