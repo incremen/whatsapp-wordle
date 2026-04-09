@@ -48,3 +48,15 @@ The bot runs as your WhatsApp user - messages you send with `!wordle`, `!guess`,
 > `scripts/start.sh` can also be used locally — it launches Chrome with remote debugging and starts the bot. Just update the Chrome path in it and in `clientConfig.ts` set `browserURL: 'http://localhost:9222'` instead of `executablePath`.
 
 > `scripts/`, `docs/how_vps`, config files etc. are for running on a (weak) VPS — you can ignore them when running locally.
+
+## Architecture & Customization
+
+If you want to repurpose this infrastructure for a different bot, the core logic is decoupled from the Wordle game mechanics. To modify the bot's behavior, focus on `src/commands.ts` and `src/game/`.
+
+The underlying infrastructure includes:
+
+- **`index.ts`** — Message routing, developer/admin permission checks, and the chat toggle state.
+- **`infra/normalizeId.ts`** — Resolves WhatsApp's `@lid` vs `@c.us` privacy ID mismatches. It extracts the raw phone number for database tracking while preserving the native `msg` object routing for group chats.
+- **`lists/`** — Simple text-file persistence for chat states (disabled chats, toggled features).
+- **`schedules/`** — Node-cron scheduling for daily boards and automated backups.
+- **`clientConfig.ts`** — whatsapp-web.js client initialization and browser launch arguments.
