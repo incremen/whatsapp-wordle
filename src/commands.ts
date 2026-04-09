@@ -1,14 +1,14 @@
 import { SessionManager } from './game/SessionManager';
 import { DailySessionManager } from './game/DailySessionManager';
-import { setDisabled } from './infra/disabledChats';
-import { setDailyBoard } from './infra/dailyBoard';
-import { setStartupChat } from './infra/startupChats';
-import { setSnapshotChat } from './infra/snapshotChats';
+import { setDisabled } from './lists/disabled';
+import { setDailyBoard } from './lists/dailyBoard';
+import { setStartupChat } from './lists/startup';
+import { setSnapshotChat } from './lists/snapshot';
 import { regularMessages, dailyMessages, Messages } from './game/messages';
 import { Session } from './game/Session';
-import { buildDailyRecap } from './game/dailyBoardScheduler';
+import { buildDailyRecap } from './schedules/dailyRecap';
 import * as db from './infra/db';
-import { buildSnapshotMedia } from './infra/snapshotScheduler';
+import { buildSnapshotMedia } from './schedules/snapshot';
 
 const manager = new SessionManager();
 const dailyManager = new DailySessionManager();

@@ -1,11 +1,11 @@
 import { log } from './infra/logger';
-import { getDisabledIds } from './infra/disabledChats';
+import { getDisabledIds } from './lists/disabled';
 import { client } from './clientConfig';
 import { initDb } from './infra/db';
 import { commands, adminCommands, devCommands, CommandMap } from './commands';
-import { startDailyBoardScheduler } from './game/dailyBoardScheduler';
-import { startSnapshotScheduler } from './infra/snapshotScheduler';
-import { getStartupChats } from './infra/startupChats';
+import { startDailyBoardScheduler } from './schedules/dailyRecap';
+import { startSnapshotScheduler } from './schedules/snapshot';
+import { getStartupChats } from './lists/startup';
 import { normalizeUserId } from './infra/normalizeId';
 
 

@@ -1,8 +1,8 @@
 import cron from 'node-cron';
 import * as fs from 'fs';
 import * as path from 'path';
-import { getSnapshotChats } from './snapshotChats';
-import { log } from './logger';
+import { getSnapshotChats } from '../lists/snapshot';
+import { log } from '../infra/logger';
 
 const { MessageMedia } = require('whatsapp-web.js');
 

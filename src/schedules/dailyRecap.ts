@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import { getDailyBoardChats } from '../infra/dailyBoard';
+import { getDailyBoardChats } from '../lists/dailyBoard';
 import { getUserDailyResult, getGroupDailyStreak } from '../infra/db';
 import { todayDate, yesterdayDate } from '../infra/time';
 import { log } from '../infra/logger';
