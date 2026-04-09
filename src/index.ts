@@ -53,9 +53,27 @@ client.on('message_create', async (msg: any) => {
 
 async function isGroupAdmin(msg: any, chatId: string): Promise<boolean> {
     if (!chatId.endsWith('@g.us')) return false;
+    const senderId = msg.author;
+    if (!senderId) return false;
+
     const chat = await msg.getChat();
-    const ids = [msg.from, msg.author].filter(Boolean);
-    const participant = chat.participants?.find((p: any) => ids.includes(p.id._serialized));
+
+    // Strip device session suffix (e.g. "123456:2@c.us" -> "123456@c.us")
+    const [userPart, server] = senderId.split('@');
+    const cleanId = `${userPart.split(':')[0]}@${server}`;
+
+    let participant = chat.participants?.find((p: any) => p.id._serialized === cleanId);
+
+    // Fallback: resolve @lid -> phone number via contact
+    if (!participant) {
+        try {
+            const contact = await msg.getContact();
+            if (contact?.number) {
+                participant = chat.participants?.find((p: any) => p.id.user === contact.number);
+            }
+        } catch {}
+    }
+
     return participant?.isAdmin || participant?.isSuperAdmin || false;
 }
 
