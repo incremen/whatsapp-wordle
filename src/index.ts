@@ -6,6 +6,8 @@ import { commands, adminCommands, devCommands, CommandMap } from './commands';
 import { startDailyBoardScheduler } from './game/dailyBoardScheduler';
 import { startSnapshotScheduler } from './infra/snapshotScheduler';
 import { getStartupChats } from './infra/startupChats';
+import { normalizeUserId } from './infra/normalizeId';
+import { migrateLidIds } from './infra/migrateLids';
 
 const qrcode = require('qrcode-terminal');
 
@@ -18,6 +20,7 @@ client.on('qr', (qr: string) => {
 
 client.on('ready', async () => {
     log('Client connected');
+    await migrateLidIds(client);
     startDailyBoardScheduler(client);
     startSnapshotScheduler(client);
     for (const chatId of getStartupChats()) {
@@ -30,6 +33,9 @@ client.on('message_create', async (msg: any) => {
     log('New message', `from: ${msg.from} body: ${msg.body}`);
 
     const chatId = msg.id.remote;
+
+    // Normalize @lid -> @c.us so all commands use a consistent ID
+    msg.from = await normalizeUserId(msg);
 
     const devMatch = findCommand(msg.body, devCommands);
     if (devMatch) {
