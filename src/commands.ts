@@ -8,8 +8,7 @@ import { regularMessages, dailyMessages, Messages } from './game/messages';
 import { Session } from './game/Session';
 import { buildDailyRecap } from './game/dailyBoardScheduler';
 import * as db from './infra/db';
-import * as path from 'path';
-const { MessageMedia } = require('whatsapp-web.js');
+import { buildSnapshotMedia } from './infra/snapshotScheduler';
 
 const manager = new SessionManager();
 const dailyManager = new DailySessionManager();
@@ -26,11 +25,7 @@ function messagesFor(session: Session): Messages {
 export const devCommands: CommandMap = {
 
     '!snapshot': (msg) => {
-        const dbPath = path.join(__dirname, '..', 'data', 'wordle.db');
-        const media = MessageMedia.fromFilePath(dbPath);
-        const date = new Date().toISOString().slice(0, 10);
-        media.filename = `wordle-backup-${date}.db`;
-        msg.reply(media);
+        msg.reply(buildSnapshotMedia());
     },
     '!dailysnapshot': (msg, chatId, args) => {
         if (args === 'enable') {
