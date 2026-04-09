@@ -167,7 +167,7 @@ export const commands: CommandMap = {
             '`!stats` — your stats',
             '`!dailystats` — daily recap (GCs only)',
             '',
-            '*Admin commands:*',
+            '*Groupchat admin commands:*',
             '`!disable` / `!enable` — toggle bot in this chat',
             '`!dailyboard enable/disable` — daily recap at midnight',
             '',
