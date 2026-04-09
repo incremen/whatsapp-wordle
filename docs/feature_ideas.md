@@ -10,13 +10,13 @@
 - `!enableStreak (gc only) (admin)` - when enabled, at midnight shows who did the daily wordle and the groupchat's streak (like in discord)
 - snapshot should return a file with a backup name including date, .db, not Untitled
 - no more bad words in guesses
+- !stats show most used starter word
+- if in a gc, edit previous message instead of replying with a new one (or make this a gc toggle?)
  
+
 ## To (maybe) Do
 - prevent duplicate words
-- if in a gc, edit previous message instead of replying with a new one (or make this a gc toggle?)
-- ^alternatively as long as not 5 new messages have been sent in the db since, THEN do so
 - moves should have a field for all 5 letters and if correct or no
-- !stats show most used starter word
 - snapshot returns db snapshot
 - group admins should be able to do admin commands
 - shouldn't be case sensitive
@@ -32,4 +32,3 @@
 - Dordle - 2 games at once, 7 guesses
 - quit detection - if someone does `!wordle` mid-game, record the old game as a quit
 - `!stats` improvements - most used opening words, guess distribution chart?
-- respond with emojis instead of error message
