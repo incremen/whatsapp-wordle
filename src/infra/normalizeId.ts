@@ -8,9 +8,15 @@
 // so the DB always stores phone-based IDs.
 
 import { log } from './logger';
+import { client } from '../clientConfig';
 
 export async function normalizeUserId(msg: any): Promise<string> {
-    // msg.author is the actual sender in group chats; msg.from is the group JID
+    // For outgoing messages, msg.author is undefined in GCs — use the bot's own ID
+    if (msg.fromMe) {
+        return client.info.wid._serialized;
+    }
+
+    // msg.author is the actual sender in group chats; msg.from is the fallback for DMs
     let senderId: string = msg.author || msg.from;
     if (!senderId) return '';
 
