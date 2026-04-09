@@ -54,7 +54,8 @@ client.on('message_create', async (msg: any) => {
 async function isGroupAdmin(msg: any, chatId: string): Promise<boolean> {
     if (!chatId.endsWith('@g.us')) return false;
     const chat = await msg.getChat();
-    const participant = chat.participants?.find((p: any) => p.id._serialized === msg.from);
+    const ids = [msg.from, msg.author].filter(Boolean);
+    const participant = chat.participants?.find((p: any) => ids.includes(p.id._serialized));
     return participant?.isAdmin || participant?.isSuperAdmin || false;
 }
 
