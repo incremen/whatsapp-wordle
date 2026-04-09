@@ -23,7 +23,7 @@ export function startSnapshotScheduler(client: any) {
         log('Snapshot cron fired');
         const media = buildSnapshotMedia();
         for (const chatId of getSnapshotChats()) {
-            try { await client.sendMessage(chatId, media); }
+            try { await client.sendMessage(chatId, media, { sendMediaAsDocument: true }); }
             catch (e) { log('Snapshot send failed', `${chatId}: ${e}`); }
         }
     }, { timezone: 'Asia/Jerusalem' });

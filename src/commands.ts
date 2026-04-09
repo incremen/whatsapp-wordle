@@ -25,7 +25,7 @@ function messagesFor(session: Session): Messages {
 export const devCommands: CommandMap = {
 
     '!snapshot': (msg) => {
-        msg.reply(buildSnapshotMedia());
+        msg.reply(buildSnapshotMedia(), undefined, { sendMediaAsDocument: true });
     },
     '!dailysnapshot': (msg, chatId, args) => {
         if (args === 'enable') {
