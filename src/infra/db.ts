@@ -95,13 +95,21 @@ export function getUserStats(userId: string): string {
 
     if (!row || row.total === 0) return 'No games found for this user.';
 
+    const faveGuess = db.prepare(`
+        SELECT value, COUNT(*) AS cnt FROM moves
+        WHERE game_id IN (SELECT id FROM games WHERE started_by = ?)
+          AND type = 'guess'
+        GROUP BY value ORDER BY cnt DESC LIMIT 1
+    `).get(userId) as any;
+
     const winRate = ((row.wins / row.total) * 100).toFixed(0);
     const lines = [
         `Games: ${row.total}`,
         `Wins: ${row.wins}/${row.total} (${winRate}%)`,
         `Avg guesses: ${row.avg_guesses?.toFixed(1) ?? '-'}`,
         `Avg hints: ${row.avg_hints?.toFixed(1) ?? '0'}`,
-        `Daily streak: ${getDailyStreak(userId)}`
+        `Daily streak: ${getDailyStreak(userId)}`,
+        `Fave guess: ${faveGuess?.value ?? '-'} (${faveGuess?.cnt ?? 0}x)`,
     ];
     return lines.join('\n');
 }
