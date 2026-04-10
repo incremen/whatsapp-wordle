@@ -6,6 +6,7 @@ import * as path from 'path';
 const FILE = path.join(__dirname, '..', '..', 'data', 'loud-chats.txt');
 
 export function isQuiet(chatId: string): boolean {
+    if (!chatId.endsWith('@g.us')) return false;
     return !getLoudChats().has(chatId);
 }
 
