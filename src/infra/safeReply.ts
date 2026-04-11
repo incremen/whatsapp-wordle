@@ -1,7 +1,7 @@
 import { log } from './logger';
 
 const MAX_RETRIES = 3;
-const TIMEOUT_MS = 500;
+const TIMEOUT_MS = 10;
 
 /**
  * Sends a reply and verifies delivery by listening for the outgoing
