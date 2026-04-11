@@ -11,6 +11,7 @@ import * as db from './infra/db';
 import { buildSnapshotMedia } from './schedules/snapshot';
 import { isQuiet, setQuiet } from './lists/quiet';
 import { client } from './clientConfig';
+import { safeReply } from './infra/safeReply';
 
 const manager = new SessionManager();
 const dailyManager = new DailySessionManager();
@@ -26,61 +27,61 @@ function messagesFor(session: Session): Messages {
 
 export const devCommands: CommandMap = {
 
-    '!snapshot': (msg) => {
-        msg.reply(buildSnapshotMedia(), undefined, { sendMediaAsDocument: true });
+    '!snapshot': async (msg) => {
+        await safeReply(client, msg, buildSnapshotMedia(), { sendMediaAsDocument: true });
     },
-    '!dailysnapshot': (msg, chatId, args) => {
+    '!dailysnapshot': async (msg, chatId, args) => {
         if (args === 'enable') {
             setSnapshotChat(chatId, true);
-            msg.reply('Daily snapshot enabled. DB backup will be sent here daily (forgot when tho).');
+            await safeReply(client, msg, 'Daily snapshot enabled. DB backup will be sent here daily (forgot when tho).');
         } else if (args === 'disable') {
             setSnapshotChat(chatId, false);
-            msg.reply('Daily snapshot disabled.');
+            await safeReply(client, msg, 'Daily snapshot disabled.');
         } else {
-            msg.reply('Usage: `!dailysnapshot enable` or `!dailysnapshot disable`');
+            await safeReply(client, msg, 'Usage: `!dailysnapshot enable` or `!dailysnapshot disable`');
         }
     },
-    '!recent': (msg) => { msg.reply(db.getRecentGames()); },
+    '!recent': async (msg) => { await safeReply(client, msg, db.getRecentGames()); },
 
 };
 
 
 export const adminCommands: CommandMap = {
 
-    '!disable': (msg, chatId) => { setDisabled(chatId, true);  msg.reply('Bot disabled here.'); },
-    '!enable':  (msg, chatId) => { setDisabled(chatId, false); msg.reply('Bot enabled here.'); },
-    '!dailyboard': (msg, chatId, args) => {
-        if (!chatId.endsWith('@g.us')) { msg.reply('GCs only.'); return; }
+    '!disable': async (msg, chatId) => { setDisabled(chatId, true);  await safeReply(client, msg, 'Bot disabled here.'); },
+    '!enable':  async (msg, chatId) => { setDisabled(chatId, false); await safeReply(client, msg, 'Bot enabled here.'); },
+    '!dailyboard': async (msg, chatId, args) => {
+        if (!chatId.endsWith('@g.us')) { await safeReply(client, msg, 'GCs only.'); return; }
         if (args === 'enable') {
             setDailyBoard(chatId, true);
-            msg.reply('Daily board enabled! At midnight, this chat will get a daily recap.');
+            await safeReply(client, msg, 'Daily board enabled! At midnight, this chat will get a daily recap.');
         } else if (args === 'disable') {
             setDailyBoard(chatId, false);
-            msg.reply('Daily board disabled.');
+            await safeReply(client, msg, 'Daily board disabled.');
         } else {
-            msg.reply('Usage: `!dailyboard enable` or `!dailyboard disable`');
+            await safeReply(client, msg, 'Usage: `!dailyboard enable` or `!dailyboard disable`');
         }
     },
-    '!quiet': (msg, chatId, args) => {
+    '!quiet': async (msg, chatId, args) => {
         if (args === 'enable') {
             setQuiet(chatId, true);
-            msg.reply('Quiet mode enabled. Board updates will edit the original message instead of spamming new ones.');
+            await safeReply(client, msg, 'Quiet mode enabled. Board updates will edit the original message instead of spamming new ones.');
         } else if (args === 'disable') {
             setQuiet(chatId, false);
-            msg.reply('Quiet mode disabled.');
+            await safeReply(client, msg, 'Quiet mode disabled.');
         } else {
-            msg.reply('Usage: `!quiet enable` or `!quiet disable`');
+            await safeReply(client, msg, 'Usage: `!quiet enable` or `!quiet disable`');
         }
     },
-    '!startupmessage': (msg, chatId, args) => {
+    '!startupmessage': async (msg, chatId, args) => {
         if (args === 'enable') {
             setStartupChat(chatId, true);
-            msg.reply('This chat will be notified when the bot starts up.');
+            await safeReply(client, msg, 'This chat will be notified when the bot starts up.');
         } else if (args === 'disable') {
             setStartupChat(chatId, false);
-            msg.reply('Startup notifications disabled.');
+            await safeReply(client, msg, 'Startup notifications disabled.');
         } else {
-            msg.reply('Usage: `!startupmessage enable` or `!startupmessage disable`');
+            await safeReply(client, msg, 'Usage: `!startupmessage enable` or `!startupmessage disable`');
         }
     },
 
@@ -94,14 +95,14 @@ export const commands: CommandMap = {
         const guesses = msg.body.slice(7).split(' ').filter((g: string) => g);
 
         if (!guesses.length) {
-            const sent = await msg.reply(messagesFor(session).start);
+            const sent = await safeReply(client, msg, messagesFor(session).start);
             session.boardMessageId = sent.id._serialized;
             session.boardTimestamp = Date.now();
             return;
         }
 
         if (guesses.length > 6) {
-            msg.reply('You can only guess up to 6 words from the start.');
+            await safeReply(client, msg, 'You can only guess up to 6 words from the start.');
             return;
         }
 
@@ -112,7 +113,7 @@ export const commands: CommandMap = {
             if (session.done) break;
         }
 
-        if (lastError) { msg.reply(lastError); return; }
+        if (lastError) { await safeReply(client, msg, lastError); return; }
 
         const board = session.formatBoard();
         let text: string;
@@ -120,7 +121,7 @@ export const commands: CommandMap = {
         else if (session.done) text = board + '\n\n' + messagesFor(session).lose(session);
         else text = board + '\n\n' + messagesFor(session).start;
 
-        const sent = await msg.reply(text);
+        const sent = await safeReply(client, msg, text);
         session.boardMessageId = sent.id._serialized;
         session.boardTimestamp = Date.now();
 
@@ -128,24 +129,24 @@ export const commands: CommandMap = {
     },
 
     '!daily': async (msg, chatId) => {
-        if (chatId.endsWith('@g.us')) { msg.reply('DMs only.'); return; }
+        if (chatId.endsWith('@g.us')) { await safeReply(client, msg, 'DMs only.'); return; }
         const session = dailyManager.create(msg.senderId);
-        if (!session) { msg.reply("You've already done today's daily."); return; }
-        const sent = await msg.reply(dailyMessages.start);
+        if (!session) { await safeReply(client, msg, "You've already done today's daily."); return; }
+        const sent = await safeReply(client, msg, dailyMessages.start);
         session.boardMessageId = sent.id._serialized;
         session.boardTimestamp = Date.now();
     },
 
     '!guess': async (msg, chatId) => {
         const session = manager.get(chatId) ?? dailyManager.get(msg.senderId);
-        if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
+        if (!session || session.done) { await safeReply(client, msg, 'No active game. Send `!wordle` to start one.'); return; }
 
         const quiet = isQuiet(chatId);
 
         const { ok, error } = session.guess(msg.senderId, msg.body.slice(7));
         if (!ok) {
             if (quiet) { await msg.react('❌'); return; }
-            msg.reply(error!);
+            await safeReply(client, msg, error!);
             return;
         }
 
@@ -170,7 +171,7 @@ export const commands: CommandMap = {
         }
 
         // Fallback: send new message (always used in non-quiet, or when edit fails/expired)
-        const sent = await msg.reply(text);
+        const sent = await safeReply(client, msg, text);
         session.boardMessageId = sent.id._serialized;
         session.boardTimestamp = Date.now();
 
@@ -179,13 +180,13 @@ export const commands: CommandMap = {
 
     '!hint': async (msg, chatId) => {
         const session = manager.get(chatId) ?? dailyManager.get(msg.senderId);
-        if (!session || session.done) { msg.reply('No active game. Send `!wordle` to start one.'); return; }
+        if (!session || session.done) { await safeReply(client, msg, 'No active game. Send `!wordle` to start one.'); return; }
         if (session.gameType === 'daily') {
-            msg.reply("No hints for a daily game!")
+            await safeReply(client, msg, "No hints for a daily game!")
             return
         }
         if (session.hints >= 5) {
-            msg.reply("What more is there to know?");
+            await safeReply(client, msg, "What more is there to know?");
             return
         }
         session.hint(msg.senderId);
@@ -206,28 +207,28 @@ export const commands: CommandMap = {
             }
         }
 
-        const sent = await msg.reply(text);
+        const sent = await safeReply(client, msg, text);
         session.boardMessageId = sent.id._serialized;
         session.boardTimestamp = Date.now();
     },
 
     '!dailystats': async (msg, chatId) => {
-        if (!chatId.endsWith('@g.us')) { msg.reply('GCs only.'); return; }
+        if (!chatId.endsWith('@g.us')) { await safeReply(client, msg, 'GCs only.'); return; }
         const chat = await msg.getChat();
         const participants = chat.participants?.map((p: any) => p.id._serialized) ?? [];
         const { text, mentions } = buildDailyRecap(participants);
-        msg.reply(text, undefined, { mentions });
+        await safeReply(client, msg, text, { mentions });
     },
 
-    '!stats': (msg) => {
-        msg.reply(db.getUserStats(msg.senderId));
+    '!stats': async (msg) => {
+        await safeReply(client, msg, db.getUserStats(msg.senderId));
     },
 
-    '!botstats': (msg) => {
-        msg.reply(db.getBotStats());
+    '!botstats': async (msg) => {
+        await safeReply(client, msg, db.getBotStats());
     },
 
-    '!help': (msg) => {
+    '!help': async (msg) => {
         const lines = [
             '*Commands:*',
             '`!wordle` — start a new game',
@@ -246,7 +247,7 @@ export const commands: CommandMap = {
             '`!startupmessage enable/disable` — get notified when bot comes online',
             'Github: https://github.com/incremen/whatsapp-wordle',
         ];
-        msg.reply(lines.join('\n'));
+        await safeReply(client, msg, lines.join('\n'));
     },
 
 };
