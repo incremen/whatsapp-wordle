@@ -40,7 +40,7 @@ function attemptReply(
 
         const handler = (newMsg: any) => {
             if (!newMsg.fromMe) return;
-            if (newMsg.to !== msg.from) return;
+            if (newMsg.to !== msg.id.remote) return;
             if (typeof text === 'string' && newMsg.body !== text) return;
 
             // Must be a reply to the original message
@@ -55,6 +55,6 @@ function attemptReply(
         client.on('message_create', handler);
 
         // Fire the reply but don't trust its promise
-        msg.reply(text, msg.from, options).catch(() => {});
+        msg.reply(text, undefined, options).catch(() => {});
     });
 }
