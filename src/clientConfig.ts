@@ -12,8 +12,8 @@ const executablePath =
     process.platform === 'linux' ? '/snap/bin/chromium' : undefined;
 
 export const puppeteerConfig: any = executablePath
-    ? { executablePath, args: PUPPETEER_ARGS }
-    : { args: PUPPETEER_ARGS };
+    ? { executablePath, args: PUPPETEER_ARGS, protocolTimeout: 120_000 }
+    : { args: PUPPETEER_ARGS, protocolTimeout: 120_000 };
 
 export const client = new Client({
     authStrategy: new LocalAuth(),
