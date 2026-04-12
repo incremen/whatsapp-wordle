@@ -150,7 +150,14 @@ export const commands: CommandMap = {
             return;
         }
 
-        if (quiet) await msg.react('✅');
+        if (quiet) {
+            if (session.won) {
+                await msg.react('👑');
+            }
+            else {
+                 await msg.react('✅');
+            }
+        }
 
         const board = session.formatBoard();
         let text: string;
