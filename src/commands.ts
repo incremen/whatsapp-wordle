@@ -130,6 +130,16 @@ export const commands: CommandMap = {
 
     '!daily': async (msg, chatId) => {
         if (chatId.endsWith('@g.us')) { await safeReply(client, msg, 'DMs only.'); return; }
+
+        const existing = dailyManager.get(msg.senderId);
+        if (existing) {
+            if (existing.done) { await safeReply(client, msg, "You've already done today's daily."); return; }
+            const sent = await safeReply(client, msg, existing.formatBoard());
+            existing.boardMessageId = sent.id._serialized;
+            existing.boardTimestamp = Date.now();
+            return;
+        }
+
         const session = dailyManager.create(msg.senderId);
         if (!session) { await safeReply(client, msg, "You've already done today's daily."); return; }
         const sent = await safeReply(client, msg, dailyMessages.start);
