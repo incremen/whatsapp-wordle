@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import { log } from './infra/logger';
 import { getDisabledIds } from './lists/disabled';
 import { client } from './clientConfig';
@@ -8,10 +9,36 @@ import { startSnapshotScheduler } from './schedules/snapshot';
 import { getStartupChats } from './lists/startup';
 import { normalizeUserId } from './infra/normalizeId';
 
+// Kill any orphaned Chromium processes left from a previous crash
+try {
+    execSync('pkill -9 -f chromium');
+    log('Zombie sweep', 'killed orphaned Chromium processes');
+} catch {
+    // No zombies found — this is the happy path
+}
 
 const qrcode = require('qrcode-terminal');
 
 initDb();
+
+async function gracefulShutdown(reason: string) {
+    log('Shutdown', reason);
+    try {
+        await Promise.race([
+            client.destroy(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 15000)),
+        ]);
+        log('Shutdown', 'browser closed cleanly');
+    } catch {
+        log('Shutdown', 'browser freeze detected, bypassing');
+    }
+    process.exit(1);
+}
+
+process.on('unhandledRejection', (err) => gracefulShutdown(`Unhandled Rejection: ${err}`));
+process.on('uncaughtException', (err) => gracefulShutdown(`Uncaught Exception: ${err.message}`));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
 client.on('qr', (qr: string) => {
     qrcode.generate(qr, { small: true });
@@ -26,6 +53,22 @@ client.on('ready', async () => {
         try { await client.sendMessage(chatId, 'Bot is online 🟢'); }
         catch (e) { log('Startup message failed', `${chatId}: ${e}`); }
     }
+
+    // Watchdog: ping browser every 5 minutes to detect frozen Chromium
+    setInterval(async () => {
+        try {
+            const state: string = await Promise.race([
+                client.getState(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('FROZEN')), 10000)),
+            ]) as string;
+
+            if (state === 'CONFLICT' || state === 'UNPAIRED') {
+                throw new Error(`Fatal WhatsApp state: ${state}`);
+            }
+        } catch (err: any) {
+            gracefulShutdown(`Watchdog: ${err.message}`);
+        }
+    }, 5 * 60 * 1000);
 });
 
 client.on('message_create', async (msg: any) => {
@@ -92,4 +135,4 @@ function findCommand(body: string, map: CommandMap): { handler: CommandMap[strin
     return { handler, args: body.slice(prefix.length + 1) };
 }
 
-client.initialize();    `x  `
+client.initialize();

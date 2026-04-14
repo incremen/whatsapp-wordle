@@ -9,8 +9,8 @@ npm run build
 # Remove old instance if it exists (prevents "Script already launched" errors)
 pm2 delete wordle-bot || true
 
-# Launch the bot
-pm2 start dist/index.js --name "wordle-bot"
+# Launch the bot (ecosystem.config.js sets kill_timeout for graceful shutdown)
+pm2 start ecosystem.config.js
 pm2 save
 ```
 
