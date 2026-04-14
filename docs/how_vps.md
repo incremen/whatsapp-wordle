@@ -1,7 +1,5 @@
 This is just so i remember how to run it the server - this file probably shouldn't be on github but this way it's easy for me to find it :p
 
-## Deployment & Maintenance
-
 ### 1. Initial Setup (Run Once)
 ```bash
 npm run build
@@ -9,7 +7,7 @@ npm run build
 # Remove old instance if it exists (prevents "Script already launched" errors)
 pm2 delete wordle-bot || true
 
-# Launch the bot (ecosystem.config.js sets kill_timeout for graceful shutdown)
+# Launch the bot using ecosystem.config.js (sets kill_timeout for graceful shutdown)
 pm2 start ecosystem.config.js
 pm2 save
 ```
@@ -32,7 +30,7 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 ---
 
 ### 3. The Update Loop
-*Run this every time you pull new code from GitHub. Note: 'restart' kills the old process for you.*
+*Run this every time you pull new code from GitHub.*
 ```bash
 git pull
 npm run build
@@ -42,21 +40,35 @@ pm2 logs wordle-bot --raw | fribidi
 
 ---
 
-### 4. Monitoring & Troubleshooting
-* **Check status overview:** `pm2 list`
-* **Check full log history:** `pm2 logs wordle-bot`
-* **Live logs with timestamps:** `pm2 logs wordle-bot --time`
-* **Live errors only (real-time filter):** `pm2 logs wordle-bot --err`
-* **Check last 200 lines:** `pm2 logs wordle-bot --lines 200`
-* **Read raw error file history:** `tail -n 100 ~/.pm2/logs/wordle-bot-error.log`
-* **Search error history for keywords:** `grep "Puppeteer" ~/.pm2/logs/wordle-bot-error.log`
-* **Check RAM/CPU:** `htop` (Press `Shift + P` to sort by CPU, `Shift + H` to hide threads) or `free -h`
-* **Bot dashboard:** `pm2 monit`
-* **Clear all logs:** `pm2 flush`
-* **Show Hebrew correctly (Unicode):** `pm2 logs wordle-bot --raw | fribidi` (Requires `fribidi` installed)
+### 4. Self-Healing Architecture
+The bot has built-in crash recovery to handle Chromium's occasional tantrums.
 
-**How to stop/kill:**
-* **Stop (pause):** `pm2 stop wordle-bot`
-* **Delete (remove from list):** `pm2 delete wordle-bot`
-* **Kill PM2 (nuclear):** `pm2 kill`
-* **Kill zombie browsers:** `sudo pkill -9 -f chromium` (Use this if `htop` shows CPU at 100% and the bot isn't responding)
+**Automated Recovery Steps:**
+1. **On Boot:** Automatically kills any orphaned Chromium processes.
+2. **Every 5 Minutes:** Pings the browser state (10s timeout).
+3. **On Freeze:** Attempts a clean `client.destroy()` (15s timeout), then exits.
+4. **Process Management:** PM2 detects the exit and restarts. The `ecosystem.config.js` sets `kill_timeout: 20000`, giving the bot 20s to shut down before a force-kill occurs.
+
+**Manual Intervention (The Nuclear Option):**
+If the bot is stuck and not self-healing:
+```bash
+sudo pkill -9 -f chromium
+pm2 restart wordle-bot
+```
+
+---
+
+### 5. Monitoring & Troubleshooting
+* **Status Overview:** `pm2 list`
+* **Live Logs:** `pm2 logs wordle-bot --time`
+* **Errors Only:** `pm2 logs wordle-bot --err`
+* **Check History:** `pm2 logs wordle-bot --lines 200`
+* **Search for Crashes:** `grep "Puppeteer" ~/.pm2/logs/wordle-bot-error.log`
+* **System Stats:** `htop` (Press `Shift + P` to sort by CPU, `Shift + H` to hide threads)
+* **Wipe Logs:** `pm2 flush`
+* **Hebrew Support:** `pm2 logs wordle-bot --raw | fribidi`
+
+**Control Commands:**
+* **Pause:** `pm2 stop wordle-bot`
+* **Remove:** `pm2 delete wordle-bot`
+* **Kill PM2:** `pm2 kill`
