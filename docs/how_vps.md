@@ -43,16 +43,20 @@ pm2 logs wordle-bot --raw | fribidi
 ---
 
 ### 4. Monitoring & Troubleshooting
-* **Check what pm2 is running** `pm2 list`
-* **Check console.log history from node** `pm2 logs wordle-bot`
-* **Check last 200 lines** pm2 logs wordle-bot --lines 200
-* **Check RAM/CPU:** `htop` or `free -h`
-* **Check Bot specifically:** `pm2 monit`
-* **Clear logs:** `pm2 flush`
-* **Print with unicode stuff (show hebrew correctly)** `pm2 logs wordle-bot --raw | fribidi`
-you might need to install fribidi first tho idk
+* **Check status overview:** `pm2 list`
+* **Check full log history:** `pm2 logs wordle-bot`
+* **Live logs with timestamps:** `pm2 logs wordle-bot --time`
+* **Live errors only (real-time filter):** `pm2 logs wordle-bot --err`
+* **Check last 200 lines:** `pm2 logs wordle-bot --lines 200`
+* **Read raw error file history:** `tail -n 100 ~/.pm2/logs/wordle-bot-error.log`
+* **Search error history for keywords:** `grep "Puppeteer" ~/.pm2/logs/wordle-bot-error.log`
+* **Check RAM/CPU:** `htop` (Press `Shift + P` to sort by CPU, `Shift + H` to hide threads) or `free -h`
+* **Bot dashboard:** `pm2 monit`
+* **Clear all logs:** `pm2 flush`
+* **Show Hebrew correctly (Unicode):** `pm2 logs wordle-bot --raw | fribidi` (Requires `fribidi` installed)
 
 **How to stop/kill:**
 * **Stop (pause):** `pm2 stop wordle-bot`
 * **Delete (remove from list):** `pm2 delete wordle-bot`
-* **Kill PM2 (stops everything/nuclear):** `pm2 kill`
+* **Kill PM2 (nuclear):** `pm2 kill`
+* **Kill zombie browsers:** `sudo pkill -9 -f chromium` (Use this if `htop` shows CPU at 100% and the bot isn't responding)
