@@ -15,9 +15,9 @@
  
 
 ## To (maybe) Do
+- longest survival session should show in !stats
 - prevent duplicate words
-- `survival` guess until you run out : start with 10 guesses, if you manage to guess a word in n guesses you get 6-n guesses more. 
-- moves should have a field for all 5 letters and if correct or no
+- moves table should have a field for all 5 letters and if correct or no
 - snapshot returns db snapshot
 - group admins should be able to do admin commands
 - shouldn't be case sensitive
