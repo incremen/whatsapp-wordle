@@ -19,6 +19,10 @@ const manager = new SessionManager();
 const dailyManager = new DailySessionManager();
 const survivalManager = new SurvivalManager();
 
+// Tracks which game type is currently "active" per chat/user, so !guess only goes to one place
+type ActiveGame = 'wordle' | 'survival' | 'daily';
+const activeGame = new Map<string, ActiveGame>();
+
 type Msg = any;
 type Handler = (msg: Msg, chatId: string, args: string) => void;
 export type CommandMap = Record<string, Handler>;
@@ -132,6 +136,13 @@ export const commands: CommandMap = {
     },
 
     '!survival': async (msg, chatId) => {
+        const existing = survivalManager.get(chatId);
+        if (existing && !existing.done) {
+            const sent = await safeReply(client, msg, existing.formatBoard());
+            existing.boardMessageId = sent.id._serialized;
+            existing.boardTimestamp = Date.now();
+            return;
+        }
         const session = survivalManager.create(chatId, msg.senderId);
         const sent = await safeReply(client, msg, session.formatBoard());
         session.boardMessageId = sent.id._serialized;
