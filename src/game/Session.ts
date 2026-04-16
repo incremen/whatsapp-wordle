@@ -41,9 +41,12 @@ export class Session {
     misplaced = new Set<string>();
     eliminated = new Set<string>();
 
-    constructor(startedBy: string, gameType: GameType = 'regular', target?: string) {
+    maxGuesses: number;
+
+    constructor(startedBy: string, gameType: GameType = 'regular', target?: string, maxGuesses: number = MAX_GUESSES) {
         this.startedBy = startedBy;
         this.gameType = gameType;
+        this.maxGuesses = maxGuesses;
         this.target = target?.toUpperCase() ?? VALID_TARGETS[Math.floor(Math.random() * VALID_TARGETS.length)].toUpperCase();
     }
 
@@ -123,7 +126,7 @@ export class Session {
         if (lastRow.emojis.every(e => e === CORRECT)) {
             this.done = true;
             this.won = true;
-        } else if (this.guesses >= MAX_GUESSES) {
+        } else if (this.guesses >= this.maxGuesses) {
             this.done = true;
         }
     }

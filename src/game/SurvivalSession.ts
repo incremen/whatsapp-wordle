@@ -34,7 +34,7 @@ export class SurvivalSession {
             this.wordsSolved.push(this.currentSession.target);
             this.completedSessions.push(this.currentSession);
             this.justSolved = true;
-            this.currentSession = new Session(this.startedBy);
+            this.currentSession = new Session(this.startedBy, 'regular', undefined, Infinity);
         } else if (this.guessesLeft <= 0) {
             this.done = true;
         }
