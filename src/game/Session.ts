@@ -83,8 +83,13 @@ export class Session {
     }
 
     formatBoard(): string {
-        const history = '```' + this.board.map(r => `${r.guess}: ${r.emojis.join('')}`).join('\n') + '```';
-        if (!this.done) return history + '\n\n' + this.getDashboard();
+        const history = this.board.length
+            ? '```' + this.board.map(r => `${r.guess}: ${r.emojis.join('')}`).join('\n') + '```'
+            : '';
+        if (!this.done) {
+            const dashboard = this.getDashboard();
+            return history ? history + '\n\n' + dashboard : dashboard;
+        }
         return history;
     }
 
