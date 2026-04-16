@@ -148,7 +148,8 @@ export const commands: CommandMap = {
     },
 
     '!guess': async (msg, chatId) => {
-        const session = manager.get(chatId) ?? dailyManager.get(msg.senderId);
+        const wordle = manager.get(chatId);
+        const session = (wordle && !wordle.done) ? wordle : dailyManager.get(msg.senderId);
         if (!session || session.done) { await safeReply(client, msg, 'No active game. Send `!wordle` to start one.'); return; }
 
         const quiet = isQuiet(chatId);
@@ -196,7 +197,8 @@ export const commands: CommandMap = {
     },
 
     '!hint': async (msg, chatId) => {
-        const session = manager.get(chatId) ?? dailyManager.get(msg.senderId);
+        const wordle = manager.get(chatId);
+        const session = (wordle && !wordle.done) ? wordle : dailyManager.get(msg.senderId);
         if (!session || session.done) { await safeReply(client, msg, 'No active game. Send `!wordle` to start one.'); return; }
         if (session.gameType === 'daily') {
             await safeReply(client, msg, "No hints for a daily game!")
