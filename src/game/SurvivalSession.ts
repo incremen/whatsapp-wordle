@@ -1,11 +1,14 @@
+import { randomUUID } from 'crypto';
 import { Session } from './Session';
 
 const STARTING_GUESSES = 10;
 
 export class SurvivalSession {
+    survivalId: string = randomUUID();
     currentSession: Session;
     guessesLeft: number = STARTING_GUESSES;
     wordsSolved: string[] = [];
+    completedSessions: Session[] = [];
     done: boolean = false;
     justSolved: boolean = false;
     startedBy: string;
@@ -29,6 +32,7 @@ export class SurvivalSession {
             const bonus = 7 - this.currentSession.guesses;
             this.guessesLeft += bonus;
             this.wordsSolved.push(this.currentSession.target);
+            this.completedSessions.push(this.currentSession);
             this.justSolved = true;
             this.currentSession = new Session(this.startedBy);
         } else if (this.guessesLeft <= 0) {
@@ -36,6 +40,22 @@ export class SurvivalSession {
         }
 
         return { ok: true };
+    }
+
+    getCompletedGameData(): { startedBy: string; target: string; won: boolean; startedAt: number; moves: any[]; survivalId: string; survivalSeq: number }[] {
+        return this.completedSessions.map((s, i) => ({
+            ...s.getGameData(),
+            survivalId: this.survivalId,
+            survivalSeq: i,
+        }));
+    }
+
+    getLastWordGameData(): { startedBy: string; target: string; won: boolean; startedAt: number; moves: any[]; survivalId: string; survivalSeq: number } {
+        return {
+            ...this.currentSession.getGameData(),
+            survivalId: this.survivalId,
+            survivalSeq: this.wordsSolved.length,
+        };
     }
 
     formatBoard(): string {

@@ -167,8 +167,20 @@ export const commands: CommandMap = {
 
         // Survival mode: separate flow, no quiet mode
         if (session instanceof SurvivalSession) {
+            const solvedBefore = session.wordsSolved.length;
             const { ok, error } = session.guess(msg.senderId, msg.body.slice(7));
             if (!ok) { await safeReply(client, msg, error!); return; }
+
+            // Save each solved word as it's completed
+            if (session.wordsSolved.length > solvedBefore) {
+                const games = session.getCompletedGameData();
+                db.saveGame(chatId, games[games.length - 1]);
+            }
+
+            // Save the final unsolved word when the run ends
+            if (session.done) {
+                db.saveGame(chatId, session.getLastWordGameData());
+            }
 
             const sent = await safeReply(client, msg, session.formatBoard());
             session.boardMessageId = sent.id._serialized;

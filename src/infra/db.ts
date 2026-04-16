@@ -7,14 +7,16 @@ const db = new Database(path.join(__dirname, '..', '..', 'data', 'wordle.db'));
 export function initDb(): void {
     db.exec(`
         CREATE TABLE IF NOT EXISTS games (
-            id         INTEGER PRIMARY KEY AUTOINCREMENT,
-            chat_id    TEXT    NOT NULL,
-            started_by TEXT    NOT NULL,
-            target     TEXT    NOT NULL,
-            daily_date TEXT,
-            started_at INTEGER NOT NULL,
-            ended_at   INTEGER,
-            won        INTEGER
+            id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            chat_id      TEXT    NOT NULL,
+            started_by   TEXT    NOT NULL,
+            target       TEXT    NOT NULL,
+            daily_date   TEXT,
+            started_at   INTEGER NOT NULL,
+            ended_at     INTEGER,
+            won          INTEGER,
+            survival_id  TEXT,
+            survival_seq INTEGER
         );
 
         CREATE TABLE IF NOT EXISTS moves (
@@ -27,6 +29,14 @@ export function initDb(): void {
             result  TEXT    NOT NULL
         );
     `);
+
+    // Migration: add survival columns if missing
+    const cols = db.prepare(`PRAGMA table_info(games)`).all() as { name: string }[];
+    const colNames = cols.map(c => c.name);
+    if (!colNames.includes('survival_id')) {
+        db.exec(`ALTER TABLE games ADD COLUMN survival_id TEXT`);
+        db.exec(`ALTER TABLE games ADD COLUMN survival_seq INTEGER`);
+    }
 }
 
 type GameData = {
@@ -36,18 +46,24 @@ type GameData = {
     won: boolean;
     startedAt: number;
     moves: { type: 'guess' | 'hint'; userId: string; value: string; result: string }[];
+    survivalId?: string;
+    survivalSeq?: number;
 };
 
 export function saveGame(chatId: string, data: GameData): void {
     const insertGame = db.prepare(
-        `INSERT INTO games (chat_id, started_by, target, daily_date, started_at, ended_at, won) VALUES (?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO games (chat_id, started_by, target, daily_date, started_at, ended_at, won, survival_id, survival_seq) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
     );
     const insertMove = db.prepare(
         `INSERT INTO moves (game_id, seq, user_id, type, value, result) VALUES (?, ?, ?, ?, ?, ?)`
     );
 
     db.transaction(() => {
-        const { lastInsertRowid: gameId } = insertGame.run(chatId, data.startedBy, data.target, data.dailyDate ?? null, data.startedAt, Date.now(), data.won ? 1 : 0);
+        const { lastInsertRowid: gameId } = insertGame.run(
+            chatId, data.startedBy, data.target, data.dailyDate ?? null,
+            data.startedAt, Date.now(), data.won ? 1 : 0,
+            data.survivalId ?? null, data.survivalSeq ?? null,
+        );
         for (let i = 0; i < data.moves.length; i++) {
             const { type, userId, value, result } = data.moves[i];
             insertMove.run(gameId, i, userId, type, value, result);
