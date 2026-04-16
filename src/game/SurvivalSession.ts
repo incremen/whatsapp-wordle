@@ -29,7 +29,7 @@ export class SurvivalSession {
         this.justSolved = false;
 
         if (this.currentSession.won) {
-            const bonus = 7 - this.currentSession.guesses;
+            const bonus = 8 - this.currentSession.guesses;
             this.guessesLeft += bonus;
             this.wordsSolved.push(this.currentSession.target);
             this.completedSessions.push(this.currentSession);

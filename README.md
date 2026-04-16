@@ -6,8 +6,9 @@ A WhatsApp bot that lets you play Wordle in any chat — DMs or group chats. Bui
 - `!wordle` — start a new game
 - `!guess <word>` — make a guess
 - `!wordle <word1> <word2> ...` — start new game with pre-guesses
-- `!daily` — daily challenge (DMs only)
 - `!hint` — reveal one correct letter
+- `!daily` — daily challenge (DMs only). No hints
+- `!survival` — endless mode: start with 10 guesses, solve a word in *n* guesses to earn 8−*n* more, stop when you finally run out. No hints.
 - `!stats` — your stats
 - `!dailystats` — daily recap (GCs only)
 - `!botstats` — global bot stats
