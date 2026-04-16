@@ -12,9 +12,12 @@ import { buildSnapshotMedia } from './schedules/snapshot';
 import { isQuiet, setQuiet } from './lists/quiet';
 import { client } from './clientConfig';
 import { safeReply } from './infra/safeReply';
+import { SurvivalManager } from './game/SurvivalManager';
+import { SurvivalSession } from './game/SurvivalSession';
 
 const manager = new SessionManager();
 const dailyManager = new DailySessionManager();
+const survivalManager = new SurvivalManager();
 
 type Msg = any;
 type Handler = (msg: Msg, chatId: string, args: string) => void;
@@ -128,6 +131,13 @@ export const commands: CommandMap = {
         if (session.done) db.saveGame(chatId, session.getGameData());
     },
 
+    '!survival': async (msg, chatId) => {
+        const session = survivalManager.create(chatId, msg.senderId);
+        const sent = await safeReply(client, msg, session.formatBoard());
+        session.boardMessageId = sent.id._serialized;
+        session.boardTimestamp = Date.now();
+    },
+
     '!daily': async (msg, chatId) => {
         if (chatId.endsWith('@g.us')) { await safeReply(client, msg, 'DMs only.'); return; }
 
@@ -149,8 +159,22 @@ export const commands: CommandMap = {
 
     '!guess': async (msg, chatId) => {
         const wordle = manager.get(chatId);
-        const session = (wordle && !wordle.done) ? wordle : dailyManager.get(msg.senderId);
+        const survival = survivalManager.get(chatId);
+        const session = (wordle && !wordle.done) ? wordle
+            : (survival && !survival.done) ? survival
+            : dailyManager.get(msg.senderId);
         if (!session || session.done) { await safeReply(client, msg, 'No active game. Send `!wordle` to start one.'); return; }
+
+        // Survival mode: separate flow, no quiet mode
+        if (session instanceof SurvivalSession) {
+            const { ok, error } = session.guess(msg.senderId, msg.body.slice(7));
+            if (!ok) { await safeReply(client, msg, error!); return; }
+
+            const sent = await safeReply(client, msg, session.formatBoard());
+            session.boardMessageId = sent.id._serialized;
+            session.boardTimestamp = Date.now();
+            return;
+        }
 
         const quiet = isQuiet(chatId);
 
@@ -198,8 +222,15 @@ export const commands: CommandMap = {
 
     '!hint': async (msg, chatId) => {
         const wordle = manager.get(chatId);
-        const session = (wordle && !wordle.done) ? wordle : dailyManager.get(msg.senderId);
+        const survival = survivalManager.get(chatId);
+        const session = (wordle && !wordle.done) ? wordle
+            : (survival && !survival.done) ? survival
+            : dailyManager.get(msg.senderId);
         if (!session || session.done) { await safeReply(client, msg, 'No active game. Send `!wordle` to start one.'); return; }
+        if (session instanceof SurvivalSession) {
+            await safeReply(client, msg, 'No hints in survival mode!');
+            return;
+        }
         if (session.gameType === 'daily') {
             await safeReply(client, msg, "No hints for a daily game!")
             return
@@ -254,6 +285,7 @@ export const commands: CommandMap = {
             '`!guess <word>` — make a guess',
             '`!wordle <word1> <word2> ...` — start with pre-guesses',
             '`!daily` — daily challenge (DMs only)',
+            '`!survival` — endless mode, guess until you run out. Start with 10 guesses, gain more guesses per how quickly you solve each game',
             '`!hint` — reveal one correct letter',
             '`!stats` — your stats',
             '`!dailystats` — daily recap (GCs only)',
