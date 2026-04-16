@@ -30,13 +30,6 @@ export function initDb(): void {
         );
     `);
 
-    // Migration: add survival columns if missing
-    const cols = db.prepare(`PRAGMA table_info(games)`).all() as { name: string }[];
-    const colNames = cols.map(c => c.name);
-    if (!colNames.includes('survival_id')) {
-        db.exec(`ALTER TABLE games ADD COLUMN survival_id TEXT`);
-        db.exec(`ALTER TABLE games ADD COLUMN survival_seq INTEGER`);
-    }
 }
 
 type GameData = {
