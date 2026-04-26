@@ -3,18 +3,33 @@ This is just so i remember how to run it the server - this file probably shouldn
 ### 1. Initial Setup (Run Once)
 ```bash
 npm run build
-pm2 delete wordle-bot || true
-pm2 start ecosystem.config.js
-pm2 save
 
 # Remove old instance if it exists (prevents "Script already launched" errors)
-# Launch the bot using ecosystem.config.js (sets kill_timeout for graceful shutdown)
+pm2 delete wordle-bot || true
 
+# Launch the bot using ecosystem.config.js (sets kill_timeout for graceful shutdown)
+pm2 start ecosystem.config.js
+pm2 save
 ```
 
 ---
 
-### 2. Server Health (2GB RAM Safety Net)
+### 2. Auto-Start (Survive Server Reboots)
+*Run this so PM2 automatically launches your bot if AWS restarts your server.*
+```bash
+# 1. Generate the startup script
+pm2 startup
+
+# 2. IMPORTANT: PM2 will output a command at the bottom starting with "sudo env PATH...". 
+#    You MUST copy that exact line, paste it into your terminal, and press Enter.
+
+# 3. Freeze the current app list so it remembers what to boot
+pm2 save
+```
+
+---
+
+### 3. Server Health (2GB RAM Safety Net)
 *Run these to prevent "Out of Memory" crashes if not already done.*
 ```bash
 # Create 2GB swap file (if not already created)
@@ -29,7 +44,7 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 ---
 
-### 3. The Update Loop
+### 4. The Update Loop
 *Run this every time you pull new code from GitHub.*
 ```bash
 git pull
@@ -40,7 +55,7 @@ pm2 logs wordle-bot --raw | fribidi
 
 ---
 
-### 4. Self-Healing Architecture
+### 5. Self-Healing Architecture
 The bot has built-in crash recovery to handle Chromium's occasional tantrums.
 
 **Automated Recovery Steps:**
@@ -58,7 +73,7 @@ pm2 restart wordle-bot
 
 ---
 
-### 5. Monitoring & Troubleshooting
+### 6. Monitoring & Troubleshooting
 * **Status Overview:** `pm2 list`
 * **Live Logs:** `pm2 logs wordle-bot --time`
 * **Errors Only:** `pm2 logs wordle-bot --err`
@@ -72,3 +87,18 @@ pm2 restart wordle-bot
 * **Pause:** `pm2 stop wordle-bot`
 * **Remove:** `pm2 delete wordle-bot`
 * **Kill PM2:** `pm2 kill`
+
+
+
+### 7. Auto-Start (Survive Server Reboots)
+*Run this so PM2 automatically launches your bot if AWS restarts your server.*
+```bash
+# 1. Generate the startup script
+pm2 startup
+
+# 2. IMPORTANT: PM2 will output a command at the bottom starting with "sudo env PATH...". 
+#    You MUST copy that exact line, paste it into your terminal, and press Enter.
+
+# 3. Freeze the current app list so it remembers what to boot
+pm2 save
+```
