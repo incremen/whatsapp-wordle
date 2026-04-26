@@ -7,10 +7,13 @@ const PUPPETEER_ARGS = [
     '--disable-gpu',
 ];
 
-export const puppeteerConfig: any = { 
-    args: PUPPETEER_ARGS, 
-    protocolTimeout: 120_000 
-};
+// Update this path if Chrome/Chromium is installed elsewhere on your system
+const executablePath =
+    process.platform === 'linux' ? '/snap/bin/chromium' : undefined;
+
+export const puppeteerConfig: any = executablePath
+    ? { executablePath, args: PUPPETEER_ARGS, protocolTimeout: 120_000 }
+    : { args: PUPPETEER_ARGS, protocolTimeout: 120_000 };
 
 export const client = new Client({
     authStrategy: new LocalAuth(),
