@@ -14,17 +14,13 @@ pm2 save
 
 ---
 
-### 2. Auto-Start (Survive Server Reboots)
-*Run this so PM2 automatically launches your bot if AWS restarts your server.*
+### 2. Manual Start (After Server Reboots)
+*Because we are using the Snap version of Chromium, the bot CANNOT be auto-started by the system (Snap will block it). If the server reboots, you must log in and start it manually.*
 ```bash
-# 1. Generate the startup script
-pm2 startup
+# DO NOT run `pm2 startup`. If you accidentally do, remove it with `pm2 unstartup`.
 
-# 2. IMPORTANT: PM2 will output a command at the bottom starting with "sudo env PATH...". 
-#    You MUST copy that exact line, paste it into your terminal, and press Enter.
-
-# 3. Freeze the current app list so it remembers what to boot
-pm2 save
+# To start the bot after a server reboot:
+pm2 start ecosystem.config.js
 ```
 
 ---
@@ -88,3 +84,14 @@ pm2 restart wordle-bot
 * **Remove:** `pm2 delete wordle-bot`
 * **Kill PM2:** `pm2 kill`
 
+---
+
+### 7. Disable AWS Sunday Reboots
+*at least my specific aws config had this*
+```bash
+# Permanently disable the custom AWS reboot timer
+sudo systemctl disable --now weekly-reboot-check.timer
+
+# (Optional) Read the script to see what it was doing
+cat /usr/local/bin/reboot-if-needed.sh
+```
