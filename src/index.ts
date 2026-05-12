@@ -80,8 +80,10 @@ client.on('message_create', async (msg: any) => {
     const chatId = msg.id.remote;
     msg.senderId = await normalizeUserId(msg);
 
-    // >fm commands — always active
-    if (msg.body?.startsWith('>fm ')) {
+    if (!msg.body?.startsWith('!')) return;
+
+    // !fm commands — always active (even in LOCAL_ONLY mode)
+    if (msg.body.startsWith('!fm ')) {
         const rest = msg.body.slice(4).trim();
         const [sub, ...argParts] = rest.split(' ');
         const handler = fmCommands[sub?.toLowerCase()];
@@ -91,8 +93,6 @@ client.on('message_create', async (msg: any) => {
 
     // In local-only mode, skip all wordle commands
     if (LOCAL_ONLY) return;
-
-    if (!msg.body?.startsWith('!')) return;
 
     const devMatch = findCommand(msg.body, devCommands);
     if (devMatch) {

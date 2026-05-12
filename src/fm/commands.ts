@@ -31,7 +31,7 @@ export const fmCommands: FmCommandMap = {
     'set': async (msg, _chatId, args) => {
         const username = args.trim();
         if (!username) {
-            await safeReply(client, msg, 'Usage: >fm set <lastfm username>');
+            await safeReply(client, msg, 'Usage: !fm set <lastfm username>');
             return;
         }
 
@@ -53,7 +53,7 @@ export const fmCommands: FmCommandMap = {
 
     'np': async (msg) => {
         const username = requireUsername(msg);
-        if (!username) { await safeReply(client, msg, 'Link your account first: >fm set <username>'); return; }
+        if (!username) { await safeReply(client, msg, 'Link your account first: !fm set <username>'); return; }
 
         try {
             const tracks = await getRecentTracks(username, 1);
@@ -70,7 +70,7 @@ export const fmCommands: FmCommandMap = {
 
     'toptracks': async (msg, _chatId, args) => {
         const username = requireUsername(msg);
-        if (!username) { await safeReply(client, msg, 'Link your account first: >fm set <username>'); return; }
+        if (!username) { await safeReply(client, msg, 'Link your account first: !fm set <username>'); return; }
 
         const period = parsePeriod(args.trim() || undefined);
         try {
@@ -87,7 +87,7 @@ export const fmCommands: FmCommandMap = {
 
     'topartists': async (msg, _chatId, args) => {
         const username = requireUsername(msg);
-        if (!username) { await safeReply(client, msg, 'Link your account first: >fm set <username>'); return; }
+        if (!username) { await safeReply(client, msg, 'Link your account first: !fm set <username>'); return; }
 
         const period = parsePeriod(args.trim() || undefined);
         try {
@@ -104,7 +104,7 @@ export const fmCommands: FmCommandMap = {
 
     'profile': async (msg) => {
         const username = requireUsername(msg);
-        if (!username) { await safeReply(client, msg, 'Link your account first: >fm set <username>'); return; }
+        if (!username) { await safeReply(client, msg, 'Link your account first: !fm set <username>'); return; }
 
         try {
             const user = await getUserInfo(username);
@@ -122,7 +122,7 @@ export const fmCommands: FmCommandMap = {
 
     'chart': async (msg, _chatId, args) => {
         const username = requireUsername(msg);
-        if (!username) { await safeReply(client, msg, 'Link your account first: >fm set <username>'); return; }
+        if (!username) { await safeReply(client, msg, 'Link your account first: !fm set <username>'); return; }
 
         const parts = args.trim().split(/\s+/).filter(Boolean);
         let cols = 3, rows = 3;
