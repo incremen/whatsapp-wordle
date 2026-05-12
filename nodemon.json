@@ -3,5 +3,9 @@
   "ext": "ts",
   "exec": "npx ts-node src/index.ts",
   "delay": "5000",
-  "signal": "SIGKILL"
+  "signal": "SIGKILL",
+  "env": {
+    "LOCAL_ONLY": "true",
+    "LASTFM_API_KEY": "f6fb07e3e6f6718321cd91ef77aa385d"
+  }
 }

@@ -8,6 +8,9 @@ import { startDailyBoardScheduler } from './schedules/dailyRecap';
 import { startSnapshotScheduler } from './schedules/snapshot';
 import { getStartupChats } from './lists/startup';
 import { normalizeUserId } from './infra/normalizeId';
+import { fmCommands } from './fm/commands';
+
+const LOCAL_ONLY = process.env.LOCAL_ONLY === 'true';
 
 // Kill any orphaned Chromium processes left from a previous crash
 try {
@@ -74,13 +77,22 @@ client.on('ready', async () => {
 client.on('message_create', async (msg: any) => {
     log('New message', `from: ${msg.from} body: ${msg.body}`);
 
-    if (!msg.body?.startsWith('!')) return;
-
     const chatId = msg.id.remote;
-
-    // Normalize @lid -> @c.us so all commands use a consistent ID
-    // Don't mutate msg.from — it's the group JID in GCs and used by whatsapp-web.js internally
     msg.senderId = await normalizeUserId(msg);
+
+    // >fm commands — always active
+    if (msg.body?.startsWith('>fm ')) {
+        const rest = msg.body.slice(4).trim();
+        const [sub, ...argParts] = rest.split(' ');
+        const handler = fmCommands[sub?.toLowerCase()];
+        if (handler) handler(msg, chatId, argParts.join(' '));
+        return;
+    }
+
+    // In local-only mode, skip all wordle commands
+    if (LOCAL_ONLY) return;
+
+    if (!msg.body?.startsWith('!')) return;
 
     const devMatch = findCommand(msg.body, devCommands);
     if (devMatch) {
