@@ -12,6 +12,14 @@ pm2 start ecosystem.config.js
 pm2 save
 ```
 
+### 1.5. Environment Variables
+API keys are NOT committed to the repo. Set them in `~/.bashrc` on the VPS so PM2 inherits them:
+```bash
+echo 'export LASTFM_API_KEY=f6fb07e3e6f6718321cd91ef77aa385d' >> ~/.bashrc
+source ~/.bashrc
+```
+PM2 picks these up on restart. For local dev, they're in `nodemon.json`.
+
 ---
 
 ### 2. Manual Start (After Server Reboots)

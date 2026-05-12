@@ -148,13 +148,7 @@ export const fmCommands: FmCommandMap = {
 
             const buffer = await generateChart(albums, cols, rows);
             const media = new MessageMedia('image/jpeg', buffer.toString('base64'), 'chart.jpg');
-
-            const caption = albums
-                .slice(0, limit)
-                .map((a, i) => `${i + 1}. ${a.artist.name} - ${a.name} (${a.playcount})`)
-                .join('\n');
-
-            await safeReply(client, msg, media, { caption });
+            await safeReply(client, msg, media);
             log('fm chart', `${cols}x${rows} ${period} sent to ${msg.senderId}`);
         } catch (err: any) {
             log('fm chart error', err.message);

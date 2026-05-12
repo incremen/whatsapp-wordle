@@ -16,6 +16,20 @@ function getAlbumArtUrl(album: TopAlbum): string | null {
     return url;
 }
 
+async function labelledTile(album: TopAlbum, imgBuf: Buffer): Promise<Buffer> {
+    const label = `<svg width="${TILE_SIZE}" height="${TILE_SIZE}" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="${TILE_SIZE - 50}" width="${TILE_SIZE}" height="50" fill="rgba(0,0,0,0.6)"/>
+        <text x="5" y="${TILE_SIZE - 30}" fill="white" font-size="13" font-family="sans-serif">${escXml(album.name.slice(0, 30))}</text>
+        <text x="5" y="${TILE_SIZE - 14}" fill="#ccc" font-size="11" font-family="sans-serif">${escXml(album.artist.name.slice(0, 28))}</text>
+        <text x="${TILE_SIZE - 5}" y="${TILE_SIZE - 14}" fill="#ccc" font-size="11" font-family="sans-serif" text-anchor="end">${album.playcount}</text>
+    </svg>`;
+    return sharp(imgBuf)
+        .resize(TILE_SIZE, TILE_SIZE)
+        .composite([{ input: Buffer.from(label), top: 0, left: 0 }])
+        .jpeg()
+        .toBuffer();
+}
+
 export async function generateChart(albums: TopAlbum[], cols = 3, rows = 3): Promise<Buffer> {
     const total = cols * rows;
     const tiles: Buffer[] = [];
@@ -25,7 +39,7 @@ export async function generateChart(albums: TopAlbum[], cols = 3, rows = 3): Pro
         if (url) {
             try {
                 const img = await fetchImage(url);
-                tiles.push(await sharp(img).resize(TILE_SIZE, TILE_SIZE).jpeg().toBuffer());
+                tiles.push(await labelledTile(album, img));
             } catch {
                 tiles.push(await placeholder(album));
             }
