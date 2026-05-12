@@ -3,7 +3,6 @@ import sharp from 'sharp';
 import { TopAlbum } from './lastfm';
 
 const TILE_SIZE = 300;
-const GRID = 3;
 
 async function fetchImage(url: string): Promise<Buffer> {
     const res = await axios.get(url, { responseType: 'arraybuffer', timeout: 10000 });
@@ -17,10 +16,11 @@ function getAlbumArtUrl(album: TopAlbum): string | null {
     return url;
 }
 
-export async function generateChart(albums: TopAlbum[]): Promise<Buffer> {
+export async function generateChart(albums: TopAlbum[], cols = 3, rows = 3): Promise<Buffer> {
+    const total = cols * rows;
     const tiles: Buffer[] = [];
 
-    for (const album of albums.slice(0, GRID * GRID)) {
+    for (const album of albums.slice(0, total)) {
         const url = getAlbumArtUrl(album);
         if (url) {
             try {
@@ -34,20 +34,20 @@ export async function generateChart(albums: TopAlbum[]): Promise<Buffer> {
         }
     }
 
-    while (tiles.length < GRID * GRID) {
+    while (tiles.length < total) {
         tiles.push(await emptyTile());
     }
 
     const composites = tiles.map((buf, i) => ({
         input: buf,
-        left: (i % GRID) * TILE_SIZE,
-        top: Math.floor(i / GRID) * TILE_SIZE,
+        left: (i % cols) * TILE_SIZE,
+        top: Math.floor(i / cols) * TILE_SIZE,
     }));
 
     return sharp({
         create: {
-            width: GRID * TILE_SIZE,
-            height: GRID * TILE_SIZE,
+            width: cols * TILE_SIZE,
+            height: rows * TILE_SIZE,
             channels: 3,
             background: { r: 0, g: 0, b: 0 },
         },
