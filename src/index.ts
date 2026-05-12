@@ -91,9 +91,6 @@ client.on('message_create', async (msg: any) => {
         return;
     }
 
-    // In local-only mode, skip all wordle commands
-    if (LOCAL_ONLY) return;
-
     const devMatch = findCommand(msg.body, devCommands);
     if (devMatch) {
         if (msg.fromMe) devMatch.handler(msg, chatId, devMatch.args);
