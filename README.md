@@ -32,13 +32,13 @@ Track your music listening stats. Requires a Last.fm account (https://www.last.f
 
 Periods: `week`, `monthly`, `quarter`, `half`, `yearly`, `alltime` (defaults to weekly)
 
-## Admin Commands (GC only)
+### Admin Commands (GC only)
 - `!disable` / `!enable` — toggle bot in this chat
 - `!quiet enable/disable` — quiet mode: edits the board in place instead of sending new messages, reacts to guesses instead of replying
 - `!dailyboard enable/disable` — daily recap at midnight
 - `!startupmessage enable/disable` — notify this chat when bot starts
 
-## Dev Commands (bot owner only)
+### Dev Commands (bot owner only)
 - `!snapshot` — send the database file as a backup
 - `!dailysnapshot enable/disable` — auto-send DB backup daily
 - `!recent` — show recent games
