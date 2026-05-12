@@ -8,7 +8,7 @@ A WhatsApp bot with multiple modules — currently Wordle and Last.fm. Built wit
 
 Play Wordle in any chat. Supports shared games in group chats, hints, daily challenges, survival mode, and stats tracking.
 
-### Commands
+#### Commands
 - `!wordle` — start a new game
 - `!guess <word>` — make a guess
 - `!wordle <word1> <word2> ...` — start new game with pre-guesses
@@ -19,11 +19,22 @@ Play Wordle in any chat. Supports shared games in group chats, hints, daily chal
 - `!dailystats` — daily recap (GCs only)
 - `!botstats` — global bot stats
 
+#### Admin Commands (GC only)
+- `!disable` / `!enable` — toggle bot in this chat
+- `!quiet enable/disable` — quiet mode: edits the board in place instead of sending new messages, reacts to guesses instead of replying
+- `!dailyboard enable/disable` — daily recap at midnight
+- `!startupmessage enable/disable` — notify this chat when bot starts
+
+#### Dev Commands (bot owner only)
+- `!snapshot` — send the database file as a backup
+- `!dailysnapshot enable/disable` — auto-send DB backup daily
+- `!recent` — show recent games
+
 ## Last.fm
 
 Track your music listening stats. Requires a Last.fm account (https://www.last.fm/join) with scrobbling enabled.
 
-### Commands
+#### Commands
 - `!fm set <username>` — link your Last.fm account
 - `!fm np` — now playing / last scrobbled track
 - `!fm chart [size] [period]` — album art grid (e.g. `!fm chart 4x4 monthly`)
@@ -34,16 +45,7 @@ Track your music listening stats. Requires a Last.fm account (https://www.last.f
 
 Periods: `week`, `monthly`, `quarter`, `half`, `yearly`, `alltime` (defaults to weekly)
 
-### Admin Commands (GC only)
-- `!disable` / `!enable` — toggle bot in this chat
-- `!quiet enable/disable` — quiet mode: edits the board in place instead of sending new messages, reacts to guesses instead of replying
-- `!dailyboard enable/disable` — daily recap at midnight
-- `!startupmessage enable/disable` — notify this chat when bot starts
 
-### Dev Commands (bot owner only)
-- `!snapshot` — send the database file as a backup
-- `!dailysnapshot enable/disable` — auto-send DB backup daily
-- `!recent` — show recent games
 
 ## Run locally
 
