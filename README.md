@@ -2,6 +2,8 @@
 
 A WhatsApp bot with multiple modules — currently Wordle and Last.fm. Built with `whatsapp-web.js` and runs as your WhatsApp user. Works in DMs and group chats.
 
+- `!help` — list all commands
+
 ## Wordle
 
 Play Wordle in any chat. Supports shared games in group chats, hints, daily challenges, survival mode, and stats tracking.

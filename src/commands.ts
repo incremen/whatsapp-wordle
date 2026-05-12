@@ -304,6 +304,7 @@ export const commands: CommandMap = {
     '!help': async (msg) => {
         const lines = [
             '*Botanar*',
+            '`!help` — this message',
             '',
             '*Wordle:*',
             '`!wordle` — start a new game',
