@@ -82,14 +82,6 @@ client.on('message_create', async (msg: any) => {
 
     if (!msg.body?.startsWith('!')) return;
 
-    // !fm commands — always active (even in LOCAL_ONLY mode)
-    if (msg.body.startsWith('!fm ')) {
-        const rest = msg.body.slice(4).trim();
-        const [sub, ...argParts] = rest.split(' ');
-        const handler = fmCommands[sub?.toLowerCase()];
-        if (handler) handler(msg, chatId, argParts.join(' '));
-        return;
-    }
 
     const devMatch = findCommand(msg.body, devCommands);
     if (devMatch) {
@@ -106,6 +98,14 @@ client.on('message_create', async (msg: any) => {
     }
 
     if (getDisabledIds().has(chatId) && !msg.fromMe) return;
+
+    if (msg.body.startsWith('!fm ')) {
+        const rest = msg.body.slice(4).trim();
+        const [sub, ...argParts] = rest.split(' ');
+        const handler = fmCommands[sub?.toLowerCase()];
+        if (handler) handler(msg, chatId, argParts.join(' '));
+        return;
+    }
 
     const match = findCommand(msg.body, commands);
     if (match) match.handler(msg, chatId, match.args);
