@@ -331,7 +331,7 @@ export const commands: CommandMap = {
             '`!fm topartists [period]` — top 10 artists',
             '`!fm profile` — your scrobble stats',
             '`!fm unset` — unlink account',
-            "Don't have Last.fm? Sign up: https://www.last.fm/join",
+            "Don't have Last.fm? Sign up and enable scrobbling: https://www.last.fm/join",
         ];
         await safeReply(client, msg, lines.join('\n'));
     },
