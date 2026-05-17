@@ -8,6 +8,8 @@ This is inspired by discord bots, who have a lot of functionality. The goal is t
 ## Wordle
 
 Play Wordle in any chat. Supports shared games in group chats, hints, daily challenges, survival mode, and stats tracking.
+<img width="629" height="645" alt="image" src="https://github.com/user-attachments/assets/0ddb84ba-69c4-4508-a340-08790925816b" />
+
 
 #### Commands
 - `!wordle` — start a new game
@@ -23,6 +25,8 @@ Play Wordle in any chat. Supports shared games in group chats, hints, daily chal
 ## Last.fm
 
 Track your music listening stats. Requires a Last.fm account (https://www.last.fm/join) with scrobbling enabled.
+<img width="574" height="774" alt="image" src="https://github.com/user-attachments/assets/9d75cceb-b343-4d5d-831c-a2bd44107893" />
+
 
 #### Commands
 - `!fm set <username>` — link your Last.fm account
@@ -38,6 +42,8 @@ Periods: `week`, `monthly`, `quarter`, `half`, `yearly`, `alltime` (defaults to 
 ## LaTeX
 
 Render LaTeX math expressions as WhatsApp stickers.
+<img width="601" height="686" alt="image" src="https://github.com/user-attachments/assets/e75a51ee-2c58-4e5b-b4a6-8fd7a7f9c81f" />
+
 
 #### Commands
 - `!l <expression>` — render LaTeX as a sticker (e.g. `!l \frac{a}{b}`)
@@ -56,9 +62,6 @@ Render LaTeX math expressions as WhatsApp stickers.
 - `!recent` — show recent wordle games
 
 
-<img width="629" height="645" alt="image" src="https://github.com/user-attachments/assets/0ddb84ba-69c4-4508-a340-08790925816b" />
-<img width="574" height="774" alt="image" src="https://github.com/user-attachments/assets/9d75cceb-b343-4d5d-831c-a2bd44107893" />
-<img width="601" height="686" alt="image" src="https://github.com/user-attachments/assets/e75a51ee-2c58-4e5b-b4a6-8fd7a7f9c81f" />
 
 ## Run locally
 
