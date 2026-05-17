@@ -84,9 +84,6 @@ client.on('message_create', async (msg: any) => {
 
     if (!msg.body?.startsWith('!')) return;
 
-    const latexMatch = findCommand(msg.body, latexCommands);
-    if (latexMatch) { latexMatch.handler(msg, chatId, latexMatch.args); return; }
-
     const devMatch = findCommand(msg.body, devCommands);
     if (devMatch) {
         if (msg.fromMe) devMatch.handler(msg, chatId, devMatch.args);
@@ -102,6 +99,9 @@ client.on('message_create', async (msg: any) => {
     }
 
     if (getDisabledIds().has(chatId) && !msg.fromMe) return;
+
+    const latexMatch = findCommand(msg.body, latexCommands);
+    if (latexMatch) { latexMatch.handler(msg, chatId, latexMatch.args); return; }
 
     if (msg.body.startsWith('!fm ')) {
         const rest = msg.body.slice(4).trim();

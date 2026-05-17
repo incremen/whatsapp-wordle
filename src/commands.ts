@@ -94,7 +94,7 @@ export const commands: CommandMap = {
             '`!dailystats` — daily recap (GCs only)',
             '`!botstats` — global bot stats',
             '',
-            '*Wordle Admin (GC only):*',
+            '*Admin (GC only):*',
             '`!disable` / `!enable` — toggle bot in this chat',
             '`!quiet enable/disable` — less spam: edits board in place, reacts to guesses',
             '`!dailyboard enable/disable` — daily recap at midnight',
