@@ -15,6 +15,8 @@
  
 
 ## To (maybe) Do
+- save opening so !wordle will auto set to !wordle audio
+- show top 5 most common openings with !fav
 - longest survival session should show in !stats
 - prevent duplicate words
 - moves table should have a field for all 5 letters and if correct or no
