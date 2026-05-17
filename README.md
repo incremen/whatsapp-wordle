@@ -45,7 +45,12 @@ Track your music listening stats. Requires a Last.fm account (https://www.last.f
 
 Periods: `week`, `monthly`, `quarter`, `half`, `yearly`, `alltime` (defaults to weekly)
 
+## LaTeX
 
+Render LaTeX math expressions as WhatsApp stickers.
+
+#### Commands
+- `!l <expression>` — render LaTeX as a sticker (e.g. `!l \frac{a}{b}`)
 
 ## Run locally
 

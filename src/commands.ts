@@ -109,6 +109,9 @@ export const commands: CommandMap = {
             '`!fm profile` — your scrobble stats',
             '`!fm unset` — unlink account',
             "Don't have Last.fm? Sign up and enable scrobbling: https://www.last.fm/join",
+            '',
+            '*LaTeX:*',
+            '`!l <expression>` — render LaTeX as a sticker',
         ];
         await safeReply(client, msg, lines.join('\n'));
     },

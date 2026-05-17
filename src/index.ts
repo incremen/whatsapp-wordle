@@ -10,6 +10,7 @@ import { startSnapshotScheduler } from './schedules/snapshot';
 import { getStartupChats } from './lists/startup';
 import { normalizeUserId } from './infra/normalizeId';
 import { fmCommands } from './fm/commands';
+import { latexCommands } from './latex/commands';
 
 const LOCAL_ONLY = process.env.LOCAL_ONLY === 'true';
 
@@ -83,6 +84,8 @@ client.on('message_create', async (msg: any) => {
 
     if (!msg.body?.startsWith('!')) return;
 
+    const latexMatch = findCommand(msg.body, latexCommands);
+    if (latexMatch) { latexMatch.handler(msg, chatId, latexMatch.args); return; }
 
     const devMatch = findCommand(msg.body, devCommands);
     if (devMatch) {
