@@ -1,7 +1,8 @@
 # Botanar
 
-A WhatsApp bot with multiple modules — currently Wordle and Last.fm. Built with `whatsapp-web.js` and runs as your WhatsApp user. Works in DMs and group chats.
+A WhatsApp bot with multiple modules — Wordle, Last.fm, and LaTeX. Built with `whatsapp-web.js` and runs as your WhatsApp user. Works in DMs and group chats.
 
+This is inspired by discord bots, who have a lot of functionality. The goal is to import all the cool stuff discord bots can do into discord.
 - `!help` — list all commands
 
 ## Wordle
@@ -18,17 +19,6 @@ Play Wordle in any chat. Supports shared games in group chats, hints, daily chal
 - `!stats` — your stats
 - `!dailystats` — daily recap (GCs only)
 - `!botstats` — global bot stats
-
-#### Admin Commands (GC only)
-- `!disable` / `!enable` — toggle bot in this chat
-- `!quiet enable/disable` — quiet mode: edits the board in place instead of sending new messages, reacts to guesses instead of replying
-- `!dailyboard enable/disable` — daily recap at midnight
-- `!startupmessage enable/disable` — notify this chat when bot starts
-
-#### Dev Commands (bot owner only)
-- `!snapshot` — send the database file as a backup
-- `!dailysnapshot enable/disable` — auto-send DB backup daily
-- `!recent` — show recent games
 
 ## Last.fm
 
@@ -52,6 +42,19 @@ Render LaTeX math expressions as WhatsApp stickers.
 #### Commands
 - `!l <expression>` — render LaTeX as a sticker (e.g. `!l \frac{a}{b}`)
 
+## Admin Commands (GC only)
+- `!disable` / `!enable` — toggle bot in this chat (disables all modules)
+- `!startupmessage enable/disable` — notify this chat when bot starts
+
+#### Wordle-specific
+- `!quiet enable/disable` — quiet mode: edits the board in place instead of sending new messages, reacts to guesses instead of replying
+- `!dailyboard enable/disable` — daily recap at midnight
+
+## Dev Commands (bot owner only)
+- `!snapshot` — send the wordle database file as a backup
+- `!dailysnapshot enable/disable` — auto-send wordle DB backup daily
+- `!recent` — show recent wordle games
+
 ## Run locally
 
 ### Prerequisites
@@ -73,8 +76,8 @@ Render LaTeX math expressions as WhatsApp stickers.
 
 4. Scan the QR code that appears in your terminal with WhatsApp (Linked Devices > Link a Device).
 
-The bot runs as your WhatsApp user — messages you send with `!wordle`, `!fm`, etc. will work in any chat.
+The bot runs as your WhatsApp user — messages you send with `!wordle`, `!fm`, `!l`, etc. will work in any chat.
 
-> By default, `npm run dev` runs in `LOCAL_ONLY` mode (only Last.fm commands active). Remove `LOCAL_ONLY=true` from `nodemon.json` to enable Wordle commands locally too.
+> By default, `npm run dev` runs in `LOCAL_ONLY` mode (only LaTeX commands active). Remove `LOCAL_ONLY=true` from `nodemon.json` to enable all commands locally.
 
 > `docs/how_vps.md` has instructions for running on a VPS with PM2.
