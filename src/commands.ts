@@ -112,6 +112,8 @@ export const commands: CommandMap = {
             '',
             '*LaTeX:*',
             '`!l <expression>` — render LaTeX as a sticker',
+            '',
+            'Github: https://github.com/incremen/whatsapp-wordle',
         ];
         await safeReply(client, msg, lines.join('\n'));
     },
