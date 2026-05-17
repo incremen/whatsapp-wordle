@@ -4,6 +4,7 @@ import { getDisabledIds } from './lists/disabled';
 import { client } from './clientConfig';
 import { initDb } from './infra/db';
 import { commands, adminCommands, devCommands, CommandMap } from './commands';
+import { wordleCommands } from './wordle/commands';
 import { startDailyBoardScheduler } from './schedules/dailyRecap';
 import { startSnapshotScheduler } from './schedules/snapshot';
 import { getStartupChats } from './lists/startup';
@@ -106,6 +107,9 @@ client.on('message_create', async (msg: any) => {
         if (handler) handler(msg, chatId, argParts.join(' '));
         return;
     }
+
+    const wordleMatch = findCommand(msg.body, wordleCommands);
+    if (wordleMatch) { wordleMatch.handler(msg, chatId, wordleMatch.args); return; }
 
     const match = findCommand(msg.body, commands);
     if (match) match.handler(msg, chatId, match.args);
