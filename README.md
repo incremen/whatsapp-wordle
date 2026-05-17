@@ -2,7 +2,7 @@
 
 A WhatsApp bot with multiple modules — Wordle, Last.fm, and LaTeX. Built with `whatsapp-web.js` and runs as your WhatsApp user. Works in DMs and group chats.
 
-This is inspired by discord bots, who have a lot of functionality. The goal is to import all the cool stuff discord bots can do into discord.
+This is inspired by discord bots, who have a lot of functionality. The goal is to import all the cool stuff discord bots can do into whatsapp.
 - `!help` — list all commands
 
 ## Wordle
