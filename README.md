@@ -55,6 +55,11 @@ Render LaTeX math expressions as WhatsApp stickers.
 - `!dailysnapshot enable/disable` — auto-send wordle DB backup daily
 - `!recent` — show recent wordle games
 
+
+<img width="629" height="645" alt="image" src="https://github.com/user-attachments/assets/0ddb84ba-69c4-4508-a340-08790925816b" />
+<img width="574" height="774" alt="image" src="https://github.com/user-attachments/assets/9d75cceb-b343-4d5d-831c-a2bd44107893" />
+<img width="601" height="686" alt="image" src="https://github.com/user-attachments/assets/e75a51ee-2c58-4e5b-b4a6-8fd7a7f9c81f" />
+
 ## Run locally
 
 ### Prerequisites
@@ -81,5 +86,7 @@ The bot runs as your WhatsApp user — messages you send with `!wordle`, `!fm`, 
 > By default, `npm run dev` runs in `LOCAL_ONLY` mode (only LaTeX commands active). Remove `LOCAL_ONLY=true` from `nodemon.json` to enable all commands locally.
 
 > `docs/how_vps.md` has instructions for running on a VPS with PM2.
-<img width="629" height="645" alt="image" src="https://github.com/user-attachments/assets/0ddb84ba-69c4-4508-a340-08790925816b" />
+
+
+
 
