@@ -55,6 +55,6 @@ function attemptReply(
         client.on('message_create', handler);
 
         // Fire the reply but don't trust its promise
-        msg.reply(text, undefined, options).catch(() => {});
+        msg.reply(text, undefined, { sendSeen: false, ...options }).catch(() => {});
     });
 }
