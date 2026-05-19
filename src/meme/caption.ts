@@ -6,9 +6,9 @@ export async function addCaption(imageBuffer: Buffer, text: string): Promise<Buf
     const width = metadata.width || 512;
     const height = metadata.height || 512;
 
-    const fontSize = Math.max(Math.floor(width / 12.7), 22);
+    const fontSize = Math.max(Math.floor(width / 14), 20);
 
-    const margin = Math.floor(width * 0.075);
+    const margin = Math.floor(width * 0.05);
 
     const textImg = await sharp({
         text: {
