@@ -13,23 +13,26 @@ export const memeCommands: MemeCommandMap = {
 
     '!caption': async (msg, _chatId, args) => {
         const text = args.trim();
-        if (!text) { await safeReply(client, msg, 'Usage: reply to an image with `!caption <text>`'); return; }
-
-        if (!msg.hasQuotedMsg) {
-            await safeReply(client, msg, 'Reply to an image with `!caption <text>`');
-            return;
-        }
+        if (!text) { await safeReply(client, msg, 'Usage: send or reply to an image with `!caption <text>`'); return; }
 
         try {
-            const quotedMsg = await msg.getQuotedMessage();
-            if (!quotedMsg.hasMedia) {
-                await safeReply(client, msg, 'Reply to an image with `!caption <text>`');
-                return;
+            let media;
+
+            // Priority 1: image attached to this message
+            if (msg.hasMedia) {
+                media = await msg.downloadMedia();
             }
 
-            const media = await quotedMsg.downloadMedia();
+            // Priority 2: quoted message image
+            if (!media && msg.hasQuotedMsg) {
+                const quotedMsg = await msg.getQuotedMessage();
+                if (quotedMsg.hasMedia) {
+                    media = await quotedMsg.downloadMedia();
+                }
+            }
+
             if (!media || !media.mimetype.startsWith('image/')) {
-                await safeReply(client, msg, 'That doesn\'t look like an image.');
+                await safeReply(client, msg, 'Send or reply to an image with `!caption <text>`');
                 return;
             }
 
