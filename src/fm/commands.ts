@@ -68,6 +68,25 @@ export const fmCommands: FmCommandMap = {
         }
     },
 
+    'recent': async (msg, _chatId, args) => {
+        const username = requireUsername(msg);
+        if (!username) { await safeReply(client, msg, 'Link your account first: !fm set <username>'); return; }
+
+        const limit = Math.min(Math.max(parseInt(args) || 5, 1), 15);
+        try {
+            const tracks = await getRecentTracks(username, limit);
+            if (!tracks.length) { await safeReply(client, msg, 'No recent tracks.'); return; }
+
+            const lines = tracks.map((t, i) => {
+                const np = t['@attr']?.nowplaying === 'true' ? '▶ ' : '';
+                return `${np}${i + 1}. ${t.artist['#text']} — ${t.name}`;
+            });
+            await safeReply(client, msg, `*Recent tracks — ${username}*\n${lines.join('\n')}`);
+        } catch {
+            await safeReply(client, msg, 'Failed to fetch recent tracks.');
+        }
+    },
+
     'toptracks': async (msg, _chatId, args) => {
         const username = requireUsername(msg);
         if (!username) { await safeReply(client, msg, 'Link your account first: !fm set <username>'); return; }
