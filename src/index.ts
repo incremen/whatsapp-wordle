@@ -11,6 +11,7 @@ import { getStartupChats } from './lists/startup';
 import { normalizeUserId } from './infra/normalizeId';
 import { fmCommands } from './fm/commands';
 import { latexCommands } from './latex/commands';
+import { memeCommands } from './meme/commands';
 
 const LOCAL_ONLY = process.env.LOCAL_ONLY === 'true';
 
@@ -102,6 +103,9 @@ client.on('message_create', async (msg: any) => {
 
     const latexMatch = findCommand(msg.body, latexCommands);
     if (latexMatch) { latexMatch.handler(msg, chatId, latexMatch.args); return; }
+
+    const memeMatch = findCommand(msg.body, memeCommands);
+    if (memeMatch) { memeMatch.handler(msg, chatId, memeMatch.args); return; }
 
     if (msg.body.startsWith('!fm ')) {
         const rest = msg.body.slice(4).trim();
