@@ -1,5 +1,6 @@
 import { client } from '../clientConfig';
 import { safeReply } from '../infra/safeReply';
+import { log } from '../infra/logger';
 import { addCaption } from './caption';
 
 const { MessageMedia } = require('whatsapp-web.js');
@@ -14,13 +15,18 @@ export const memeCommands: MemeCommandMap = {
         const text = args.trim();
         if (!text) { await safeReply(client, msg, 'Usage: reply to an image with `!caption <text>`'); return; }
 
-        const quotedMsg = await msg.getQuotedMessage?.();
-        if (!quotedMsg || !quotedMsg.hasMedia) {
+        if (!msg.hasQuotedMsg) {
             await safeReply(client, msg, 'Reply to an image with `!caption <text>`');
             return;
         }
 
         try {
+            const quotedMsg = await msg.getQuotedMessage();
+            if (!quotedMsg.hasMedia) {
+                await safeReply(client, msg, 'Reply to an image with `!caption <text>`');
+                return;
+            }
+
             const media = await quotedMsg.downloadMedia();
             if (!media || !media.mimetype.startsWith('image/')) {
                 await safeReply(client, msg, 'That doesn\'t look like an image.');
@@ -31,7 +37,8 @@ export const memeCommands: MemeCommandMap = {
             const result = await addCaption(imageBuffer, text);
             const resultMedia = new MessageMedia('image/jpeg', result.toString('base64'), 'caption.jpg');
             await safeReply(client, msg, resultMedia);
-        } catch {
+        } catch (err: any) {
+            log('caption error', err.message);
             await safeReply(client, msg, 'Failed to add caption.');
         }
     },
