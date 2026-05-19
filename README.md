@@ -48,6 +48,13 @@ Render LaTeX math expressions as WhatsApp stickers.
 #### Commands
 - `!l <expression>` — render LaTeX as a sticker (e.g. `!l \frac{a}{b}`)
 
+## Meme
+
+Add a meme-style caption to an image. Font is Futura Condensed Extra Bold (falls back to Impact if not installed).
+
+#### Commands
+- `!caption <text>` — send or reply to an image to add a caption
+
 ## Admin Commands (GC only)
 - `!disable` / `!enable` — toggle bot in this chat (disables all modules)
 - `!startupmessage enable/disable` — notify this chat when bot starts

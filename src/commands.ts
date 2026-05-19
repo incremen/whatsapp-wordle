@@ -113,6 +113,9 @@ export const commands: CommandMap = {
             '*LaTeX:*',
             '`!l <expression>` — render LaTeX as a sticker',
             '',
+            '*Meme:*',
+            '`!caption <text>` — send or reply to an image to add a caption',
+            '',
             'Github: https://github.com/incremen/whatsapp-wordle',
         ];
         await safeReply(client, msg, lines.join('\n'));
