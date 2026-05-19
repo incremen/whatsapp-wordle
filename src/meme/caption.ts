@@ -25,10 +25,12 @@ export async function addCaption(imageBuffer: Buffer, text: string): Promise<Buf
         .toBuffer();
 
     const textMeta = await sharp(textImg).metadata();
+    const textWidth = textMeta.width || width;
     const textHeight = textMeta.height || fontSize;
 
     const padding = Math.floor(fontSize * 0.3);
     const barHeight2 = textHeight + padding * 2;
+    const leftOffset = Math.floor((width - textWidth) / 2);
 
     const captionBar = await sharp({
         create: {
@@ -38,7 +40,7 @@ export async function addCaption(imageBuffer: Buffer, text: string): Promise<Buf
             background: { r: 255, g: 255, b: 255, alpha: 1 },
         },
     })
-        .composite([{ input: textImg, top: padding, left: margin }])
+        .composite([{ input: textImg, top: padding, left: leftOffset }])
         .png()
         .toBuffer();
 
