@@ -18,8 +18,8 @@ export const latexCommands: LatexCommandMap = {
             const media = new MessageMedia('image/webp', buffer.toString('base64'), 'latex.webp');
             await msg.reply(media, undefined, { sendMediaAsSticker: true, stickerName: args.trim() });
         } catch (err: any) {
-            log('latex error', err.message);
-            await safeReply(client, msg, 'Failed to render LaTeX.');
+            log('latex error', err.message);    
+            await safeReply(client, msg, `Failed to render LaTeX: ${err.message}`);
         }
     },
 
