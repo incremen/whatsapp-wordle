@@ -11,6 +11,10 @@ export type LatexCommandMap = Record<string, Handler>;
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
+// whatsapp-web.js has a bug where msg.reply() with a sticker crashes if the chat
+// contains poll messages (throws "this.$PollVoteNotification$p_1.unsafe is not a function").
+// We retry 3 times, then fall back to client.sendMessage() without quoting to bypass it.
+// We use raw msg.reply() instead of safeReply so failures are caught instantly (not after 8s timeout).
 async function sendSticker(msg: any, media: any, name: string) {
     const opts = { sendMediaAsSticker: true, stickerName: name };
 
