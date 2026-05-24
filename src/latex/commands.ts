@@ -1,5 +1,6 @@
 import { client } from '../clientConfig';
 import { safeReply } from '../infra/safeReply';
+import { log } from '../infra/logger';
 import { renderLatex } from './render';
 
 const { MessageMedia } = require('whatsapp-web.js');
@@ -16,7 +17,8 @@ export const latexCommands: LatexCommandMap = {
             const buffer = await renderLatex(args.trim());
             const media = new MessageMedia('image/webp', buffer.toString('base64'), 'latex.webp');
             await msg.reply(media, undefined, { sendMediaAsSticker: true, stickerName: args.trim() });
-        } catch {
+        } catch (err: any) {
+            log('latex error', err.message);
             await safeReply(client, msg, 'Failed to render LaTeX.');
         }
     },

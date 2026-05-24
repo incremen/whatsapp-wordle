@@ -37,7 +37,7 @@ function makeBgSvg(): string {
 
 export async function renderLatex(latex: string): Promise<Buffer> {
     const url = `https://latex.codecogs.com/png.image?\\dpi{1200}${encodeURIComponent(latex)}`;
-    const res = await axios.get(url, { responseType: 'arraybuffer', timeout: 10000 });
+    const res = await axios.get(url, { responseType: 'arraybuffer', timeout: 15000 });
 
     const bg = await sharp(Buffer.from(makeBgSvg())).png().toBuffer();
 
