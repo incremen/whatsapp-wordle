@@ -1,6 +1,9 @@
 import sharp from 'sharp';
 
 export async function addCaption(imageBuffer: Buffer, text: string): Promise<Buffer> {
+    // my friends manages to crash the bot by giving it a caption with 1000 newlines. lets not let that happen anymore :)
+    const sanitized = text.replaceAll('\n', ' ').slice(0, 500);
+
     const image = sharp(imageBuffer);
     const metadata = await image.metadata();
     const width = metadata.width || 512;
@@ -12,7 +15,7 @@ export async function addCaption(imageBuffer: Buffer, text: string): Promise<Buf
 
     const textImg = await sharp({
         text: {
-            text: `<span foreground="black">${escPango(text)}</span>`,
+            text: `<span foreground="black">${escPango(sanitized)}</span>`,
             font: 'Futura Condensed ExtraBold',
             width: width - margin * 2,
             align: 'centre',
