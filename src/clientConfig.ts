@@ -5,6 +5,12 @@ const PUPPETEER_ARGS = [
     '--disable-setuid-sandbox',
     '--disable-dev-shm-usage',
     '--disable-gpu',
+
+    // to not use so much memory in chrome with images:
+    '--js-flags="--max-old-space-size=512"', 
+    '--disable-application-cache',
+    '--media-cache-size=1', 
+    '--disk-cache-size=1',
 ];
 
 // Update this path if Chrome/Chromium is installed elsewhere on your system
