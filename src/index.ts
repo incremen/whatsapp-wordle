@@ -24,6 +24,7 @@ try {
 }
 
 const qrcode = require('qrcode-terminal');
+const startupTime = Math.floor(Date.now() / 1000);
 
 initDb();
 
@@ -51,8 +52,11 @@ client.on('qr', (qr: string) => {
     log('QR ready');
 });
 
+let ready = false;
+
 client.on('ready', async () => {
     log('Client connected');
+    ready = true;
     startDailyBoardScheduler(client);
     startSnapshotScheduler(client);
     for (const chatId of getStartupChats()) {
@@ -78,7 +82,11 @@ client.on('ready', async () => {
 });
 
 client.on('message_create', async (msg: any) => {
+    if (!ready) return;
+
     log('New message', `from: ${msg.from} body: ${msg.body}`);
+
+    if (msg.timestamp < startupTime) return;
 
     const chatId = msg.id.remote;
     msg.senderId = await normalizeUserId(msg);
