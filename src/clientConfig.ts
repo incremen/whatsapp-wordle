@@ -14,10 +14,10 @@ const PUPPETEER_ARGS = [
 ];
 
 // Update this path if Chrome/Chromium is installed elsewhere on your system
-const executablePath = undefined;
-    // process.platform === 'linux' ? '/snap/bin/chromium' : undefined;
+const executablePath =
+    process.platform === 'linux' ? '/snap/bin/chromium' : undefined;
 
-export const puppeteerConfig: any = executablePath  
+export const puppeteerConfig: any = executablePath
     ? { executablePath, args: PUPPETEER_ARGS, protocolTimeout: 120_000 }
     : { args: PUPPETEER_ARGS, protocolTimeout: 120_000 };
 
