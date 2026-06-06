@@ -1,5 +1,16 @@
 This is just so i remember how to run it the server - this file probably shouldn't be on github but this way it's easy for me to find it :p
 
+### 0. Setup & Clone Repository
+```bash
+# Install PM2 globally
+sudo npm install -g pm2
+
+# Clone the repository
+git clone https://github.com/incremen/whatsapp-wordle.git
+cd whatsapp-wordle
+npm install
+```
+
 ### 1. Initial Setup (Run Once)
 ```bash
 npm run build
