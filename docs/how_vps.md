@@ -14,10 +14,11 @@ npm install
 
 ### 1. Initial Setup (Run Once)
 ```bash
-# Install fonts for image rendering (Hebrew support + meme font)
-sudo apt install fonts-noto fonts-noto-color-emoji
+# Install fonts for image rendering (Hebrew, emojis, meme font)
+sudo apt install fonts-noto fontconfig
 mkdir -p ~/.local/share/fonts
-scp user@your-mac-ip:/System/Library/Fonts/Supplemental/Futura.ttc ~/.local/share/fonts/
+wget -O ~/.local/share/fonts/NotoColorEmoji.ttf https://github.com/googlefonts/noto-emoji/raw/main/fonts/NotoColorEmoji.ttf
+# Copy Futura from your Mac: scp -i whatsapp-bot-dev.pem /System/Library/Fonts/Supplemental/Futura.ttc ubuntu@<vps-ip>:~/.local/share/fonts/
 fc-cache -fv
 
 npm install
