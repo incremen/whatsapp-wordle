@@ -59,6 +59,9 @@ export class Session {
         if (!VALID_GUESSES.has(word.toLowerCase())) {
             return { ok: false, error: 'Not a valid word.' };
         }
+        if (this.board.some(r => r.guess === word)) {
+            return { ok: false, error: 'Already guessed.' };
+        }
 
         const emojis = this.getGuessEmojis(word);
         this.board.push({ type: 'guess', userId, guess: word, emojis });
