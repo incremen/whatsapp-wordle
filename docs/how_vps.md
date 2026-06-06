@@ -13,6 +13,7 @@ npm install
 
 ### 1. Initial Setup (Run Once)
 ```bash
+npm install
 npm run build
 
 # Remove old instance if it exists (prevents "Script already launched" errors)
