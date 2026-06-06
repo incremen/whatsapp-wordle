@@ -14,7 +14,7 @@ const PUPPETEER_ARGS = [
 
 // Update this path if Chrome/Chromium is installed elsewhere on your system
 const executablePath =
-    process.platform === 'linux' ? '/user/bin/chromium' : undefined;
+    process.platform === 'linux' ? '/usr/bin/chromium' : undefined;
 
 export const puppeteerConfig: any = executablePath
     ? { executablePath, args: PUPPETEER_ARGS, protocolTimeout: 120_000 }
