@@ -14,6 +14,12 @@ npm install
 
 ### 1. Initial Setup (Run Once)
 ```bash
+# Install fonts for image rendering (Hebrew support + meme font)
+sudo apt install fonts-noto fonts-noto-color-emoji
+mkdir -p ~/.local/share/fonts
+scp user@your-mac-ip:/System/Library/Fonts/Supplemental/Futura.ttc ~/.local/share/fonts/
+fc-cache -fv
+
 npm install
 npm run build
 
