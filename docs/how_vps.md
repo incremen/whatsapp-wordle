@@ -2,8 +2,9 @@ This is just so i remember how to run it the server - this file probably shouldn
 
 ### 0. Setup & Clone Repository
 ```bash
-# Install PM2 globally
+# Install PM2 and Chromium
 sudo npm install -g pm2
+sudo snap install chromium
 
 # Clone the repository
 git clone https://github.com/incremen/whatsapp-wordle.git
