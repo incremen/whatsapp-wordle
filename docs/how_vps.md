@@ -5,7 +5,7 @@ This is just so i remember how to run it the server - this file probably shouldn
 # Install usefull stuff
 sudo npm install -g pm2
 sudo snap install chromium
-sudo apt install fonts-noto fontconfig fribidi
+sudo apt install fonts-noto fontconfig libfribidi-bin
 
 # Clone the repository
 git clone https://github.com/incremen/whatsapp-wordle.git
