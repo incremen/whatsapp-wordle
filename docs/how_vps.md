@@ -124,3 +124,30 @@ sudo systemctl disable --now weekly-reboot-check.timer
 # (Optional) Read the script to see what it was doing
 cat /usr/local/bin/reboot-if-needed.sh
 ```
+
+
+
+## Not using snap chromium anymore, actually?
+Idk what the memory leak is from but it is annoying. According to gemini:
+"The AWS VPS is Graviton (aarch64 / ARM64), so Puppeteer's default Chrome for Testing x86 binary instantly crashes.
+
+Snap Chromium uses a containerized squashfs filesystem. Its strict memory sandboxing combined with WhatsApp Web's heavy WASM encryption causes the renderer to balloon past 3GB of RAM and OOM crash.
+
+We need a native .deb ARM64 build so Chromium can manage memory natively on the OS without container overhead. Since the server's default Python is messed up (ModuleNotFoundError: No module named 'apt_pkg'), normal PPA commands fail, so we have to add it manually."
+
+And we could install the latest version like this:
+
+```bash
+# 1. Download the XtraDeb PPA GPG key directly (bypasses the broken Python apt script)
+curl -sL "[https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x82BB6851C64F6880](https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x82BB6851C64F6880)" | sudo gpg --dearmor --yes -o /usr/share/keyrings/xtradeb.gpg
+
+# 2. Add the repository to APT sources manually
+echo "deb [arch=arm64 signed-by=/usr/share/keyrings/xtradeb.gpg] [https://ppa.launchpadcontent.net/xtradeb/apps/ubuntu](https://ppa.launchpadcontent.net/xtradeb/apps/ubuntu) jammy main" | sudo tee /etc/apt/sources.list.d/xtradeb.list
+
+# 3. Install the native ARM64 Chromium package
+sudo apt update
+sudo apt install -y chromium
+
+# Verify it points to /usr/bin/chromium and not /snap/bin/chromium
+which chromium
+```
