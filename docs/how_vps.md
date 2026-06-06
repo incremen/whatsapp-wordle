@@ -101,7 +101,7 @@ pm2 restart wordle-bot
 ### 6. Monitoring & Troubleshooting
 * **Status Overview:** `pm2 list`
 * **Live Logs:** `pm2 logs wordle-bot --time`
-* **Errors Only:** `pm2 logs wordle-bot --err`
+* **Errors Only:** `cat ~/.pm2/logs/wordle-bot-error.log`
 * **Check History:** `pm2 logs wordle-bot --lines 200`
 * **Search for Crashes:** `grep "Puppeteer" ~/.pm2/logs/wordle-bot-error.log`
 * **System Stats:** `htop` (Press `Shift + P` to sort by CPU, `Shift + H` to hide threads)
