@@ -12,6 +12,7 @@ import { normalizeUserId } from './infra/normalizeId';
 import { fmCommands } from './fm/commands';
 import { latexCommands } from './latex/commands';
 import { memeCommands } from './meme/commands';
+import { translateCommands } from './translate/commands';
 
 const LOCAL_ONLY = process.env.LOCAL_ONLY === 'true';
 
@@ -114,6 +115,9 @@ client.on('message_create', async (msg: any) => {
 
     const memeMatch = findCommand(msg.body, memeCommands);
     if (memeMatch) { memeMatch.handler(msg, chatId, memeMatch.args); return; }
+
+    const translateMatch = findCommand(msg.body, translateCommands);
+    if (translateMatch) { translateMatch.handler(msg, chatId, translateMatch.args); return; }
 
     if (msg.body.startsWith('!fm ')) {
         const rest = msg.body.slice(4).trim();
