@@ -39,7 +39,7 @@ API keys are NOT committed to the repo. Set them in `~/.bashrc` on the VPS so PM
 echo 'export LASTFM_API_KEY=thisisanapikey123456' >> ~/.bashrc
 source ~/.bashrc
 ```
-PM2 picks these up on restart. For local dev, they're in `nodemon.json`.
+Then restart with `pm2 restart wordle-bot --update-env` to apply. For local dev, env vars are in `nodemon.json`.
 
 ---
 
