@@ -15,6 +15,9 @@
  
 
 ## To (maybe) Do
+- log restarts and reason (did we get an error, or did the browser just sleep?)
+
+
 - save opening so !wordle will auto set to !wordle audio
 - show top 5 most common openings with !fav
 - longest survival session should show in !stats
