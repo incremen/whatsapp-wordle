@@ -53,7 +53,11 @@ Render LaTeX math expressions as WhatsApp stickers.
 Add a meme-style caption to an image. Font is Futura Condensed Extra Bold (falls back to Impact if not installed).
 
 #### Commands
-- `!caption <text>` — send or reply to an image to add a caption
+- `!caption <text>` — caption an image or sticker (replies in same format)
+- `!caption img <text>` — caption and force output as image
+- `!caption sticker <text>` — caption and force output as sticker
+- `!sticker` — convert an image to a sticker
+- `!unsticker` — convert a sticker to an image
 
 ## Translate
 Translate text to any language. Supports language names (`spanish`, `hebrew`) and codes (`es`, `he`).
