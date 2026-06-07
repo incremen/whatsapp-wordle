@@ -72,9 +72,11 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 ### 4. The Update Loop
 *Run this every time you pull new code from GitHub.*
 ```bash
+git checkout -- package-lock.json
 git pull
+npm install
 npm run build
-pm2 restart wordle-bot
+pm2 restart wordle-bot --update-env
 pm2 logs wordle-bot --raw | fribidi
 ```
 
