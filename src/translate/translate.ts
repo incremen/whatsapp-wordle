@@ -1,10 +1,12 @@
-import { translate } from '@vitalets/google-translate-api';
+import axios from 'axios';
+
+const LINGVA_URL = 'https://lingva.ml/api/v1';
 
 const languageMap: Record<string, string> = {
     'en': 'en',
     'english': 'en',
-    'he': 'he',
-    'hebrew': 'he',
+    'he': 'iw',
+    'hebrew': 'iw',
     'arabic': 'ar',
     'spanish': 'es',
     'french': 'fr',
@@ -12,7 +14,7 @@ const languageMap: Record<string, string> = {
     'german': 'de',
     'italian': 'it',
     'japanese': 'ja',
-    'chinese': 'zh-CN',
+    'chinese': 'zh',
     'portuguese': 'pt',
     'hindi': 'hi',
     'dutch': 'nl',
@@ -24,7 +26,6 @@ export async function translateText(text: string, targetLanguage?: string): Prom
     const normalizedLang = (targetLanguage || 'en').toLowerCase();
     const mappedCode = languageMap[normalizedLang] || normalizedLang;
 
-    const result = await translate(text, { from: 'auto', to: mappedCode });
-    return result.text;
+    const { data } = await axios.get(`${LINGVA_URL}/auto/${mappedCode}/${encodeURIComponent(text)}`);
+    return data.translation;
 }
-    
