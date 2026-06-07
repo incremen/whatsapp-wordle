@@ -18,6 +18,10 @@ async function getMedia(msg: Msg): Promise<any | null> {
     return null;
 }
 
+function isSticker(media: any): boolean {
+    return media.mimetype === 'image/webp';
+}
+
 export const memeCommands: MemeCommandMap = {
 
     '!sticker': async (msg) => {
@@ -37,21 +41,38 @@ export const memeCommands: MemeCommandMap = {
         await safeReply(client, msg, imageMedia);
     },
 
+    // !caption <text>        — reply as same format (sticker→sticker, image→image)
+    // !caption img <text>    — force output as image
+    // !caption sticker <text> — force output as sticker
     '!caption': async (msg, _chatId, args) => {
-        const text = args.trim();
-        if (!text) { await safeReply(client, msg, 'Usage: send or reply to an image with `!caption <text>`'); return; }
+        let text = args.trim();
+        let forceOutput: 'image' | 'sticker' | null = null;
+
+        if (text.startsWith('img ')) { forceOutput = 'image'; text = text.slice(4); }
+        else if (text.startsWith('sticker ')) { forceOutput = 'sticker'; text = text.slice(8); }
+
+        if (!text) { await safeReply(client, msg, 'Usage: `!caption [img|sticker] <text>`'); return; }
 
         try {
             const media = await getMedia(msg);
             if (!media || !media.mimetype.startsWith('image/')) {
-                await safeReply(client, msg, 'Send or reply to an image with `!caption <text>`');
+                await safeReply(client, msg, 'Send or reply to an image/sticker with `!caption <text>`');
                 return;
             }
 
+            const sourceIsSticker = isSticker(media);
+            const outputAsSticker = forceOutput === 'sticker' || (forceOutput === null && sourceIsSticker);
+
             const imageBuffer = Buffer.from(media.data, 'base64');
             const result = await addCaption(imageBuffer, text);
-            const resultMedia = new MessageMedia('image/jpeg', result.toString('base64'), 'caption.jpg');
-            await safeReply(client, msg, resultMedia);
+
+            if (outputAsSticker) {
+                const stickerMedia = new MessageMedia('image/jpeg', result.toString('base64'), 'caption.jpg');
+                await safeReply(client, msg, stickerMedia, { sendMediaAsSticker: true });
+            } else {
+                const resultMedia = new MessageMedia('image/jpeg', result.toString('base64'), 'caption.jpg');
+                await safeReply(client, msg, resultMedia);
+            }
         } catch (err: any) {
             log('caption error', err.message);
             await safeReply(client, msg, 'Failed to add caption.');
