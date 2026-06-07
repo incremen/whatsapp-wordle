@@ -116,6 +116,9 @@ export const commands: CommandMap = {
             '*Meme:*',
             '`!caption <text>` — send or reply to an image to add a caption',
             '',
+            '*Translate:*',
+            '`!translate <language> <text>` — translate text (or reply to a message)',
+            '',
             'Github: https://github.com/incremen/whatsapp-wordle',
         ];
         await safeReply(client, msg, lines.join('\n'));

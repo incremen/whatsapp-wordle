@@ -55,6 +55,13 @@ Add a meme-style caption to an image. Font is Futura Condensed Extra Bold (falls
 #### Commands
 - `!caption <text>` — send or reply to an image to add a caption
 
+## Translate
+Translate text to any language. Supports language names (`spanish`, `hebrew`) and codes (`es`, `he`).
+
+#### Commands
+- `!translate <language> <text>` — translate text to the given language
+- `!translate <language>` — reply to a message to translate it
+
 ## Admin Commands (GC only)
 - `!disable` / `!enable` — toggle bot in this chat (disables all modules)
 - `!startupmessage enable/disable` — notify this chat when bot starts
