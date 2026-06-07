@@ -11,6 +11,17 @@ export type MemeCommandMap = Record<string, Handler>;
 
 export const memeCommands: MemeCommandMap = {
 
+    '!unsticker': async (msg) => {
+        let media;
+        if (msg.hasQuotedMsg) {
+            const quoted = await msg.getQuotedMessage();
+            if (quoted.hasMedia) media = await quoted.downloadMedia();
+        }
+        if (!media) { await safeReply(client, msg, 'Reply to a sticker with `!unsticker`'); return; }
+        const imageMedia = new MessageMedia('image/webp', media.data, 'image.webp');
+        await safeReply(client, msg, imageMedia);
+    },
+
     '!caption': async (msg, _chatId, args) => {
         const text = args.trim();
         if (!text) { await safeReply(client, msg, 'Usage: send or reply to an image with `!caption <text>`'); return; }
