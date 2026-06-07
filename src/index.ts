@@ -116,7 +116,7 @@ client.on('message_create', async (msg: any) => {
     if (memeMatch) { memeMatch.handler(msg, chatId, memeMatch.args); return; }
 
     if (msg.body.startsWith('!fm ')) {
-        const rest = msg.body.slice(4).trixm();
+        const rest = msg.body.slice(4).trim();
         const [sub, ...argParts] = rest.split(' ');
         const handler = fmCommands[sub?.toLowerCase()];
         if (handler) handler(msg, chatId, argParts.join(' '));
