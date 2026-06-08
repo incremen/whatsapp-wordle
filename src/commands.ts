@@ -6,7 +6,7 @@ import * as db from './infra/db';
 import { buildSnapshotMedia } from './schedules/snapshot';
 import { setQuiet } from './lists/quiet';
 import { client } from './clientConfig';
-import { safeReply } from './infra/safeReply';
+import { safeReply } from './infra/messaging';
 
 type Msg = any;
 type Handler = (msg: Msg, chatId: string, args: string) => void;

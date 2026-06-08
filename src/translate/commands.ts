@@ -1,5 +1,5 @@
 import { client } from '../clientConfig';
-import { safeReply } from '../infra/safeReply';
+import { safeReply } from '../infra/messaging';
 import { translateText } from './translate';
 
 type Msg = any;

@@ -6,7 +6,7 @@ import { buildDailyRecap } from '../schedules/dailyRecap';
 import * as db from '../infra/db';
 import { isQuiet } from '../lists/quiet';
 import { client } from '../clientConfig';
-import { safeReply } from '../infra/safeReply';
+import { safeReply } from '../infra/messaging';
 import { SurvivalManager } from '../game/SurvivalManager';
 import { SurvivalSession } from '../game/SurvivalSession';
 

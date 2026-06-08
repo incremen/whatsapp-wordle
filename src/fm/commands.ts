@@ -1,5 +1,5 @@
 import { client } from '../clientConfig';
-import { safeReply } from '../infra/safeReply';
+import { safeReply } from '../infra/messaging';
 import { log } from '../infra/logger';
 import {
     getUserInfo, getTopAlbums, getTopTracks, getTopArtists, getRecentTracks,

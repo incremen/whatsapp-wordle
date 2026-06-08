@@ -3,6 +3,7 @@ import { getDailyBoardChats } from '../lists/dailyBoard';
 import { getUserDailyResult, getGroupDailyStreak } from '../infra/db';
 import { todayDate, yesterdayDate } from '../infra/time';
 import { log } from '../infra/logger';
+import { sendMessage } from '../infra/messaging';
 
 let scheduled = false;
 
@@ -16,7 +17,7 @@ export function startDailyBoardScheduler(client: any) {
         for (const chatId of getDailyBoardChats()) {
             const chat = await client.getChatById(chatId);
             const { text, mentions } = buildDailyRecap(chat.participants?.map((p: any) => p.id._serialized) ?? [], date);
-            await chat.sendMessage(text, { mentions });
+            await sendMessage(chat, text, { mentions });
         }
     }, { timezone: 'Asia/Jerusalem' });
 
