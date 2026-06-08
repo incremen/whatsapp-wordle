@@ -1,4 +1,4 @@
-import { setDisabled } from './lists/disabled';
+import { setEnabled } from './lists/enabled';
 import { setDailyBoard } from './lists/dailyBoard';
 import { setStartupChat } from './lists/startup';
 import { setSnapshotChat } from './lists/snapshot';
@@ -36,8 +36,8 @@ export const devCommands: CommandMap = {
 
 export const adminCommands: CommandMap = {
 
-    '!disable': async (msg, chatId) => { setDisabled(chatId, true);  await safeReply(client, msg, 'Bot disabled here.'); },
-    '!enable':  async (msg, chatId) => { setDisabled(chatId, false); await safeReply(client, msg, 'Bot enabled here.'); },
+    '!disable': async (msg, chatId) => { setEnabled(chatId, false); await safeReply(client, msg, 'Bot disabled here.'); },
+    '!enable':  async (msg, chatId) => { setEnabled(chatId, true);  await safeReply(client, msg, 'Bot enabled here.'); },
     '!dailyboard': async (msg, chatId, args) => {
         if (!chatId.endsWith('@g.us')) { await safeReply(client, msg, 'GCs only.'); return; }
         if (args === 'enable') {

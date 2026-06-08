@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import { log } from './infra/logger';
-import { getDisabledIds } from './lists/disabled';
+import { getEnabledIds } from './lists/enabled';
 import { client } from './clientConfig';
 import { initDb } from './infra/db';
 import { commands, adminCommands, devCommands, CommandMap } from './commands';
@@ -108,7 +108,7 @@ client.on('message_create', async (msg: any) => {
         return;
     }
 
-    if (getDisabledIds().has(chatId)) return;
+    if (!getEnabledIds().has(chatId)) return;
 
     const latexMatch = findCommand(msg.body, latexCommands);
     if (latexMatch) { latexMatch.handler(msg, chatId, latexMatch.args); return; }
