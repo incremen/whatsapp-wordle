@@ -108,7 +108,7 @@ client.on('message_create', async (msg: any) => {
         return;
     }
 
-    if (getDisabledIds().has(chatId) && !msg.fromMe) return;
+    if (getDisabledIds().has(chatId)) return;
 
     const latexMatch = findCommand(msg.body, latexCommands);
     if (latexMatch) { latexMatch.handler(msg, chatId, latexMatch.args); return; }
