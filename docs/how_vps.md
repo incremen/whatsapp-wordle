@@ -8,7 +8,21 @@ sudo snap install chromium
 sudo apt install fonts-noto fontconfig libfribidi-bin
 
 # For !rap and !tts audio commands
-sudo apt install espeak-ng ffmpeg
+sudo apt install ffmpeg
+
+# espeak-ng: the apt version (1.50) has NO Hebrew voice. Build 1.52+ from source.
+# (Build outside the repo so it doesn't get committed.)
+sudo apt install cmake build-essential
+cd ~
+git clone https://github.com/espeak-ng/espeak-ng.git
+cd espeak-ng
+cmake -B build
+cmake --build build
+sudo cmake --install build
+sudo ldconfig
+hash -r
+espeak-ng --voices | grep -i hebrew   # should print a "he ... Hebrew" line
+cd ~ && rm -rf ~/espeak-ng            # source no longer needed once installed
 
 # Clone the repository
 git clone https://github.com/incremen/whatsapp-wordle.git
