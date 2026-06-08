@@ -78,6 +78,18 @@ export const MIX = {
 // bass frequencies; the treble cut tames the abrasive top end.
 export const VOCAL_EQ = 'highpass=f=150,treble=g=-3';
 
+// --- Voices ----------------------------------------------------------------
+// espeak "variants" layered on the base language voice (e.g. en+Alex). A random
+// one is chosen per message for variety. These are the more human-leaning ones.
+export const VOICE_VARIANTS = ['Alex', 'Andy', 'Belinda', 'Iven', 'John', 'Linda'];
+
+// Build the espeak -v argument: base language + a (given or random) variant,
+// e.g. pickVoice('he') -> "he+Linda".
+export function pickVoice(language: Language, variant?: string): string {
+  const v = variant ?? VOICE_VARIANTS[Math.floor(Math.random() * VOICE_VARIANTS.length)];
+  return `${language}+${v}`;
+}
+
 // --- External tools & sample rates -----------------------------------------
 export const ESPEAK_BINARY = 'espeak-ng';
 export const FFMPEG_BINARY = 'ffmpeg';

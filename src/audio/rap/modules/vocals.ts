@@ -20,6 +20,7 @@ import {
   EMPHASIS,
   ESPEAK_BINARY,
   ESPEAK_SAMPLE_RATE,
+  pickVoice,
   INTRO_BARS,
   Language,
   MAX_TRACK_SECONDS,
@@ -190,7 +191,7 @@ export async function generateVocals(
 
   try {
     // 1. Whole-phrase synthesis (execFile arg array => no shell injection).
-    await execFilePromise(ESPEAK_BINARY, ['-v', language, '-p', String(pitch), '-s', String(wpm), '-w', rawWav, text]);
+    await execFilePromise(ESPEAK_BINARY, ['-v', pickVoice(language), '-p', String(pitch), '-s', String(wpm), '-w', rawWav, text]);
 
     // 2. Detect syllables in the rendered audio.
     const segs = await detectSyllableSegments(rawWav, workPrefix);
