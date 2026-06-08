@@ -20,8 +20,10 @@ export async function synthesizeSpeech(text: string, language: Language): Promis
   try {
     let words = text;
     if (language === 'he') {
-      // Strip English chars (gibberish in the Hebrew voice) then add nikkud.
-      words = await addNikkud(text.replace(/[a-zA-Z]/g, ''));
+      // Add nikkud. Latin words are kept: Nakdan leaves them untouched and
+      // espeak-ng 1.52's Hebrew voice auto-switches to English for them, so
+      // mixed text like "שלום aquarium" reads correctly.
+      words = await addNikkud(text);
     }
     const pitch = language === 'he' ? 60 : 70;
 

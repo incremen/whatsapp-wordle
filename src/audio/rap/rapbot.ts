@@ -37,11 +37,12 @@ export async function createRapTrack(text: string, language: Language): Promise<
   const bpm = BPM[language];
 
   try {
-    // 1. Prepare the text. Hebrew needs nikkud (and English chars stripped, as
-    //    they make the Hebrew voice output gibberish).
+    // 1. Prepare the text. Hebrew needs nikkud. Latin words are kept: Nakdan
+    //    leaves them untouched and espeak-ng 1.52's Hebrew voice auto-switches to
+    //    English for them, so mixed text like "שלום aquarium" reads correctly.
     let lyrics = text;
     if (language === 'he') {
-      lyrics = await addNikkud(text.replace(/[a-zA-Z]/g, ''));
+      lyrics = await addNikkud(text);
     }
 
     // 2. Build the backing track. The riff is shared: it's both synthesized
