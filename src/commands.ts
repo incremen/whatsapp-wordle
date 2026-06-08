@@ -126,6 +126,7 @@ export const commands: CommandMap = {
             '*Audio:*',
             '`!rap <text>` — rap the text over a generated beat (English or Hebrew)',
             '`!tts <text>` — plain text-to-speech',
+            '_(both also work as a reply to another message)_',
             '',
             'Github: https://github.com/incremen/whatsapp-wordle',
         ];

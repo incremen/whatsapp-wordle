@@ -66,6 +66,14 @@ Translate text to any language. Supports language names (`spanish`, `hebrew`) an
 - `!translate <language> <text>` — translate text to the given language
 - `!translate <language>` — reply to a message to translate it
 
+## Audio
+Text-to-speech via espeak-ng (English & Hebrew, auto-detected). A random voice is picked per message. Sent as a WhatsApp voice note.
+
+#### Commands
+- `!rap <text>` — rap the text over a generated beat
+- `!tts <text>` — plain text-to-speech
+- Both also work as a reply to another message (uses the replied-to text)
+
 ## Admin Commands (GC only)
 - `!disable` / `!enable` — toggle bot in this chat (disables all modules)
 - `!startupmessage enable/disable` — notify this chat when bot starts
