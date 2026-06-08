@@ -7,6 +7,9 @@ sudo npm install -g pm2
 sudo snap install chromium
 sudo apt install fonts-noto fontconfig libfribidi-bin
 
+# For !rap and !tts audio commands
+sudo apt install espeak-ng ffmpeg
+
 # Clone the repository
 git clone https://github.com/incremen/whatsapp-wordle.git
 cd whatsapp-wordle
