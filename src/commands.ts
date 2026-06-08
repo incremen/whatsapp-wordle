@@ -123,6 +123,10 @@ export const commands: CommandMap = {
             '*Translate:*',
             '`!translate <language> <text>` — translate text (or reply to a message)',
             '',
+            '*Audio:*',
+            '`!rap <text>` — rap the text over a generated beat (English or Hebrew)',
+            '`!tts <text>` — plain text-to-speech',
+            '',
             'Github: https://github.com/incremen/whatsapp-wordle',
         ];
         await safeReply(client, msg, lines.join('\n'));

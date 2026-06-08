@@ -13,6 +13,7 @@ import { fmCommands } from './fm/commands';
 import { latexCommands } from './latex/commands';
 import { memeCommands } from './meme/commands';
 import { translateCommands } from './translate/commands';
+import { audioCommands } from './audio/commands';
 
 const LOCAL_ONLY = process.env.LOCAL_ONLY === 'true';
 
@@ -118,6 +119,9 @@ client.on('message_create', async (msg: any) => {
 
     const translateMatch = findCommand(msg.body, translateCommands);
     if (translateMatch) { translateMatch.handler(msg, chatId, translateMatch.args); return; }
+
+    const audioMatch = findCommand(msg.body, audioCommands);
+    if (audioMatch) { audioMatch.handler(msg, chatId, audioMatch.args); return; }
 
     if (msg.body.startsWith('!fm ')) {
         const rest = msg.body.slice(4).trim();
