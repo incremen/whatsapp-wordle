@@ -30,11 +30,22 @@ function detectLanguage(text: string): Language {
 // blow up memory on the VPS. ~800 chars is roughly a minute of speech.
 const MAX_CHARS = 800;
 
+// Use the command's args, or fall back to the replied-to message's text.
+async function resolveText(msg: Msg, args: string): Promise<string> {
+  const text = args.trim();
+  if (text) return text;
+  if (msg.hasQuotedMsg) {
+    const quoted = await msg.getQuotedMessage();
+    return (quoted.body || '').trim();
+  }
+  return '';
+}
+
 export const audioCommands: AudioCommandMap = {
 
   '!rap': async (msg, _chatId, args) => {
-    const text = args.trim();
-    if (!text) { await safeReply(client, msg, 'Usage: `!rap <text>`'); return; }
+    const text = await resolveText(msg, args);
+    if (!text) { await safeReply(client, msg, 'Usage: `!rap <text>` (or reply to a message)'); return; }
     if (text.length > MAX_CHARS) { await safeReply(client, msg, `Too long — keep it under ${MAX_CHARS} characters.`); return; }
     try {
       const mp3 = await createRapTrack(text, detectLanguage(text));
@@ -47,8 +58,8 @@ export const audioCommands: AudioCommandMap = {
   },
 
   '!tts': async (msg, _chatId, args) => {
-    const text = args.trim();
-    if (!text) { await safeReply(client, msg, 'Usage: `!tts <text>`'); return; }
+    const text = await resolveText(msg, args);
+    if (!text) { await safeReply(client, msg, 'Usage: `!tts <text>` (or reply to a message)'); return; }
     if (text.length > MAX_CHARS) { await safeReply(client, msg, `Too long — keep it under ${MAX_CHARS} characters.`); return; }
     try {
       const mp3 = await synthesizeSpeech(text, detectLanguage(text));
