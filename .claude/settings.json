@@ -4,7 +4,9 @@
       "Bash(npx tsc *)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(fc-list)"
+      "Bash(fc-list)",
+      "Bash(ffprobe -v error -show_entries format=format_name,duration -show_entries stream=codec_name -of default=nw=1 /tmp/tmp_tts_test.ogg)",
+      "Bash(ffprobe -v error -show_entries format=format_name -show_entries stream=codec_name -of default=nw=1 /tmp/tts_test.ogg)"
     ]
   }
 }

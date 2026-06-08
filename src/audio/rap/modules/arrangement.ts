@@ -56,8 +56,9 @@ export async function assembleArrangement(
     `[2:a]aformat=sample_rates=${sr}:channel_layouts=mono,${VOCAL_EQ},adelay=${vocalDelayMs}|${vocalDelayMs},volume=${MIX.vocals}[voc];` +
     `[bass][drums][voc]amix=inputs=3:duration=longest:normalize=0,volume=${MIX.master},alimiter=limit=${MIX.limit}[out]`;
 
-  // Output MP3 to stdout (pipe:1) and capture it as a Buffer — no file written,
-  // so nothing accumulates on disk for the bot to clean up.
+  // Output OGG/Opus to stdout (pipe:1) and capture it as a Buffer — no file
+  // written, so nothing accumulates on disk. Opus-in-Ogg is the format WhatsApp
+  // needs for a voice note (PTT) that plays on both web and phone apps.
   return runFfmpegToBuffer([
     '-hide_banner', '-y',
     '-stream_loop', String(bassLoops), '-i', bassLoopFile,
@@ -66,7 +67,8 @@ export async function assembleArrangement(
     '-filter_complex', filter,
     '-map', '[out]',
     '-t', totalSec.toFixed(3),
-    '-f', 'mp3',
+    '-c:a', 'libopus', '-b:a', '32k',
+    '-f', 'ogg',
     'pipe:1',
   ]);
 }

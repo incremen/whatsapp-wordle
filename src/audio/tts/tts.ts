@@ -32,7 +32,8 @@ export async function synthesizeSpeech(text: string, language: Language): Promis
       { encoding: 'buffer', maxBuffer: 100 * 1024 * 1024 },
     );
 
-    return await runFfmpegToBuffer(['-hide_banner', '-y', '-i', 'pipe:0', '-f', 'mp3', 'pipe:1'], wav as Buffer);
+    // OGG/Opus so WhatsApp renders it as a voice note that plays on phone apps too.
+    return await runFfmpegToBuffer(['-hide_banner', '-y', '-i', 'pipe:0', '-c:a', 'libopus', '-b:a', '32k', '-f', 'ogg', 'pipe:1'], wav as Buffer);
   } catch (error) {
     console.error('TTS error:', error);
     return null;
