@@ -109,7 +109,8 @@ client.on('message_create', async (msg: any) => {
         return;
     }
 
-    if (!getEnabledIds().has(chatId)) return;
+    // DMs are enabled by default; group chats must be explicitly enabled.
+    if (chatId.endsWith('@g.us') && !getEnabledIds().has(chatId)) return;
 
     const latexMatch = findCommand(msg.body, latexCommands);
     if (latexMatch) { latexMatch.handler(msg, chatId, latexMatch.args); return; }
