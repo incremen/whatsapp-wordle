@@ -12,7 +12,7 @@ import { safeReply } from '../infra/messaging';
 const { MessageMedia } = require('whatsapp-web.js');
 
 export async function sendVoice(msg: any, mp3: Buffer): Promise<void> {
-  const media = new MessageMedia('audio/mpeg', mp3.toString('base64'), 'voice.mp3');
-  // sendAudioAsVoice renders it as a playable voice note rather than a file.
-  await safeReply(client, msg, media, { sendAudioAsVoice: true });
+  const media = new MessageMedia('audio/mpeg', mp3.toString('base64'), 'audio.mp3');
+  // Sent as a regular audio file (not a PTT voice note).
+  await safeReply(client, msg, media);
 }
