@@ -26,11 +26,16 @@ function detectLanguage(text: string): Language {
   return /[֐-׿]/.test(text) ? 'he' : 'en';
 }
 
+// Cap input length so a huge message can't generate a multi-minute MP3 and
+// blow up memory on the VPS. ~800 chars is roughly a minute of speech.
+const MAX_CHARS = 800;
+
 export const audioCommands: AudioCommandMap = {
 
   '!rap': async (msg, _chatId, args) => {
     const text = args.trim();
     if (!text) { await safeReply(client, msg, 'Usage: `!rap <text>`'); return; }
+    if (text.length > MAX_CHARS) { await safeReply(client, msg, `Too long — keep it under ${MAX_CHARS} characters.`); return; }
     try {
       const mp3 = await createRapTrack(text, detectLanguage(text));
       if (!mp3) { await safeReply(client, msg, 'Failed to make a rap (the vocalizer may be down).'); return; }
@@ -44,6 +49,7 @@ export const audioCommands: AudioCommandMap = {
   '!tts': async (msg, _chatId, args) => {
     const text = args.trim();
     if (!text) { await safeReply(client, msg, 'Usage: `!tts <text>`'); return; }
+    if (text.length > MAX_CHARS) { await safeReply(client, msg, `Too long — keep it under ${MAX_CHARS} characters.`); return; }
     try {
       const mp3 = await synthesizeSpeech(text, detectLanguage(text));
       if (!mp3) { await safeReply(client, msg, 'Failed to synthesize speech.'); return; }
