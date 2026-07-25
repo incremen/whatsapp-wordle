@@ -1,8 +1,3 @@
-import { log } from './logger';
-
-const MAX_RETRIES = 3;
-const TIMEOUT_MS = 8000;
-
 // A message starting with "!" would re-trigger the bot's own command handler
 // (fromMe messages are processed), causing a self-loop. All outgoing text is
 // passed through this guard. Non-string payloads (media) pass through untouched.
@@ -20,53 +15,14 @@ export async function sendMessage(target: any, ...args: any[]): Promise<any> {
     return target.sendMessage(...args.map(sanitizeOutgoing));
 }
 
-// Verifies delivery by listening for the outgoing `message_create` event and
-// matching on body text + target chat + hasQuotedMsg. The original approach
-// matched quotedStanzaID against msg.id.id, but WhatsApp Web broke that around
-// July 25, 2026 by renaming internal key fields and switching to LID format.
+// Originally verified delivery via message_create event matching, but WhatsApp
+// Web broke that in July 2026 (renamed internal key fields, switched to LID format).
 export async function safeReply(
-    client: any,
+    _client: any,
     msg: any,
     text: any,
     options?: any,
 ): Promise<any> {
     text = sanitizeOutgoing(text);
-
-    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-        try {
-            return await attemptReply(client, msg, text, options);
-        } catch {
-            log('safeReply', `Attempt ${attempt}/${MAX_RETRIES} timed out for ${msg.from}`);
-            if (attempt === MAX_RETRIES) {
-                throw new Error(`safeReply: failed after ${MAX_RETRIES} attempts for ${msg.from}`);
-            }
-        }
-    }
-}
-
-function attemptReply(
-    client: any,
-    msg: any,
-    text: any,
-    options?: any,
-): Promise<any> {
-    return new Promise((resolve, reject) => {
-        const timer = setTimeout(() => {
-            client.removeListener('message_create', handler);
-            reject(new Error('timeout'));
-        }, TIMEOUT_MS);
-
-        const handler = (newMsg: any) => {
-            if (!newMsg.fromMe) return;
-            if (typeof text === 'string' && newMsg.body !== text) return;
-            if (!newMsg.hasQuotedMsg) return;
-
-            clearTimeout(timer);
-            client.removeListener('message_create', handler);
-            resolve(newMsg);
-        };
-
-        client.on('message_create', handler);
-        msg.reply(text, undefined, { sendSeen: false, ...options }).catch(() => {});
-    });
+    return msg.reply(text, undefined, { sendSeen: false, ...options });
 }
