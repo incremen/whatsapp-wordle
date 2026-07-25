@@ -10,7 +10,8 @@
       "Bash(espeak-ng --voices=variant)",
       "Bash(awk '{print $2, $4}')",
       "Bash(espeak-ng -v \"en+Michael\" -w test.wav \"Hi I am Michael\")",
-      "Bash(echo \"exit: $?\")"
+      "Bash(echo \"exit: $?\")",
+      "Bash(curl -s \"https://api.github.com/repos/pedroslopez/whatsapp-web.js/issues?state=all&per_page=30\")"
     ]
   }
 }

@@ -20,11 +20,10 @@ export async function sendMessage(target: any, ...args: any[]): Promise<any> {
     return target.sendMessage(...args.map(sanitizeOutgoing));
 }
 
-/**
- * Sends a reply and verifies delivery by listening for the outgoing
- * `message_create` event instead of trusting the Puppeteer promise.
- * Retries up to MAX_RETRIES times on timeout.
- */
+// Verifies delivery by listening for the outgoing `message_create` event and
+// matching on body text + target chat + hasQuotedMsg. The original approach
+// matched quotedStanzaID against msg.id.id, but WhatsApp Web broke that around
+// July 25, 2026 by renaming internal key fields and switching to LID format.
 export async function safeReply(
     client: any,
     msg: any,
@@ -61,10 +60,7 @@ function attemptReply(
             if (!newMsg.fromMe) return;
             if (newMsg.to !== msg.id.remote) return;
             if (typeof text === 'string' && newMsg.body !== text) return;
-
-            // Must be a reply to the original message
-            const quotedId = newMsg._data?.quotedStanzaID;
-            if (!quotedId || quotedId !== msg.id.id) return;
+            if (!newMsg.hasQuotedMsg) return;
 
             clearTimeout(timer);
             client.removeListener('message_create', handler);
@@ -72,8 +68,6 @@ function attemptReply(
         };
 
         client.on('message_create', handler);
-
-        // Fire the reply but don't trust its promise
         msg.reply(text, undefined, { sendSeen: false, ...options }).catch(() => {});
     });
 }
