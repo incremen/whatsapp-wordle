@@ -58,7 +58,6 @@ function attemptReply(
 
         const handler = (newMsg: any) => {
             if (!newMsg.fromMe) return;
-            if (newMsg.to !== msg.id.remote) return;
             if (typeof text === 'string' && newMsg.body !== text) return;
             if (!newMsg.hasQuotedMsg) return;
 
