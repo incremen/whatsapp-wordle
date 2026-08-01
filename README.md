@@ -54,8 +54,10 @@ Add a meme-style caption to an image. Font is Futura Condensed Extra Bold (falls
 
 #### Commands
 - `!caption <text>` — caption an image or sticker (replies in same format)
-- `!caption img <text>` — caption and force output as image
-- `!caption sticker <text>` — caption and force output as sticker
+- `!caption img <text>` — force output as image
+- `!caption sticker <text>` — force output as sticker
+- `!caption bubble <text>` — overlay a speech bubble on the image
+- Flags can be combined in any order: `!caption sticker bubble <text>`, `!caption img bubble <text>`, etc.
 - `!sticker` — convert an image to a sticker
 - `!unsticker` — convert a sticker to an image
 
