@@ -88,6 +88,15 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 ### 4. The Update Loop
 *Run this every time you pull new code from GitHub.*
+
+> **whatsapp-web.js version:** bug with whatsapp web js handling ids:
+https://github.com/wwebjs/whatsapp-web.js/issues/201856
+you can just do
+npm install github:MuhdSHiBiLi/whatsapp-web.js#main
+which fixes it for me
+so yay
+
+
 ```bash
 git checkout -- package-lock.json
 git pull
