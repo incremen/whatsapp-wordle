@@ -42,26 +42,27 @@ export async function addSpeechBubble(imageBuffer: Buffer, text: string): Promis
         .png()
         .toBuffer();
 
-    // White bar behind text + tail area (tail has transparent bg so white shows through)
-    const topHeight = textBarHeight + tailHeight;
-    const topBar = await sharp({
-        create: { width, height: topHeight, channels: 4, background: { r: 255, g: 255, b: 255, alpha: 1 } },
+    const captionBar = await sharp({
+        create: { width, height: textBarHeight, channels: 4, background: { r: 255, g: 255, b: 255, alpha: 1 } },
     })
-        .composite([
-            { input: textImg, top: padding, left: leftOffset },
-            { input: tail, top: textBarHeight, left: 0 },
-        ])
+        .composite([{ input: textImg, top: padding, left: leftOffset }])
         .png()
         .toBuffer();
 
     const resizedImage = await sharp(imageBuffer).resize(width, height).png().toBuffer();
 
+    // Overlay the bubble tail onto the top of the image
+    const imageWithBubble = await sharp(resizedImage)
+        .composite([{ input: tail, top: 0, left: 0 }])
+        .png()
+        .toBuffer();
+
     return sharp({
-        create: { width, height: height + topHeight, channels: 4, background: { r: 255, g: 255, b: 255, alpha: 1 } },
+        create: { width, height: height + textBarHeight, channels: 4, background: { r: 255, g: 255, b: 255, alpha: 1 } },
     })
         .composite([
-            { input: topBar, top: 0, left: 0 },
-            { input: resizedImage, top: topHeight, left: 0 },
+            { input: captionBar, top: 0, left: 0 },
+            { input: imageWithBubble, top: textBarHeight, left: 0 },
         ])
         .jpeg({ quality: 90 })
         .toBuffer();
