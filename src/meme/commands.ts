@@ -1,7 +1,7 @@
 import { client } from '../clientConfig';
 import { safeReply } from '../infra/messaging';
 import { log } from '../infra/logger';
-import { addCaption } from './caption';
+import { addCaption, addSpeechBubble } from './caption';
 
 const { MessageMedia } = require('whatsapp-web.js');
 
@@ -76,6 +76,28 @@ export const memeCommands: MemeCommandMap = {
         } catch (err: any) {
             log('caption error', err.message);
             await safeReply(client, msg, 'Failed to add caption.');
+        }
+    },
+
+
+    '!bubble': async (msg, _chatId, args) => {
+        const text = args.trim();
+        if (!text) { await safeReply(client, msg, 'Usage: `!bubble <text>`'); return; }
+
+        try {
+            const media = await getMedia(msg);
+            if (!media || !media.mimetype.startsWith('image/')) {
+                await safeReply(client, msg, 'Send or reply to an image with `!bubble <text>`');
+                return;
+            }
+
+            const imageBuffer = Buffer.from(media.data, 'base64');
+            const result = await addSpeechBubble(imageBuffer, text);
+            const resultMedia = new MessageMedia('image/jpeg', result.toString('base64'), 'bubble.jpg');
+            await safeReply(client, msg, resultMedia);
+        } catch (err: any) {
+            log('bubble error', err.message);
+            await safeReply(client, msg, 'Failed to add speech bubble.');
         }
     },
 
