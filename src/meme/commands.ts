@@ -41,64 +41,54 @@ export const memeCommands: MemeCommandMap = {
         await safeReply(client, msg, imageMedia);
     },
 
-    // !caption <text>        — reply as same format (sticker→sticker, image→image)
-    // !caption img <text>    — force output as image
-    // !caption sticker <text> — force output as sticker
+    // Flags (any order, before the text): img | sticker | bubble
+    // e.g. !caption bubble hey, !caption sticker bubble hey, !caption img bubble hey
     '!caption': async (msg, _chatId, args) => {
+        const FLAGS = ['img', 'sticker', 'bubble'] as const;
         let text = args.trim();
         let forceOutput: 'image' | 'sticker' | null = null;
+        let bubble = false;
 
-        if (text.startsWith('img ')) { forceOutput = 'image'; text = text.slice(4); }
-        else if (text.startsWith('sticker ')) { forceOutput = 'sticker'; text = text.slice(8); }
+        let changed = true;
+        while (changed) {
+            changed = false;
+            for (const flag of FLAGS) {
+                if (text.startsWith(flag + ' ')) {
+                    if (flag === 'img') forceOutput = 'image';
+                    else if (flag === 'sticker') forceOutput = 'sticker';
+                    else if (flag === 'bubble') bubble = true;
+                    text = text.slice(flag.length + 1);
+                    changed = true;
+                }
+            }
+        }
 
-        if (!text) { await safeReply(client, msg, 'Usage: `!caption [img|sticker] <text>`'); return; }
+        if (!text) { await safeReply(client, msg, 'Usage: `!caption [img|sticker] [bubble] <text>`'); return; }
 
+        const media = await getMedia(msg);
+        if (!media || !media.mimetype.startsWith('image/')) {
+            await safeReply(client, msg, 'Send or reply to an image/sticker with `!caption <text>`');
+            return;
+        }
+
+        const sourceIsSticker = isSticker(media);
+        const outputAsSticker = forceOutput === 'sticker' || (forceOutput === null && sourceIsSticker);
+        const imageBuffer = Buffer.from(media.data, 'base64');
+
+        let result: Buffer;
         try {
-            const media = await getMedia(msg);
-            if (!media || !media.mimetype.startsWith('image/')) {
-                await safeReply(client, msg, 'Send or reply to an image/sticker with `!caption <text>`');
-                return;
-            }
-
-            const sourceIsSticker = isSticker(media);
-            const outputAsSticker = forceOutput === 'sticker' || (forceOutput === null && sourceIsSticker);
-
-            const imageBuffer = Buffer.from(media.data, 'base64');
-            const result = await addCaption(imageBuffer, text);
-
-            if (outputAsSticker) {
-                const stickerMedia = new MessageMedia('image/jpeg', result.toString('base64'), 'caption.jpg');
-                await safeReply(client, msg, stickerMedia, { sendMediaAsSticker: true });
-            } else {
-                const resultMedia = new MessageMedia('image/jpeg', result.toString('base64'), 'caption.jpg');
-                await safeReply(client, msg, resultMedia);
-            }
+            result = bubble
+                ? await addSpeechBubble(imageBuffer, text)
+                : await addCaption(imageBuffer, text);
         } catch (err: any) {
             log('caption error', err.message);
             await safeReply(client, msg, 'Failed to add caption.');
+            return;
         }
+
+        const resultMedia = new MessageMedia('image/jpeg', result.toString('base64'), 'caption.jpg');
+        await safeReply(client, msg, resultMedia, outputAsSticker ? { sendMediaAsSticker: true } : undefined);
     },
 
-
-    '!bubble': async (msg, _chatId, args) => {
-        const text = args.trim();
-        if (!text) { await safeReply(client, msg, 'Usage: `!bubble <text>`'); return; }
-
-        try {
-            const media = await getMedia(msg);
-            if (!media || !media.mimetype.startsWith('image/')) {
-                await safeReply(client, msg, 'Send or reply to an image with `!bubble <text>`');
-                return;
-            }
-
-            const imageBuffer = Buffer.from(media.data, 'base64');
-            const result = await addSpeechBubble(imageBuffer, text);
-            const resultMedia = new MessageMedia('image/jpeg', result.toString('base64'), 'bubble.jpg');
-            await safeReply(client, msg, resultMedia);
-        } catch (err: any) {
-            log('bubble error', err.message);
-            await safeReply(client, msg, 'Failed to add speech bubble.');
-        }
-    },
 
 };
